@@ -145,9 +145,24 @@ class WordPress_Webhooks_Run{
 		if( wordpress_webhooks()->helpers->is_page( $this->page_name ) && is_admin() ) {
 			$version = WW_DEV_MODE === 'development' ? time() : WW_VERSION;
 
-			wp_enqueue_style( 'ww-admin-styles', WW_PLUGIN_URL . 'includes/frontend/assets/css/style.css', array(), $version, 'all' );
+			wp_register_style('ww_google_font', 'https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Raleway:300,400,500,600,700|Crete+Round:400i"', [], $ver);
+			wp_register_style('ww_bootstrap', WW_PLUGIN_URL.'includes/frontend/assets/css/bootstrap.css', array(), $version);
+			wp_register_style( 'ww_styles', WW_PLUGIN_URL . 'includes/frontend/assets/css/styles.css', array(), $version, 'all' );
+			
+			wp_enqueue_style('ww_google_font');
+			wp_enqueue_style('ww_bootstrap');
+			wp_enqueue_style('ww_styles');
+			
+			wp_register_script( 'ww-admin-scripts', WW_PLUGIN_URL . 'includes/frontend/assets/dist/js/admin-scripts.min.js', array( 'jquery' ), $version, true );
+			wp_register_script( 'ww_rateit', WW_PLUGIN_URL . 'includes/frontend/assets/js/rateit/jquery.rateit.min.js', array( 'jquery' ), $version, true );
+			wp_register_script( 'ww_app', WW_PLUGIN_URL . 'includes/frontend/assets/js/app.js', array( 'jquery' ), $version, true );
+
 			wp_enqueue_script( 'jquery-ui-sortable');
-			wp_enqueue_script( 'ww-admin-scripts', WW_PLUGIN_URL . 'includes/frontend/assets/dist/js/admin-scripts.min.js', array( 'jquery' ), $version, true );
+			wp_enqueue_script( 'ww-admin-scripts');
+			wp_enqueue_script( 'ww_rateit');
+			wp_enqueue_script( 'ww_app');
+			
+			
 			wp_localize_script( 'ww-admin-scripts', 'ironikus', array(
 				'ajax_url'   => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce' => wp_create_nonce( md5( $this->page_name ) ),
