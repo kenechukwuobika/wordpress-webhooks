@@ -38,6 +38,15 @@
             <div class="card-header">Please us spread the word and keep this plugin up to date</div>
             <div class="card-body">
                 <p class="ww_card--text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero</p>
+                <ul class="list-unstyled">
+    <li>
+        <strong>Rate the plugin </strong>
+        <div id="plugin_rating" class="rateit"
+            READONLY_PLACEHOLDER data-rateit-value="3"
+            data-rateit-resetable="false" data-rid="1"></div>
+    </li>
+
+</ul>
             </div>
         </div>
     </div>
