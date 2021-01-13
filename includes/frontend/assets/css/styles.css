@@ -1,0 +1,83 @@
+  body{
+    background-color: #f1f1f1;
+    color: ;
+  }
+
+  .ww-heading-primary{
+    font-size: 24px;
+    text-align: center;
+  }
+
+  #wpcontent{
+    padding: 0;
+  }
+
+  #ww__container{
+    padding: 0 20px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1rem; 
+    font-size: .875rem;
+  }
+
+  .ww__content{
+    margin-top: 20px;
+    background: white;
+    padding: 40px;
+    border-radius: .23em;
+    box-shadow: 0 0.5rem .8rem rgba(0,0,0,0.2);
+  }
+
+  .ww__primary--heading{
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    color: #5643fa;
+    font-weight: 700;
+    margin-left: 20px;
+    margin-bottom: 1.5rem;
+  }
+
+  .ww__navbar{
+    background-color: rgb(32, 32, 32)
+  }
+
+  .ww_home--heading{
+    margin-bottom: 2rem;
+  }
+
+  .ww_home--text{
+    width: 38rem;
+    margin-bottom: 70px;
+  }
+
+  .ww_info{
+    text-align: center;
+    max-width: 82.19rem;
+  }
+
+  .ww_info>*:not(:last-child){
+    margin-right: 6.875rem;
+  }
+
+  .ww_card{
+    border: solid .1rem #000;
+  }
+  
+  .ww_card--text{
+    width: 265px;
+  }
+
+  .ww_btn{
+    background-color: #5643fa;
+    border: solid #5643fa;
+    padding: .8rem 0;
+  }
+
+  .ww_btn:hover{
+    background-color: #152292;
+    border: solid #152292;
+  }
+
+  .ww_plugin--rate{
+    width: 100%;
+  }
