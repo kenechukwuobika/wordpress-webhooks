@@ -3,3 +3,4 @@ license.txt
 
 * copy.php
 *.min.*
+/includes/frontend/assets/svg

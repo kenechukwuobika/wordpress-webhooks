@@ -57,7 +57,7 @@ class WordPress_Webhooks_Run{
 		add_filter( 'ww/helpers/throw_admin_notice_bootstrap', array( $this, 'throw_admin_notice_bootstrap' ), 100, 1 );
 
 		// Ajax related
-		add_action( 'wp_ajax_ironikus_add_webhook_trigger',  array( $this, 'ironikus_add_webhook_trigger' ) );
+		add_action( 'wp_ajax_ww_create_webhook_trigger',  array( $this, 'ww_create_webhook_trigger' ) );
 		add_action( 'wp_ajax_ironikus_add_webhook_action',  array( $this, 'ironikus_add_webhook_action' ) );
 		add_action( 'wp_ajax_ironikus_remove_webhook_trigger',  array( $this, 'ironikus_remove_webhook_trigger' ) );
 		add_action( 'wp_ajax_ironikus_remove_webhook_action',  array( $this, 'ironikus_remove_webhook_action' ) );
@@ -153,17 +153,19 @@ class WordPress_Webhooks_Run{
 			wp_enqueue_style('ww_bootstrap');
 			wp_enqueue_style('ww_styles');
 			
+			wp_register_script( 'ww_popper', WW_PLUGIN_URL . 'includes/frontend/assets/js/popper.js', array( 'jquery' ), $version, true );
+			wp_register_script( 'ww_rateit', WW_PLUGIN_URL . 'includes/frontend/assets/js/rateit/jquery.rateit.min.js', array( 'jquery' ), '1.0.0', true );
 			wp_register_script( 'ww-admin-scripts', WW_PLUGIN_URL . 'includes/frontend/assets/dist/js/admin-scripts.min.js', array( 'jquery' ), $version, true );
-			wp_register_script( 'ww_rateit', WW_PLUGIN_URL . 'includes/frontend/assets/js/rateit/jquery.rateit.min.js', array( 'jquery' ), $version, true );
 			wp_register_script( 'ww_app', WW_PLUGIN_URL . 'includes/frontend/assets/js/app.js', array( 'jquery' ), $version, true );
 
 			wp_enqueue_script( 'jquery-ui-sortable');
-			wp_enqueue_script( 'ww-admin-scripts');
+			wp_enqueue_script( 'ww_popper');
 			wp_enqueue_script( 'ww_rateit');
+			wp_enqueue_script( 'ww-admin-scripts');
 			wp_enqueue_script( 'ww_app');
 			
 			
-			wp_localize_script( 'ww-admin-scripts', 'ironikus', array(
+			wp_localize_script( 'ww-admin-scripts', 'ww_ajax', array(
 				'ajax_url'   => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce' => wp_create_nonce( md5( $this->page_name ) ),
 				'plugin_url' => WW_PLUGIN_URL,
@@ -195,8 +197,8 @@ class WordPress_Webhooks_Run{
 	/**
 	 * Handler for dealing with the ajax based webhook triggers
 	 */
-	public function ironikus_add_webhook_trigger(){
-		check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+	public function ww_create_webhook_trigger(){
+		check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
 		$percentage_escape		= '{irnksescprcntg}';
 		$webhook_url            = isset( $_REQUEST['webhook_url'] ) ? $_REQUEST['webhook_url'] : '';
@@ -204,18 +206,18 @@ class WordPress_Webhooks_Run{
 		$webhook_url 			= sanitize_text_field( $webhook_url );
 		$webhook_url 			= str_replace( $percentage_escape, '%', $webhook_url );
 
-        $webhook_slug            = isset( $_REQUEST['webhook_slug'] ) ? sanitize_title( $_REQUEST['webhook_slug'] ) : '';
+        $webhook_name            = isset( $_REQUEST['webhook_name'] ) ? sanitize_title( $_REQUEST['webhook_name'] ) : '';
         $webhook_current_url    = isset( $_REQUEST['current_url'] ) ? sanitize_text_field( $_REQUEST['current_url'] ) : '';
         $webhook_group          = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
         $webhook_callback       = isset( $_REQUEST['webhook_callback'] ) ? sanitize_text_field( $_REQUEST['webhook_callback'] ) : '';
-		$webhooks               = wordpress_webhooks()->webhook->get_hooks( 'trigger', $webhook_group );
+		$webhooks               = wordpress_webhooks()->webhook->get_hooks( 'trigger');
 		$response               = array( 'success' => false );
 		$url_parts              = parse_url( $webhook_current_url );
 		parse_str($url_parts['query'], $query_params);
 		$clean_url              = strtok( $webhook_current_url, '?' );
 
-		if( ! empty( $webhook_slug ) ){
-			$new_webhook = $webhook_slug;
+		if( ! empty( $webhook_name ) ){
+			$new_webhook = $webhook_name;
 		} else {
 			$new_webhook = strtotime( date( 'Y-n-d H:i:s' ) ) . 999 . rand( 10, 9999 );
 		}

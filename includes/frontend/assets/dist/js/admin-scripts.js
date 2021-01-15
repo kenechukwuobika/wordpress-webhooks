@@ -4485,7 +4485,7 @@
             url : ironikus.ajax_url,
             type : 'post',
             data : {
-                action : 'ironikus_add_webhook_trigger',
+                action : 'ww_create_webhook_trigger',
                 webhook_url : webhook_url_val,
                 webhook_slug : webhook_slug_val,
                 webhook_group : webhook_id,

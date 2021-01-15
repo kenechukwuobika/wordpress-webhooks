@@ -42,8 +42,13 @@
     <li>
         <strong>Rate the plugin </strong>
         <div id="plugin_rating" class="rateit"
-            READONLY_PLACEHOLDER data-rateit-value="3"
-            data-rateit-resetable="false" data-rid="1"></div>
+            data-rateit-readonly="true" data-rateit-value="3"
+            data-rateit-resetable="false" data-rid="1">
+        </div>
+        <div id="recipe_rating" class="rateit"
+            READONLY_PLACEHOLDER data-rateit-value="RECIPE_RATING"
+            data-rateit-resetable="false" data-rid="RECIPE_ID">
+        </div>
     </li>
 
 </ul>

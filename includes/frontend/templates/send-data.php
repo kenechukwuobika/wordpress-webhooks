@@ -1,318 +1,125 @@
 <?php
 $triggers = wordpress_webhooks()->webhook->get_triggers();
-$triggers_data = wordpress_webhooks()->webhook->get_hooks( 'trigger' );
+$custom_webhooks = wordpress_webhooks()->webhook->get_hooks( 'trigger' );
+uasort($custom_webhooks, function ($a, $b){			
+	return strcasecmp($b['date_created'], $a['date_created']);
+});
 $current_url = wordpress_webhooks()->helpers->get_current_url(false);
 $current_url_full = wordpress_webhooks()->helpers->get_current_url();
 $data_mapping_templates = wordpress_webhooks()->data_mapping->get_data_mapping();
 $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
+
 ?>
-<?php add_ThickBox(); ?>
-<div class="ironikus-webhook-triggers">
-	<h2><?php echo wordpress_webhooks()->helpers->translate( 'Available Webhook Triggers', 'ww-page-triggers' ); ?></h2>
-	<div class="main-description">
-		<?php if( wordpress_webhooks()->whitelabel->is_active() && ! empty( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ) ) ) : ?>
-			<?php echo wordpress_webhooks()->helpers->translate( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ), 'admin-settings-license' ); ?>
-		<?php else : ?>
-			<?php echo sprintf( wordpress_webhooks()->helpers->translate( 'Below you will find a list of all active %1$s triggers. To use one, you need to define a URL that should be triggered to send the available data. For more information on that, you can check out our each webhook trigger description or our product documentation by clicking <a title="Go to our product documentation" target="_blank" href="%2$s">here</a>.', 'ww-page-triggers' ), '<strong>' . $this->page_title . '</strong>', 'https://ironikus.com/docs/?utm_source=wp-webhooks-pro&utm_medium=send-data-documentation&utm_campaign=WP%20Webhooks%20Pro'); ?>
-		<?php endif; ?>
+<div class="d-flex flex-column">
+
+	<div class="d-flex justify-content-between mb-4">
+		<div class="ww_senddata--text">
+			<h2 class=""><?php echo wordpress_webhooks()->helpers->translate( 'Create A Webhook Trigger', 'ww-page-triggers' ); ?></h2>
+			<div class="main-description">
+				<?php if( wordpress_webhooks()->whitelabel->is_active() && ! empty( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ) ) ) : ?>
+					<?php echo wordpress_webhooks()->helpers->translate( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ), 'admin-settings-license' ); ?>
+				<?php else : ?>
+					
+					<?php echo sprintf( wordpress_webhooks()->helpers->translate( 'Use the webhook URL down below to connect your external service with your site. This URL receives data from external endpoints and does certain actions on your WordPress site. Please note, that deleting the default main webhook creates automatically a new one. If you need more information, check out the installation and documentation by clicking here.' ), '<strong>' . $this->page_title . '</strong>', 'https://ironikus.com/docs/?utm_source=wp-webhooks-pro&utm_medium=send-data-documentation&utm_campaign=WP%20Webhooks%20Pro'); ?>
+				<?php endif; ?>
+
+			</div>
+		</div>
+		<svg class="ww_doc--help" xmlns="http://www.w3.org/2000/svg" width="23.5" height="23.5" viewBox="0 0 23.5 23.5"><path d="M24.063,12.313A11.75,11.75,0,1,1,12.313.563,11.749,11.749,0,0,1,24.063,12.313ZM12.628,4.448A6.137,6.137,0,0,0,7.106,7.468a.569.569,0,0,0,.129.77L8.878,9.485a.568.568,0,0,0,.79-.1c.846-1.074,1.427-1.7,2.715-1.7.968,0,2.165.623,2.165,1.562,0,.71-.586,1.074-1.541,1.61-1.115.625-2.589,1.4-2.589,3.348v.19a.569.569,0,0,0,.569.569h2.653a.569.569,0,0,0,.569-.569v-.063c0-1.349,3.941-1.4,3.941-5.054C18.149,6.532,15.3,4.448,12.628,4.448ZM12.313,16.2a2.179,2.179,0,1,0,2.179,2.179A2.182,2.182,0,0,0,12.313,16.2Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
+	</div>
+
+	<form class="mb-4">
+		<div class="form-group">
+
+			<div class="dropdown">
+				<button class="ww_input dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<?php echo wordpress_webhooks()->helpers->translate( 'Select a trigger', 'ww-page-triggers' ); ?>
+				</button>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				<?php foreach( $triggers as $identkey => $trigger ) {
+
+					$trigger_name = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
+					$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
+					$trigger_callback = !empty( $trigger['callback'] ) ? $trigger['callback'] : '';
+				?>
+
+					<div id="webhook" data-ww-callback=<?php echo $trigger_callback; ?> class="ww_input--item dropdown-item" >
+						<span><?php echo $webhook_name?></span>
+						<small id="webhook" class="form-text text-muted"><?php echo $trigger_name?></small>
+					</div>
+
+				<?php }?>
+				
+				</div>	
+			</div>
+
+			<input type="text" class="ww_input mb-4 mt-4 form-control" id="webhook-name" placeholder=<?php echo "'".wordpress_webhooks()->helpers->translate( 'Enter webhook name', 'ww-page-triggers' )."'"; ?> required>
+			
+			<input type="text" class="ww_input mb-4 form-control" id="webhook-url" placeholder=<?php echo "'".wordpress_webhooks()->helpers->translate( 'Enter webhook url', 'ww-page-triggers' )."'"; ?> required>
+
+			
+		</div>
+		<!-- <div class="form-group">
+			<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+		</div> -->
+		
+		<button id="ww_submit" type="submit" class="btn btn-primary">Add trigger</button>
+	</form>
+
+
+
+<form action="" class="ww_send--filter d-flex">
+	<div class="d-flex align-items-center">
+		<input type="text" class="ww_input--sm mb-4 mt-4 form-control" id="" placeholder=<?php echo "'".wordpress_webhooks()->helpers->translate( 'Search webhooks...', 'ww-page-triggers' )."'"; ?> required>
+		<svg class="ww_send--icon" xmlns="http://www.w3.org/2000/svg" width="10.102" height="10.102" viewBox="0 0 10.102 10.102">
+			<path id="Icon_open-magnifying-glass" data-name="Icon open-magnifying-glass" d="M4.38-.032a4.38,4.38,0,1,0,0,8.76,4.329,4.329,0,0,0,2.077-.513,1.251,1.251,0,0,0,.163.163L7.871,9.628a1.276,1.276,0,1,0,1.8-1.8L8.422,6.575a1.251,1.251,0,0,0-.2-.163,4.321,4.321,0,0,0,.551-2.077,4.385,4.385,0,0,0-4.38-4.38Zm0,1.251A3.114,3.114,0,0,1,7.508,4.347,3.138,3.138,0,0,1,6.682,6.5l-.038.038a1.251,1.251,0,0,0-.163.163,3.131,3.131,0,0,1-2.115.788,3.128,3.128,0,0,1,0-6.257Z" transform="translate(0 0.045)" fill="#395ff5"/>
+		</svg>
+
 	</div>
 	
-	<?php if( ! empty( $triggers ) ) : ?>
-		<div class="accordion" id="allTriggers">
-			<?php foreach( $triggers as $identkey => $trigger ) :
+	<input type="text" class="ww_input--sm mb-4 mt-4 form-control" id="" placeholder=<?php echo "'".wordpress_webhooks()->helpers->translate( 'Filter by trigger', 'ww-page-triggers' )."'"; ?> required>
+	<input id="ww-current-url" type="hidden" value="<?php echo $current_url_full; ?>" />
+</form>
 
-				$trigger_name = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
-				$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
 
-				//Map default trigger_attributes if available
-				$settings = array();
-				if( ! empty( $trigger['settings'] ) ){
 
-					if( isset( $trigger['settings']['data'] ) ){
-						$settings = (array) $trigger['settings']['data'];
-					}
+<table class="table ww_send--table">
+  <thead class="thead-dark">
+	<tr>
+		<th scope="col">Webhook Name</th>
+		<th scope="col">Webhook url</th>
+		<th scope="col">Trigger</th>
+		<th scope="col">Actions</th>
+	</tr>
+  </thead>
+  <tbody>
+    
+	<?php 
+		foreach ($custom_webhooks as $custom_webhook => $value){ 
+	?>
+	
+		<tr id=<?php echo $value['webhook_name'].'-'.$custom_webhook; ?>>
+			<th scope="row"><?php echo $custom_webhook; ?></th>
+			<td><?php echo $value['webhook_url'];?></td>
+			<td><?php echo $value['webhook_name'];?></td>
+			<td>
+				<a href="#" class="btn btn-primary">demo</a>
+				<a href="#" class="btn btn-danger">delete</a>
+				<a href="#" class="btn btn-primary">deactivate</a>
+				<a href="#" class="btn btn-primary">settings</a>
+			</td>
+		</tr>
 
-					if( isset( $trigger['settings']['load_default_settings'] ) && $trigger['settings']['load_default_settings'] === true ){
-							$settings = array_merge( wordpress_webhooks()->settings->get_default_trigger_settings(), $settings );
-					}
-				}
+	<?php
+		};
+	?>
 
-				//Map dynamic settings
-				$required_settings = wordpress_webhooks()->settings->get_required_trigger_settings();
-				foreach( $required_settings as $settings_ident => $settings_data ){
+  </tbody>
+</table>
 
-					if( $settings_ident == 'ww_trigger_data_mapping' ){
-						if( ! empty( $data_mapping_templates ) ){
-							$required_settings[ $settings_ident ]['choices'] = array_replace( $required_settings[ $settings_ident ]['choices'], wordpress_webhooks()->data_mapping->flatten_data_mapping_data( $data_mapping_templates ) );
-						} else {
-							unset( $required_settings[ $settings_ident ] ); //if empty
-						}
-					}
 
-					if( $settings_ident == 'ww_trigger_authentication' ){
-						if( ! empty( $authentication_templates ) ){
-							$required_settings[ $settings_ident ]['choices'] = array_replace( $required_settings[ $settings_ident ]['choices'], wordpress_webhooks()->auth->flatten_authentication_data( $authentication_templates ) );
-						} else {
-							unset( $required_settings[ $settings_ident ] ); //if empty
-						}
-					}
 
-				}
-
-				$settings = array_merge( $required_settings, $settings );
-
-				?>
-				<div class="card">
-					<div class="card-header collapsed" id="headingtrigger-<?php echo $identkey; ?>" data-toggle="collapse" data-target="#collapsetrigger-<?php echo $identkey; ?>" aria-expanded="false" aria-controls="collapsetrigger-<?php echo $identkey; ?>">
-						<button class="btn btn-link collapsed" type="button">
-							<strong><?php echo $trigger_name; ?></strong>
-							<?php if( ! empty( $webhook_name ) ) : ?>
-								 <span class="accordion-sub-webhook-name">(<?php echo $webhook_name; ?>)</span>
-							<?php endif; ?>
-						</button>
-					</div>
-					<div id="collapsetrigger-<?php echo $identkey; ?>" class="collapse" aria-labelledby="headingtrigger-<?php echo $identkey; ?>" data-parent="#allTriggers">
-						<div class="card-body">
-							<div class="irnks-short-description">
-								<?php echo $trigger['short_description']; ?>
-							</div>
-
-							<table class="table ironikus-webhook-table ironikus-group-<?php echo $trigger['trigger']; ?>">
-								<thead class="thead-dark">
-								<tr>
-									<th style="width:15%">
-										<?php echo wordpress_webhooks()->helpers->translate( 'Webhook Name', 'ww-page-triggers' ); ?>
-									</th>
-									<th style="width:70%">
-										<?php echo wordpress_webhooks()->helpers->translate( 'Webhook URL', 'ww-page-triggers' ); ?>
-									</th>
-									<th style="width:15%">
-										<?php echo wordpress_webhooks()->helpers->translate( 'Action', 'ww-page-triggers' ); ?>
-									</th>
-								</tr>
-								</thead>
-								<tbody class="single-webhook-trigger-table-body">
-								<?php $all_triggers = wordpress_webhooks()->webhook->get_hooks( 'trigger', $trigger['trigger'] ); ?>
-								<?php foreach( $all_triggers as $webhook => $webhook_data ) : ?>
-									<?php if( ! is_array( $webhook_data ) || empty( $webhook_data ) ) { continue; } ?>
-									<?php if( ! current_user_can( apply_filters( 'ww/admin/settings/webhook/page_capability', wordpress_webhooks()->settings->get_admin_cap( 'ww-page-triggers' ), $webhook, $trigger['trigger'] ) ) ) { continue; } ?>
-									<?php
-										$status = 'active';
-										$status_name = 'Deactivate';
-										if( isset( $webhook_data['status'] ) && $webhook_data['status'] == 'inactive' ){
-											$status = 'inactive';
-											$status_name = 'Activate';
-										}
-									?>
-									<tr id="ironikus-webhook-id-<?php echo $trigger['trigger'] . '-' . $webhook; ?>">
-										<td>
-											<?php echo $webhook; ?>
-										</td>
-										<td>
-											<input class="ironikus-webhook-input" type='text' name='ironikus_wp_webhooks_pro_webhook_url' value="<?php echo $webhook_data['webhook_url']; ?>" readonly /><br>
-										</td>
-										<td>
-											<div class="ironikus-element-actions">
-												<span class="ironikus-delete" ironikus-delete="<?php echo $webhook; ?>" ironikus-group="<?php echo $trigger['trigger']; ?>" ><?php echo wordpress_webhooks()->helpers->translate( 'Delete', 'ww-page-triggers' ); ?></span><br>
-												<span class="ironikus-status-action <?php echo $status; ?>" ironikus-webhook-status="<?php echo $status; ?>" ironikus-webhook-group="<?php echo $trigger['trigger']; ?>" ironikus-webhook-slug="<?php echo $webhook; ?>"><?php echo wordpress_webhooks()->helpers->translate( $status_name, 'ww-page-actions' ); ?></span><br>
-												<a class="thickbox ironikus-settings-wrapper" title="<?php echo $trigger_name; ?>" href="#TB_inline?height=330&width=800&inlineId=ww-trigger-settings-<?php echo $trigger['trigger'] . '-' . $webhook; ?>">
-													<span class="ironikus-settings" ironikus-group="<?php echo $trigger['trigger']; ?>" ><?php echo wordpress_webhooks()->helpers->translate( 'Settings', 'ww-page-triggers' ); ?></span>
-												</a>
-												<?php if( ! empty( $trigger['callback'] ) ) : ?>
-													<br><span class="ironikus-send-demo" ironikus-demo-data-callback="<?php echo $trigger['callback']; ?>" ironikus-webhook="<?php echo $webhook; ?>" ironikus-group="<?php echo $trigger['trigger']; ?>" ><?php echo wordpress_webhooks()->helpers->translate( 'Send demo', 'ww-page-triggers' ); ?></span>
-												<?php endif; ?>
-											</div>
-											<div id="ww-trigger-settings-<?php echo $trigger['trigger'] . '-' . $webhook; ?>" style="display:none;">
-												<div class="ironikus-tb-webhook-wrapper">
-													<div class="ironikus-tb-webhook-url">
-														<strong>Webhook url:</strong> <?php echo $webhook_data['webhook_url']; ?>
-														<br><strong>Webhook trigger name:</strong> <?php echo $trigger_name; ?>
-														<br><strong>Webhook technical name:</strong> <?php echo $webhook_data['webhook_name']; ?>
-													</div>
-													<div class="ironikus-tb-webhook-settings">
-														<?php if( $settings ) : ?>
-															<form id="ironikus-webhook-form-<?php echo $trigger['trigger'] . '-' . $webhook; ?>">
-																<table class="table ww-settings-table form-table">
-																	<tbody>
-
-																	<?php
-
-																	$settings_data = array();
-																	if( isset( $triggers_data[ $trigger['trigger'] ] ) ){
-																		if( isset( $triggers_data[ $trigger['trigger'] ][ $webhook ] ) ){
-																			if( isset( $triggers_data[ $trigger['trigger'] ][ $webhook ]['settings'] ) ){
-																				$settings_data = $triggers_data[ $trigger['trigger'] ][ $webhook ]['settings'];
-																			}
-																		}
-																	}
-
-																	foreach( $settings as $setting_name => $setting ) :
-
-																		$is_checked = ( $setting['type'] == 'checkbox' && $setting['default_value'] == 'yes' ) ? 'checked' : '';
-																		$value = ( $setting['type'] != 'checkbox' && isset( $setting['default_value'] ) ) ? $setting['default_value'] : '1';
-																		$placeholder = ( $setting['type'] != 'checkbox' && isset( $setting['placeholder'] ) ) ? $setting['placeholder'] : '';
-
-																		if( isset( $settings_data[ $setting_name ] ) ){
-																			$value = $settings_data[ $setting_name ];
-																			$is_checked = ( $setting['type'] == 'checkbox' && $value == 1 ) ? 'checked' : '';
-																		}
-
-																		?>
-																		<tr valign="top">
-																			<td class="tb-settings-input">
-																				<label for="iroikus-input-id-<?php echo $setting_name; ?>-<?php echo $trigger['trigger'] . '-' . $webhook; ?>">
-																					<strong><?php echo $setting['label']; ?></strong>
-																				</label>
-																				<?php if( in_array( $setting['type'], array( 'text' ) ) ) : ?>
-																				<input id="iroikus-input-id-<?php echo $setting_name; ?>-<?php echo $trigger['trigger'] . '-' . $webhook; ?>" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
-																				<?php elseif( in_array( $setting['type'], array( 'checkbox' ) ) ) : ?>
-																					<label class="switch ">
-																						<input id="iroikus-input-id-<?php echo $setting_name; ?>-<?php echo $trigger['trigger'] . '-' . $webhook; ?>" class="default primary" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
-																						<span class="slider round"></span>
-																					</label>
-																				<?php elseif( $setting['type'] === 'select' && isset( $setting['choices'] ) ) : ?>
-																					<select name="<?php echo $setting_name; ?><?php echo ( isset( $setting['multiple'] ) && $setting['multiple'] ) ? '[]' : ''; ?>" <?php echo ( isset( $setting['multiple'] ) && $setting['multiple'] ) ? 'multiple' : ''; ?>>
-																						<?php
-																							if( isset( $settings_data[ $setting_name ] ) ){
-																								$settings_data[ $setting_name ] = ( is_array( $settings_data[ $setting_name ] ) ) ? array_flip( $settings_data[ $setting_name ] ) : $settings_data[ $setting_name ];
-																							}
-																						?>
-																						<?php foreach( $setting['choices'] as $choice_name => $choice_label ) : ?>
-																						<?php
-																							$selected = '';
-																							if( isset( $settings_data[ $setting_name ] ) ){
-
-																								if( is_array( $settings_data[ $setting_name ] ) ){
-																									if( isset( $settings_data[ $setting_name ][ $choice_name ] ) ){
-																										$selected = 'selected="selected"';
-																									}
-																								} else {
-																									if( (string) $settings_data[ $setting_name ] === (string) $choice_name ){
-																										$selected = 'selected="selected"';
-																									}
-																								}
-
-																							}
-																						?>
-																						<option value="<?php echo $choice_name; ?>" <?php echo $selected; ?>><?php echo wordpress_webhooks()->helpers->translate( $choice_label, 'ww-page-triggers' ); ?></option>
-																						<?php endforeach; ?>
-																					</select>
-																				<?php endif; ?>
-																			</td>
-																			<td>
-																				<p class="description">
-																					<?php echo $setting['description']; ?>
-																				</p>
-																			</td>
-																		</tr>
-																	<?php endforeach; ?>
-
-																	</tbody>
-																</table>
-																<div class="ironikus-single-webhook-trigger-handler">
-																	<p class="btn btn-primary h30 ironikus-submit-settings-form" id="<?php echo $trigger['trigger'] . '-' . $webhook; ?>" webhook-group="<?php echo $trigger['trigger']; ?>" webhook-id="<?php echo $webhook; ?>" >
-																		<span class="ironikus-save-text active"><?php echo wordpress_webhooks()->helpers->translate( 'Save Settings', 'ww-page-triggers' ); ?></span>
-																		<img class="ironikus-loader" src="<?php echo WW_PLUGIN_URL . 'includes/frontend/assets/img/loader.gif'; ?>" />
-																	</p>
-																</div>
-															</form>
-														<?php else : ?>
-															<div class="ww-empty">
-																<?php echo wordpress_webhooks()->helpers->translate( 'For your current webhook are no settings available.', 'ww-page-triggers' ); ?>
-															</div>
-														<?php endif; ?>
-													</div>
-												</div>
-											</div>
-										</td>
-									</tr>
-								<?php endforeach; ?>
-								</tbody>
-							</table>
-
-							<div class="ironikus-single-webhook-trigger-handler">
-								<div class="input-group mb-3">
-									<label class="input-group-prepend" for="ironikus-webhook-slug-<?php echo $trigger['trigger']; ?>">
-										<span class="input-group-text"><?php echo wordpress_webhooks()->helpers->translate( 'Webhook Name', 'ww-page-triggers' ); ?></span>
-									</label>
-									<input id="ironikus-webhook-slug-<?php echo $trigger['trigger']; ?>" type="text" class="form-control ironikus-webhook-input-new h30" aria-label="<?php echo wordpress_webhooks()->helpers->translate( 'Webhook Name (Optional)', 'ww-page-triggers' ); ?>" aria-describedby="input-group-webbhook-name-<?php echo $identkey; ?>" placeholder="<?php echo wordpress_webhooks()->helpers->translate( 'my-new-webhook', 'ww-page-triggers' ); ?>">
-								</div>
-								<div class="input-group mb-3">
-									<label class="input-group-prepend" for="ironikus-webhook-url-<?php echo $trigger['trigger']; ?>">
-										<span class="input-group-text"><?php echo wordpress_webhooks()->helpers->translate( 'Webhook URL', 'ww-page-triggers' ); ?></span>
-									</label>
-									<input id="ironikus-webhook-url-<?php echo $trigger['trigger']; ?>" type="text" class="form-control ironikus-webhook-input-new h30" aria-label="<?php echo wordpress_webhooks()->helpers->translate( 'Include your webhook url here', 'ww-page-triggers' ); ?>" aria-describedby="input-group-webbhook-name-<?php echo $identkey; ?>" placeholder="<?php echo wordpress_webhooks()->helpers->translate( 'https://example.com/webbhook/onwzinsze', 'ww-page-triggers' ); ?>">
-								</div>
-								<p class="btn btn-primary ironikus-save h30" ironikus-webhook-callback="<?php echo !empty( $trigger['callback'] ) ? $trigger['callback'] : ''; ?>" ironikus-webhook-trigger="<?php echo $trigger['trigger']; ?>" >
-									<span class="ironikus-save-text active"><?php echo wordpress_webhooks()->helpers->translate( 'Add', 'ww-page-triggers' ); ?></span>
-									<img class="ironikus-loader" src="<?php echo WW_PLUGIN_URL . 'includes/frontend/assets/img/loader.gif'; ?>" />
-								</p>
-							</div>
-
-							<div class="accordion" id="triggerSendValues-<?php echo $identkey; ?>">
-								<div class="card">
-									<div class="card-header" id="headingTriggerSendValuesSub-<?php echo $identkey; ?>" data-toggle="collapse" data-target="#collapseTriggerSendValuesSub-<?php echo $identkey; ?>" aria-expanded="false" aria-controls="collapseTriggerSendValuesSub-<?php echo $identkey; ?>">
-										<button class="btn btn-link collapsed" type="button">
-											<?php echo wordpress_webhooks()->helpers->translate( 'Outgoing values', 'ww-page-triggers'); ?>
-										</button>
-									</div>
-
-									<div id="collapseTriggerSendValuesSub-<?php echo $identkey; ?>" class="collapse" aria-labelledby="headingTriggerSendValuesSub-<?php echo $identkey; ?>" data-parent="#triggerSendValues-<?php echo $identkey; ?>">
-										<div class="card-body">
-											<?php if( ! empty( $trigger['parameter'] ) ) : ?>
-												<ul class="wpwh-trigger-arguments">
-													<?php foreach( $trigger['parameter'] as $param => $param_data ) : ?>
-														<li>
-															<div class="ironikus-attribute-wrapper">
-																<strong><?php echo $param; echo ( ! empty( $param_data['required'] ) ) ? '<span style="color:red;">*</span>' : '' ?></strong>
-																<?php if( isset( $param_data['short_description'] ) ) : ?>
-																	<br>
-																	<small><?php echo $param_data['short_description']; ?></small>
-																<?php endif; ?>
-															</div>
-														</li>
-													<?php endforeach; ?>
-												</ul>
-											<?php endif; ?>
-
-											<?php if( ! empty( $trigger['returns_code'] ) ) : ?>
-												<p>
-													<?php echo wordpress_webhooks()->helpers->translate( 'Here is an example of all the available default fields that are sent after the trigger is fired. The fields may vary based on custom extensions or third party plugins.', 'ww-page-triggers'); ?>
-												</p>
-												<pre><?php echo $trigger['returns_code']; ?></pre>
-											<?php endif; ?>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="accordion" id="triggerDescription-<?php echo $identkey; ?>">
-								<div class="card">
-									<div class="card-header" id="headingtriggerDescriptionSub-<?php echo $identkey; ?>"  data-toggle="collapse" data-target="#collapsetriggerDescriptionSub-<?php echo $identkey; ?>" aria-expanded="false" aria-controls="collapsetriggerDescriptionSub-<?php echo $identkey; ?>">
-										<button class="btn btn-link collapsed" type="button">
-											<?php echo wordpress_webhooks()->helpers->translate( 'Description', 'ww-page-triggers'); ?>
-										</button>
-									</div>
-
-									<div id="collapsetriggerDescriptionSub-<?php echo $identkey; ?>" class="collapse" aria-labelledby="headingtriggerDescriptionSub-<?php echo $identkey; ?>" data-parent="#triggerDescription-<?php echo $identkey; ?>">
-										<div class="card-body">
-											<?php echo $trigger['description']; ?>
-										</div>
-									</div>
-								</div>
-							</div>
-
-						</div>
-					</div>
-				</div>
-			<?php endforeach; ?>
-		</div>
-	<?php else : ?>
-		<div class="ww-empty">
-			<?php echo wordpress_webhooks()->helpers->translate( 'You currently don\'t have any triggers activated. Please go to our settings tab and activate some.', 'ww-page-triggers' ); ?>
-		</div>
-	<?php endif; ?>
-
-</div>
-
-<input id="ironikus-webhook-current-url" type="hidden" value="<?php echo $current_url_full; ?>" />
+	
+	
+	
+	

@@ -105,6 +105,7 @@ class WordPress_Webhooks_Instantiate {
 	 *
 	 * @return array|mixed - An array of the available webhooks
 	 */
+
 	public function get_hooks( $type = 'all', $group = '', $single = '' ){
 		if( $type != 'all' ){
 			if( isset( $this->webhook_options[ $type ] ) && ! empty( $group ) ){
@@ -139,9 +140,8 @@ class WordPress_Webhooks_Instantiate {
 			$return = array();
 		}
 
-		return apply_filters( 'ww/admin/webhooks/get_hooks', $return, $type, $group, $single ) ;
+		return apply_filters( 'ww_get_hooks', $return, $type, $group, $single ) ;
 	}
-
 	/**
 	 * Set custom webhooks inside of our array()
 	 *
@@ -163,22 +163,10 @@ class WordPress_Webhooks_Instantiate {
 			$this->webhook_options[ $type ] = array();
 		}
 
-		if( $type == 'trigger' ){
-			//A trigger needs to belong to a group
-			if( ! empty( $group ) ){
-				if( ! isset( $this->webhook_options[ $type ][ $group ] ) ){
-					$this->webhook_options[ $type ][ $group ] = array();
-				}
-
-				$this->webhook_options[$type][ $group ][ $key ] = $data;
-				$return = update_option( $this->webhook_options_key, $this->webhook_options );
-			} else {
-				$return = false;
-			}
-		} else {
-			$this->webhook_options[$type][ $key ] = $data;
-			$return = update_option( $this->webhook_options_key, $this->webhook_options );
-		}
+		// var_dump($this->webhook_options);
+		$this->webhook_options[$type][ $key ] = $data;
+		$return = update_option( $this->webhook_options_key, $this->webhook_options );
+	
 
 		return $return;
 	}
@@ -251,6 +239,7 @@ class WordPress_Webhooks_Instantiate {
 				break;
 			case 'trigger':
 				$data['webhook_url'] = $args['webhook_url'];
+				$data['webhook_name'] = $args['group'];
 
 				if( isset( $args['settings'] ) && is_array( $args['settings'] ) ){
 					$data['settings'] = $args['settings'];
