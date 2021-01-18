@@ -58,6 +58,7 @@ class WordPress_Webhooks_Run{
 
 		// Ajax related
 		add_action( 'wp_ajax_ww_create_webhook_trigger',  array( $this, 'ww_create_webhook_trigger' ) );
+		add_action( 'wp_ajax_ww_get_trigger_description',  array( $this, 'ww_get_trigger_description' ) );
 		add_action( 'wp_ajax_ironikus_add_webhook_action',  array( $this, 'ironikus_add_webhook_action' ) );
 		add_action( 'wp_ajax_ironikus_remove_webhook_trigger',  array( $this, 'ironikus_remove_webhook_trigger' ) );
 		add_action( 'wp_ajax_ironikus_remove_webhook_action',  array( $this, 'ironikus_remove_webhook_action' ) );
@@ -83,12 +84,12 @@ class WordPress_Webhooks_Run{
 		add_action( 'ww_display_admin_content', array( $this, 'add_main_settings_content' ), 10 );
 
 		// Setup actions
-		add_filter( 'ww/webhooks/get_webhooks_actions', array( $this, 'add_webhook_actions_content' ), 10 );
+		add_filter( 'ww_get_webhooks_actions', array( $this, 'add_webhook_actions_content' ), 10 );
 		add_action( 'ww/webhooks/add_webhooks_actions', array( $this, 'add_webhook_actions' ), 1000, 3 );
 
 		// Setup triggers
 		add_action( 'plugins_loaded', array( $this, 'add_webhook_triggers' ), 10 );
-		add_filter( 'ww/webhooks/get_webhooks_triggers', array( $this, 'add_webhook_triggers_content' ), 10 );
+		add_filter( 'ww_get_webhooks_triggers', array( $this, 'add_webhook_triggers_content' ), 10 );
 
 		//Reset wp webhooks
 		add_action( 'admin_init', array( $this, 'reset_ww_data' ), 10 );
@@ -99,8 +100,8 @@ class WordPress_Webhooks_Run{
 		add_filter( 'ww/admin/webhooks/webhook_http_args', array( $this, 'apply_authentication_template_header' ), 100, 5 );
 
 		//Load just active ones
-		add_action( 'ww/webhooks/get_webhooks_triggers', array( $this, 'filter_active_webhooks_triggers' ), PHP_INT_MAX - 100, 2 );
-		add_action( 'ww/webhooks/get_webhooks_actions', array( $this, 'filter_active_webhooks_actions' ), PHP_INT_MAX - 100, 2 );
+		add_action( 'ww_get_webhooks_triggers', array( $this, 'filter_active_webhooks_triggers' ), PHP_INT_MAX - 100, 2 );
+		add_action( 'ww_get_webhooks_actions', array( $this, 'filter_active_webhooks_actions' ), PHP_INT_MAX - 100, 2 );
 	
 	}
 
@@ -240,6 +241,22 @@ class WordPress_Webhooks_Run{
 		die();
 	}
 	
+	
+	/**
+	 * Handler for getting trigger descritpion from template
+	 *
+	 * @return void
+	 */
+	public function ww_get_trigger_description(){
+		// get_template_part(WW_PLUGIN_DIR.'includes/frontend/templates/descriptions/trigger', $_REQUEST['id']);
+		include(WW_PLUGIN_DIR.'includes/frontend/templates/descriptions/trigger-'.$_REQUEST['id'].'.php');
+		$my_html = ob_get_contents();
+		ob_end_clean();
+		echo wp_send_json_success(['page'=> $my_html]);
+		die();
+	}
+
+
 	/**
 	 * Handler for creating a new webhook action url
 	 *
