@@ -486,7 +486,7 @@ class WordPress_Webhooks_Instantiate {
 	 * array( 'action' => 'my-action', 'parameter' => array( 'my_parameter' => array( 'short_description => 'my text', 'required' => true ) ), 'short_description' => 'This is my short description.', 'description' => 'My HTML Content' )
 	 */
 	public function get_actions( $active_webhooks = true ){
-		return apply_filters( 'ww/webhooks/get_webhooks_actions', array(), $active_webhooks );
+		return apply_filters( 'ww_get_webhooks_actions', array(), $active_webhooks );
 	}
 	/**
 	 * Display the actions in our frontend actions table
@@ -496,7 +496,7 @@ class WordPress_Webhooks_Instantiate {
 	 */
 	public function get_triggers( $single = '', $active_webhooks = true ){
 
-		$triggers = apply_filters( 'ww/webhooks/get_webhooks_triggers', array(), $active_webhooks );
+		$triggers = apply_filters( 'ww_get_webhooks_triggers', array(), $active_webhooks );
 
 		if( ! empty( $single ) ){
 			if( isset( $triggers[ $single ] ) ){
