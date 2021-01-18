@@ -100,18 +100,25 @@
         });
     });
 
-    document.querySelectorAll('.ww_input--item').forEach(element => {
-        element.addEventListener('click', function () {
-            document.querySelector('.ww_input').textContent = element.childNodes[1].textContent;
-            document.querySelector('.ww_input').setAttribute('data-callback', this.getAttribute('data-ww-callback'))
-            console.log(document.querySelector('.ww_input').getAttribute('data-callback'))
-            document.querySelector('#webhook-name').style.display = 'block';
-            document.querySelector('#webhook-url').style.display = 'block';
+    
+    $('.ww_input--item').each(function (element) {
+        $(this).on('click', function () {
+            console.log($(this).children());
+            $('.ww_input').text(this.childNodes[1].textContent);
+            $('.ww_input').attr('data-callback', this.getAttribute('data-ww-callback'))
+
+            $('#webhook-name').css({ 'visibility': 'visible'});
+            $('#webhook-name').css({ 'opacity': '1'});
+            $('#webhook-name').css({ 'transform': 'translateY(0rem)'});
+            $('#webhook-name').css({ 'position': 'relative'});
+
+            $('#webhook-url').css({ 'visibility': 'visible'});
+            $('#webhook-url').css({ 'opacity': '1'});
+            $('#webhook-url').css({ 'transform': 'translateY(0rem)'});
+            $('#webhook-url').css({ 'position': 'relative'});
         })
-    });
-    
-    // jQuery('.ww_input--item');
-    
+    })
+        
     
     $( "#ww_submit" ).on( "click", function(e) {
     e.preventDefault();
@@ -127,7 +134,7 @@
             type : 'post',
             data : {
                 action : 'ww_create_webhook_trigger',
-                webhook_url,
+                 webhook_url,
                 webhook_name,
                 webhook_group : webhook_id,
                 webhook_callback,
@@ -180,9 +187,46 @@
                     $( $this ).css( { 'background': '' } );
                 }, 2700);
             }
-        } );
-    
+        });
     });
+
+    $('.ww_doc--help').on('click', function () {
+        $('.ww_modal').addClass('ww_modal--active');
+    });
+
+    $('.ww_modal--close').on('click', function (e) {
+        e.stopPropagation();
+        $('.ww_modal').removeClass('ww_modal--active');
+        $('.ww_modal--1').css({ 'display': 'block' });
+        $('.ww_modal--2').css({ 'display': 'none' });
+    });
+
+    $(".ww_triggers--links").each(function () {
+        $(this).on('click', function (e) {
+            const short_description     =   $(this).siblings()[0].value;
+            const return_value          =   $(this).siblings()[1].value;
+            e.preventDefault();
+           
+           $.ajax({
+            url     :   ww_ajax.ajax_url,
+            type    :   'get',
+            data    :   {
+                action  :   'ww_get_trigger_description',
+                id      :   e.target.id
+            },
+
+            success : function( response ) {            
+                $('#home').html(response.data.page);
+            }
+    
+           });
+
+            $('.ww_modal--1').css({ 'display': 'none' });
+            $('.ww_modal--2').css({ 'display': 'block' });
+        });
+    });
+
+   
 
 })(jQuery);
 
