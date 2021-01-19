@@ -75,7 +75,9 @@ class WordPress_Webhooks_Run{
 		add_action( 'wp_ajax_ironikus_load_authentication_template_data',  array( $this, 'ironikus_load_authentication_template_data' ) );
 		add_action( 'wp_ajax_ironikus_save_authentication_template',  array( $this, 'ironikus_save_authentication_template' ) );
 		add_action( 'wp_ajax_ironikus_delete_authentication_template',  array( $this, 'ironikus_delete_authentication_template' ) );
-		add_action( 'wp_ajax_ironikus_save_main_settings',  array( $this, 'ironikus_save_main_settings' ) );
+		add_action( 'wp_ajax_ww_save_general_settings',  array( $this, 'ww_save_general_settings' ) );
+		add_action( 'wp_ajax_ww_save_trigger_settings',  array( $this, 'ww_save_trigger_settings' ) );
+		add_action( 'wp_ajax_ww_save_action_settings',  array( $this, 'ww_save_action_settings' ) );
 		add_action( 'wp_ajax_ironikus_save_whitelabel_settings',  array( $this, 'ironikus_save_whitelabel_settings' ) );
 		add_action( 'wp_ajax_ironikus_manage_extensions',  array( $this, 'ironikus_manage_extensions' ) );
 
@@ -731,19 +733,71 @@ class WordPress_Webhooks_Run{
 	/*
      * Functionality to save the main settings of the settings page
      */
-	public function ironikus_save_main_settings(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+	public function ww_save_settings($input, $type){
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
-        $main_settings    = isset( $_REQUEST['main_settings'] ) ? $_REQUEST['main_settings'] : '';
+        $settings    = isset( $input ) ? $input : '';
 		$response           = array( 
 			'success' => false,
 			'msg' => wordpress_webhooks()->helpers->translate('An error occured saving your data.', 'ajax-settings')
 		);
 		
-		parse_str( $main_settings, $main_settings_data );	
+		parse_str( $settings, $settings_str );	
 
-		if( ! empty( $main_settings_data ) ){
-		    $check = wordpress_webhooks()->settings->save_settings( $main_settings_data );
+		$check = '';
+
+		if( ! empty( $settings_str ) ){
+			switch($type){
+				case 'general_settings':
+					$check = wordpress_webhooks()->settings->save_general_settings( $settings_str );
+				break;
+
+				case 'trigger_settings':
+					$check = wordpress_webhooks()->settings->save_trigger_settings( $settings_str );
+				break;
+
+				case 'action_settings':
+					$check = wordpress_webhooks()->settings->save_action_settings( $settings_str );
+				break;
+			}
+
+		    if( ! empty( $check ) ){
+		        $response['success'] = true;
+		        $response['msg'] = wordpress_webhooks()->helpers->translate("$type successfully saved.", "ajax-settings");
+            } else {
+				$response['msg'] = wordpress_webhooks()->helpers->translate('Your settings couldn\'t be saved.', 'ajax-settings');
+			}
+        }
+
+		echo json_encode( $response );
+		die();		
+	}
+
+	public function ww_save_general_settings(){
+		$this->ww_save_settings($_REQUEST['form_data'], 'general_settings');
+	}
+
+	public function ww_save_trigger_settings(){
+		$this->ww_save_settings($_REQUEST['form_data'], 'trigger_settings');
+	}
+
+	public function ww_save_action_settings(){
+		$this->ww_save_settings($_REQUEST['form_data'], 'action_settings');
+	}
+
+	public function ww_save_generalsettings(){
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
+
+        $general_settings    = isset( $_REQUEST['general_settings'] ) ? $_REQUEST['general_settings'] : '';
+		$response           = array( 
+			'success' => false,
+			'msg' => wordpress_webhooks()->helpers->translate('An error occured saving your data.', 'ajax-settings')
+		);
+		
+		parse_str( $general_settings, $general_settings_str );	
+
+		if( ! empty( $general_settings_str ) ){
+		    $check = wordpress_webhooks()->settings->save_general_settings( $general_settings_str );
 
 		    if( ! empty( $check ) ){
 		        $response['success'] = true;
@@ -755,7 +809,8 @@ class WordPress_Webhooks_Run{
 
         echo json_encode( $response );
 		die();
-    }
+	}
+	
 	
 	/*
      * Functionality to save the whitelabel settings

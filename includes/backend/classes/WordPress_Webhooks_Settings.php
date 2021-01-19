@@ -1461,7 +1461,7 @@ class WordPress_Webhooks_Settings{
 		return apply_filters( 'ww/admin/settings/get_all_post_statuses', $post_statuses );
 	}
 
-	public function save_settings( $new_settings ){
+	public function save_general_settings( $new_settings ){
 		$success = false;
 
 		if( empty( $new_settings ) ) {
@@ -1469,10 +1469,7 @@ class WordPress_Webhooks_Settings{
 		}
 
 		$settings = wordpress_webhooks()->settings->get_settings();
-		$triggers = wordpress_webhooks()->webhook->get_triggers( '', false );
-		$actions = wordpress_webhooks()->webhook->get_actions( false );
-		$active_webhooks = wordpress_webhooks()->settings->get_active_webhooks();
-	
+		
 		// START General Settings
 		foreach( $settings as $settings_name => $setting ){
 	
@@ -1495,9 +1492,26 @@ class WordPress_Webhooks_Settings{
 		}
 		// END General Settings
 	
+		$success = true;
+
+		do_action( 'ww_settings_saved', $new_settings );
+
+		return $success;
+	}
+
+	public function save_trigger_settings( $new_settings ){
+		$success = false;
+
+		if( empty( $new_settings ) ) {
+			return $success;
+		}
+
+		$triggers = wordpress_webhooks()->webhook->get_triggers( '', false );
+		$active_webhooks = wordpress_webhooks()->settings->get_active_webhooks();
+	
 		// START Trigger Settings
 		foreach( $triggers as $trigger ){
-			if( isset( $new_settings[ 'wwpt_' . $trigger['trigger'] ] ) ){
+			if( isset( $new_settings[ 'ww_' . $trigger['trigger'] ] ) ){
 				$active_webhooks['triggers'][ $trigger['trigger'] ] = array();
 			} else {
 				unset( $active_webhooks['triggers'][ $trigger['trigger'] ] );
@@ -1505,9 +1519,29 @@ class WordPress_Webhooks_Settings{
 		}
 		// END Trigger Settings
 	
+		
+		update_option( wordpress_webhooks()->settings->get_active_webhooks_ident(),  $active_webhooks );
+
+		$success = true;
+
+		do_action( 'ww_settings_saved', $new_settings );
+
+		return $success;
+	}
+
+	public function save_action_settings( $new_settings ){
+		$success = false;
+
+		if( empty( $new_settings ) ) {
+			return $success;
+		}
+
+		$actions = wordpress_webhooks()->webhook->get_actions( false );
+		$active_webhooks = wordpress_webhooks()->settings->get_active_webhooks();
+	
 		// START Action Settings
 		foreach( $actions as $action ){
-			if( isset( $new_settings[ 'wwpa_' . $action['action'] ] ) ){
+			if( isset( $new_settings[ 'wwa_' . $action['action'] ] ) ){
 				$active_webhooks['actions'][ $action['action'] ] = array();
 			} else {
 				unset( $active_webhooks['actions'][ $action['action'] ] );
@@ -1518,10 +1552,11 @@ class WordPress_Webhooks_Settings{
 
 		$success = true;
 
-		do_action( 'wpwh/admin/settings/settings_saved', $new_settings );
+		do_action( 'ww_settings_saved', $new_settings );
 
 		return $success;
-	 }
+	}
+	
 
 	public function save_whitelabel_settings( $new_settings ){
 		$success = false;
@@ -1564,7 +1599,7 @@ class WordPress_Webhooks_Settings{
 
 		$success = true;
 
-		do_action( 'wpwh/admin/settings/settings_saved', $new_settings );
+		do_action( 'ww_settings_saved', $new_settings );
 
 		return $success;
 	 }
