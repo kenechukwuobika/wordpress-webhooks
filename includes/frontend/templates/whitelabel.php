@@ -30,7 +30,7 @@ if ( ! empty( $license_key ) && $license_status !== false && $license_status ===
 
 if( $show_whitelabel_settings ) :
 
-    if( did_action( 'wpwh/admin/settings/settings_saved' ) ){
+    if( did_action( 'ww_settings_saved' ) ){
         echo wordpress_webhooks()->helpers->create_admin_notice( 'The settings are successfully updated. Please refresh the page.', 'success', true );
     }
 
