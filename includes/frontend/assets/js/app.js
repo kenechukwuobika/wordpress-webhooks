@@ -101,7 +101,7 @@
     });
 
     
-    $('.ww_input--item').each(function (element) {
+    $('.ww_htmitem').each(function () {
         $(this).on('click', function () {
             console.log($(this).children());
             $('.ww_input').text(this.childNodes[1].textContent);
@@ -117,6 +117,14 @@
             $('#webhook-url').css({ 'transform': 'translateY(0rem)'});
             $('#webhook-url').css({ 'position': 'relative'});
         })
+    })
+
+    $('.ww_input--item').each(function () {
+        
+
+
+
+
     })
         
     
@@ -226,9 +234,70 @@
         });
     });
 
-   
+    //Save the general settings via Ajax
+    $("#ww_form--general").on( "submit", submitForm('ww_save_general_settings'));
+    //Save the trigger settings via Ajax
+    $("#ww_form--trigger").on( "submit", submitForm('ww_save_trigger_settings'));
+    //Save the action settings via Ajax
+    $("#ww_form--action").on( "submit", submitForm('ww_save_action_settings'));
+
+    function submitForm(action) {
+        return function (e) {
+        
+            e.preventDefault();
+            console.log(e);
+            let $this = this;
+            let form_data = $(this).serialize();
+            console.log(form_data);
+    
+    
+            //Prevent from clicking again
+            // if( $( $this ).children( '.ironikus-loader' ).hasClass( 'active' ) ){
+            //     return;
+            // }
+            //todo change button HTML within the settings page to the one in the thickbox
+            // $( $this ).children( '.ironikus-save-text' ).toggleClass( 'active' );
+            // $( $this ).children( '.ironikus-loader' ).toggleClass( 'active' );
+    
+            $.ajax({
+                url : ww_ajax.ajax_url,
+                type : 'post',
+                data : {
+                    action,
+                    form_data,
+                    ww_nonce: ww_ajax.ajax_nonce
+                },
+                success : function( $response ) {
+                    // var $settings_response = $.parseJSON( $response );
+    
+                    // window.location = window.location.href;location.reload();
+    
+                    // if( $settings_response['success'] != 'false' ){
+                    //    $( '#ironikus-webhook-id-' + $webhook ).remove();
+                    // }
+    
+                    setTimeout(function(){
+                        $( $this ).children( '.ironikus-save-text' ).toggleClass( 'active' );
+                        $( $this ).children( '.ironikus-loader' ).toggleClass( 'active' );
+    
+                        $( $this ).css( { 'background': '#00a73f', 'border-color': '#00a73f' } );
+                    }, 200);
+                    setTimeout(function(){
+                        $( $this ).css( { 'background': '', 'border-color': '' } );
+                    }, 2700);
+                
+                },
+                error: function( errorThrown ){
+                    console.log(errorThrown);
+                }
+            });
+        }
+    
+    }
+    
 
 })(jQuery);
+
 
 
 

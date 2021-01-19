@@ -10,149 +10,178 @@ $actions = wordpress_webhooks()->webhook->get_actions( false );
 $active_webhooks = wordpress_webhooks()->settings->get_active_webhooks();
 $current_url_full = wordpress_webhooks()->helpers->get_current_url();
 
-if( did_action( 'wpwh/admin/settings/settings_saved' ) ){
+
+
+if( did_action( 'ww_settings_saved' ) ){
 	echo wordpress_webhooks()->helpers->create_admin_notice( 'The settings are successfully updated. Please refresh the page.', 'success', true );
 }
 
 ?>
 
-<div class="ironikus-settings-wrapper">
+<div class="ww_tabs--settings">
+	<ul class="nav nav-tabs" id="myTab" role="tablist">
+		<li class="nav-item waves-effect waves-light">
+			<a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="home" aria-selected="false">General Settings</a>
+		</li>
+		<li class="nav-item waves-effect waves-light">
+			<a class="nav-link" id="send-tab" data-toggle="tab" href="#send" role="tab" aria-controls="profile" aria-selected="false">Send Data Actions</a>
+		</li>
+		<li class="nav-item waves-effect waves-light">
+			<a class="nav-link" id="receive-tab" data-toggle="tab" href="#receive" role="tab" aria-controls="profile" aria-selected="false">Receive Data Actions</a>
+		</li>
+		
+	</ul>
 
-	<h2><?php echo wordpress_webhooks()->helpers->translate('Global Settings', 'admin-settings'); ?></h2>
+	<div class="tab-content" id="myTabContent">
+		<div class="tab-pane fade active show" id="general" role="tabpanel" aria-labelledby="general-tab">
+		
+			<h4>General Settings</h4>
 
-	<div class="sub-text">
-		<?php if( wordpress_webhooks()->whitelabel->is_active() && ! empty( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_settings' ) ) ) : ?>
-			<?php echo wordpress_webhooks()->helpers->translate( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_settings' ), 'admin-settings-license' ); ?>
-		<?php else : ?>
-			<?php echo wordpress_webhooks()->helpers->translate( 'Here you can configure the global settings for our plugin, enable certain features to extend the possibilities for your site, and activate your available webhook actions and triggers.', 'admin-settings' ); ?>
-		<?php endif; ?>
+			<p>Here you can configure the global settings for our plugin, enable certain features to extend the possibilities for your site, and activate your available webhook actions and triggers.</p>
+
+			<form action="" method="post" id="ww_form--general" class="d-flex flex-column align-items-center">
+				<table style="width: 80rem;" class="table ">
+					<thead class="thead-dark">
+						<tr>
+							<th scope="col">Action</th>
+							<th scope="col">Title</th>
+							<th scope="col">Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+						<?php 
+							foreach ($settings as $setting => $setting_value){ 
+								$is_checked = ( $setting_value['type'] == 'checkbox' && $setting_value['value'] == 'yes' ) ? 'checked' : '';
+								$value = ( $setting_value['type'] != 'checkbox' ) ? $setting_value['value'] : '1';
+								$is_checkbox = ( $setting_value['type'] == 'checkbox' ) ? true : false;
+						?>
+						
+							<tr>
+								<td>
+								<?php if( $is_checkbox ) : ?>
+								<label class="switch ">
+									<input id="<?php echo $setting_value['id']; ?>" class="default primary" name="<?php echo $setting; ?>" type="<?php echo $setting_value['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
+									<span class="slider round"></span>
+								</label>
+								<?php else : ?>
+									<input id="<?php echo $setting_value['id']; ?>" name="<?php echo $setting; ?>" type="<?php echo $setting_value['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
+								<?php endif; ?>
+								</td>
+								<th scope="row"><?php echo $setting_value['label']; ?></th>
+								<td><?php echo $setting_value['description'];?></td>
+								
+							</tr>
+
+						<?php
+							};
+						?>
+
+					</tbody>
+				</table>
+
+				<input type="submit" id="ww_general--settings" value="Save Settings" class="ww_btn ww_form--btn">
+
+			</form>
+
+			
+		</div>
+
+		<div class="tab-pane fade" id="send" role="tabpanel" aria-labelledby="send-tab">
+			<h4>Activate "Send Data" Triggers</h4>
+
+			<p>Here you can configure the send data settings for our plugin, enable certain features to extend the possibilities for your site, and activate your available webhook actions and triggers.</p>
+
+			<form action="" method="post" id="ww_form--trigger" class="d-flex flex-column align-items-center">
+				<table style="width: 80rem;" class="table ">
+					<thead class="thead-dark">
+						<tr>
+							<th scope="col">Action</th>
+							<th scope="col">Title</th>
+							<th scope="col">Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+						<?php 
+							foreach ($triggers as $trigger => $trigger_value){ 
+								$is_checked = isset( $active_webhooks['triggers'][ $trigger_value['trigger'] ] ) ?  'checked' : '';
+						?>
+						
+							<tr>
+								<td>
+								<label class="switch ">
+									<input id="ww_<?php echo $trigger_value['trigger']; ?>" class="default primary" name="ww_<?php echo $trigger_value['trigger']; ?>" 
+									type="checkbox" 
+									class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> $is_checked />
+									<span class="slider"></span>
+								</label>
+								
+								</td>
+								<th scope="row"><?php echo $trigger_value['name']; ?></th>
+								<td><?php echo $trigger_value['short_description'];?></td>
+								
+							</tr>
+
+						<?php
+							};
+						?>
+
+					</tbody>
+				</table>
+
+				<input type="submit" id="ww_general--settings" value="Save Settings" class="ww_btn ww_form--btn">
+
+			</form>
+		</div>
+
+		<div class="tab-pane fade" id="receive" role="tabpanel" aria-labelledby="receive-tab">
+			<h4>Activate "Receive Data" Actions</h4>
+
+			<p>Here you can configure the send data settings for our plugin, enable certain features to extend the possibilities for your site, and activate your available webhook actions and triggers.</p>
+
+			<form action="" method="post" id="ww_form--action" class="d-flex flex-column align-items-center">
+				<table style="width: 80rem;" class="table ">
+					<thead class="thead-dark">
+						<tr>
+							<th scope="col">Action</th>
+							<th scope="col">Title</th>
+							<th scope="col">Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+						<?php 
+							foreach ($actions as $action => $action_value){ 
+								$is_checked = isset( $active_webhooks['actions'][ $action_value['action'] ] ) ?  'checked' : '';
+						?>
+						
+							<tr>
+								<td>
+								<label class="switch ">
+									<input id="wwa_<?php echo $action_value['action']; ?>" class="default primary" name="wwa_<?php echo $action_value['action']; ?>" 
+									type="checkbox" 
+									class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> $is_checked />
+									<span class="slider"></span>
+								</label>
+								
+								</td>
+								<th scope="row"><?php echo $action_value['action']; ?></th>
+								<td><?php echo $action_value['short_description'];?></td>
+								
+							</tr>
+
+						<?php
+							};
+						?>
+
+					</tbody>
+				</table>
+
+				<input type="submit" id="ww_general--settings" value="Save Settings" class="ww_btn ww_form--btn">
+
+			</form>
+		</div>
 	</div>
-
-	<form id="ironikus-main-settings-form" method="post" action="">
-
-		<table class="table ww-settings-table form-table">
-			<tbody>
-
-			<?php foreach( $settings as $setting_name => $setting ) :
-
-				$is_checked = ( $setting['type'] == 'checkbox' && $setting['value'] == 'yes' ) ? 'checked' : '';
-				$value = ( $setting['type'] != 'checkbox' ) ? $setting['value'] : '1';
-				$is_checkbox = ( $setting['type'] == 'checkbox' ) ? true : false;
-
-			?>
-				<tr valign="top">
-					<td class="settings-input" >
-						<label for="<?php echo $setting_name; ?>">
-							<strong><?php echo $setting['label']; ?></strong>
-						</label>
-						<?php if( $is_checkbox ) : ?>
-							<label class="switch ">
-								<input id="<?php echo $setting['id']; ?>" class="default primary" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
-								<span class="slider round"></span>
-							</label>
-						<?php else : ?>
-							<input id="<?php echo $setting['id']; ?>" name="<?php echo $setting_name; ?>" type="<?php echo $setting['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
-						<?php endif; ?>
-					</td>
-					<td>
-						<p class="description">
-							<?php echo $setting['description']; ?>
-						</p>
-					</td>
-				</tr>
-			<?php endforeach; ?>
-
-			</tbody>
-		</table>
-
-		<p class="btn btn-primary h30 ironikus-submit-settings-data">
-			<span class="ironikus-save-text active"><?php echo wordpress_webhooks()->helpers->translate( 'Save all', 'admin-settings' ); ?></span>
-			<img class="ironikus-loader" src="<?php echo WW_PLUGIN_URL . 'includes/frontend/assets/img/loader.gif'; ?>" />
-		</p>
-
-		<h2><?php echo wordpress_webhooks()->helpers->translate('Activate "Send Data" Triggers', 'admin-settings'); ?></h2>
-
-		<div class="sub-text">
-			<?php echo wordpress_webhooks()->helpers->translate( 'This is a list of all available data triggers, that are currently registered on your site. To use one, just check the box and click save. After that you will be able to use the trigger within the "Send Data" tab.', 'admin-settings' ); ?>
-		</div>
-		<table class="table ww-settings-table form-table">
-			<tbody>
-
-			<?php foreach( $triggers as $trigger ) :
-
-				$ident = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
-				$is_checked = isset( $active_webhooks['triggers'][ $trigger['trigger'] ] ) ?  'checked' : '';
-
-				?>
-				<tr valign="top">
-					<td class="action-button-toggle">
-						<label class="switch ">
-							<input id="wwpt_<?php echo $trigger['trigger']; ?>" class="regular-text default primary" name="wwpt_<?php echo $trigger['trigger']; ?>" type="checkbox" class="regular-text" value="1" <?php echo $is_checked; ?> />
-							<span class="slider round"></span>
-						</label>
-					</td>
-					<td scope="row" valign="top">
-						<label for="wwpt_<?php echo $trigger['trigger']; ?>">
-							<strong><?php echo $ident; ?></strong>
-						</label>
-					</td>
-					<td>
-						<p class="description">
-							<?php echo $trigger['short_description']; ?>
-						</p>
-					</td>
-				</tr>
-			<?php endforeach; ?>
-
-			</tbody>
-		</table>
-		<p class="btn btn-primary h30 ironikus-submit-settings-data">
-			<span class="ironikus-save-text active"><?php echo wordpress_webhooks()->helpers->translate( 'Save all', 'admin-settings' ); ?></span>
-			<img class="ironikus-loader" src="<?php echo WW_PLUGIN_URL . 'includes/frontend/assets/img/loader.gif'; ?>" />
-		</p>
-
-		<h2><?php echo wordpress_webhooks()->helpers->translate('Activate "Receive Data" Actions', 'admin-settings'); ?></h2>
-
-		<div class="sub-text">
-			<?php echo wordpress_webhooks()->helpers->translate( 'This is a list of all available action webhooks registered on your site. To use one, just check the box and click save. After that, you will be able to use the action at the Receive Data tab.', 'admin-settings' ); ?>
-		</div>
-		<table class="table ww-settings-table form-table">
-			<tbody>
-
-			<?php foreach( $actions as $action ) :
-
-				$is_checked = isset( $active_webhooks['actions'][ $action['action'] ] ) ?  'checked' : '';
-
-				?>
-				<tr valign="top">
-					<td class="action-button-toggle">
-						<label class="switch ">
-							<input id="wwpa_<?php echo $action['action']; ?>" class="regular-text default primary" name="wwpa_<?php echo $action['action']; ?>" type="checkbox" class="regular-text" value="1" <?php echo $is_checked; ?> />
-							<span class="slider round"></span>
-						</label>
-					</td>
-					<td scope="row" valign="top">
-						<label for="wwpa_<?php echo $action['action']; ?>">
-							<strong><?php echo $action['action']; ?></strong>
-						</label>
-					</td>
-					<td>
-						<p class="description">
-							<?php echo $action['short_description']; ?>
-						</p>
-					</td>
-				</tr>
-			<?php endforeach; ?>
-
-			</tbody>
-		</table>
-
-		<input type="hidden" name="ironikus_update_settings" value="yes">
-		<p class="btn btn-primary h30 ironikus-submit-settings-data">
-			<span class="ironikus-save-text active"><?php echo wordpress_webhooks()->helpers->translate( 'Save all', 'admin-settings' ); ?></span>
-			<img class="ironikus-loader" src="<?php echo WW_PLUGIN_URL . 'includes/frontend/assets/img/loader.gif'; ?>" />
-		</p>
-
-	</form>
-
+	
 </div>
