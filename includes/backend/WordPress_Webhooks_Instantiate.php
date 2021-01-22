@@ -152,7 +152,7 @@ class WordPress_Webhooks_Instantiate {
 	 *
 	 * @return bool - True if the hook was successfully set
 	 */
-	public function set_hooks( $key, $type, $data, $group = '' ){
+	public function set_hooks( $key, $type, $data){
 		$return = false;
 
 		if( empty( $key ) || empty( $type ) || empty( $data ) ){
@@ -180,24 +180,20 @@ class WordPress_Webhooks_Instantiate {
 	 *
 	 * @return bool - Wether the webhook was deleted or not
 	 */
-	public function unset_hooks( $webhook, $type, $group = '' ){
+
+	public function unset_hooks( $webhook, $type){
 
 		if( empty( $webhook ) || empty( $type ) )
 			return false;
 
 
 		if( isset( $this->webhook_options[ $type ] ) ){
-			if( $type == 'trigger' ){
-				if( isset( $this->webhook_options[ $type ][$group][ $webhook ] ) ){
-					unset( $this->webhook_options[ $type ][$group][ $webhook ] );
-					return update_option( $this->webhook_options_key, $this->webhook_options );
-				}
-			} else {
-				if( isset( $this->webhook_options[ $type ][ $webhook ] ) ){
-					unset( $this->webhook_options[ $type ][ $webhook ] );
-					return update_option( $this->webhook_options_key, $this->webhook_options );
-				}
+			
+			if( isset( $this->webhook_options[ $type ][ $webhook ] ) ){
+				unset( $this->webhook_options[ $type ][ $webhook ] );
+				return update_option( $this->webhook_options_key, $this->webhook_options );
 			}
+		
 		} else {
 			//return true if it doesnt exist
 			return true;
@@ -205,6 +201,7 @@ class WordPress_Webhooks_Instantiate {
 
 		return false;
 	}
+
 
 	/**
 	 * Register a new webhook URL
@@ -236,21 +233,26 @@ class WordPress_Webhooks_Instantiate {
 		switch( $type ){
 			case 'action':
 				$data['api_key'] = $this->generate_api_key();
+				$data['webhook_url'] = wordpress_webhooks()->webhook->built_url( $webhook, $data['api_key'] );
 				break;
 			case 'trigger':
 				$data['webhook_url'] = $args['webhook_url'];
 				$data['webhook_name'] = $args['group'];
+				$data['webhook_callback'] = $args['webhook_callback'];
+
 
 				if( isset( $args['settings'] ) && is_array( $args['settings'] ) ){
 					$data['settings'] = $args['settings'];
 				}
 
-				$group = $args['group'];
+				
 				break;
 		}
 
+		$data['status'] = $args['webhook_status'];
+		
 
-		return $this->set_hooks( $webhook, $type, $data, $group );
+		return $this->set_hooks( $webhook, $type, $data);
 
 	}
 
@@ -263,7 +265,7 @@ class WordPress_Webhooks_Instantiate {
 	 *
 	 * @return bool - Wether the webhook was updated or not
 	 */
-	public function update( $key, $type, $group = '', $args = array() ){
+	public function update( $key, $type, $args = array() ){
 
 		if( empty( $key ) || empty( $type ) ){
 			return false;
@@ -275,19 +277,9 @@ class WordPress_Webhooks_Instantiate {
 
 		$data = array();
 
-		if( ! empty( $group ) ){
-			if( isset( $current_hooks[ $type ] ) ){
-				if( isset( $current_hooks[ $type ][ $group ] ) ){
-					if( isset( $current_hooks[ $type ][ $group ][ $key ] ) ){
-						$data = $current_hooks[ $type ][ $group ][ $key ];
-					}
-				}
-			}
-		} else {
-			if( isset( $current_hooks[ $type ] ) ){
-				if( isset( $current_hooks[ $type ][ $key ] ) ){
-					$data = $current_hooks[ $type ][ $key ];
-				}
+		if( isset( $current_hooks[ $type ] ) ){
+			if( isset( $current_hooks[ $type ][ $key ] ) ){
+				$data = $current_hooks[ $type ][ $key ];
 			}
 		}
 
@@ -309,7 +301,7 @@ class WordPress_Webhooks_Instantiate {
 
 			}
 
-			$check = $this->set_hooks( $key, $type, $data, $group );
+			$check = $this->set_hooks( $key, $type, $data);
 		}
 
 		return $check;
@@ -325,7 +317,7 @@ class WordPress_Webhooks_Instantiate {
 			return;
 		}
 
-		$default_wehook = apply_filters( 'ww/admin/webhooks/default_webhook_name', 'main_' . rand( 1000, 9999 ) );
+		$default_wehook = apply_filters( 'ww_default_webhook_name', 'ww_default_' . rand( 1000, 9999 ) );
 
 		$data = array(
 			'api_key'       => $this->generate_api_key(),
@@ -344,7 +336,7 @@ class WordPress_Webhooks_Instantiate {
 
 		$password = strtolower( wp_generate_password( $length, false ) );
 
-		return apply_filters( 'ww/admin/webhooks/generate_api_key', $password, $length );
+		return apply_filters( 'ww_generate_api_key', $password, $length );
 	}
 
 	/**
@@ -494,17 +486,18 @@ class WordPress_Webhooks_Instantiate {
 	 * The structure to include your recpient looks like this:
 	 * array( 'action' => 'my-action', 'parameter' => array( 'my_parameter' => array( 'short_description => 'my text', 'required' => true ) ), 'short_description' => 'This is my short description.', 'description' => 'My HTML Content' )
 	 */
-	public function get_triggers( $single = '', $active_webhooks = true ){
+	public function get_triggers( $single = '', $trigger_name='', $active_webhooks = true ){
 
 		$triggers = apply_filters( 'ww_get_webhooks_triggers', array(), $active_webhooks );
-
+		
 		if( ! empty( $single ) ){
-			if( isset( $triggers[ $single ] ) ){
-				return $triggers[ $single ];
-			} else {
-				return false;
+			foreach($triggers as $trigger){
+				if( isset( $trigger[ $single ] ) && $trigger[ $single ] == $trigger_name){
+					return $trigger;
+				} 
 			}
-		} else {
+		}
+		else {
 			return $triggers;
 		}
 

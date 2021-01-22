@@ -2,5 +2,7 @@ readme.txt
 license.txt
 
 * copy.php
+* copy.js
+* copy.css
 *.min.*
 /includes/frontend/assets/svg

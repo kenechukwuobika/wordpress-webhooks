@@ -4491,7 +4491,7 @@
                 webhook_group : webhook_id,
                 webhook_callback : $webhook_callback,
                 current_url : webhook_current_url,
-                ironikus_nonce: ironikus.ajax_nonce
+                ww_nonce: ironikus.ajax_nonce
             },
             success : function( $response ) {
                 var $webhook = $.parseJSON( $response );
@@ -4565,9 +4565,9 @@
             url : ironikus.ajax_url,
             type : 'post',
             data : {
-                action : 'ironikus_add_webhook_action',
+                action : 'ww_create_webhook_action',
                 webhook_slug : $webhook_slug,
-                ironikus_nonce: ironikus.ajax_nonce
+                ww_nonce: ironikus.ajax_nonce
             },
             success : function( $response ) {
                 var $webhook = $.parseJSON( $response );
@@ -4653,10 +4653,10 @@
                 url : ironikus.ajax_url,
                 type : 'post',
                 data : {
-                    action : 'ironikus_remove_webhook_trigger',
+                    action : 'ww_delete_webhook',
                     webhook : $webhook,
                     webhook_group : $webhook_group,
-                    ironikus_nonce: ironikus.ajax_nonce
+                    ww_nonce: ironikus.ajax_nonce
                 },
                 success : function( $response ) {
                     var $webhook_response = $.parseJSON( $response );
@@ -4687,7 +4687,7 @@
                 data : {
                     action : 'ironikus_remove_webhook_action',
                     webhook : $webhook,
-                    ironikus_nonce: ironikus.ajax_nonce
+                    ww_nonce: ironikus.ajax_nonce
                 },
                 success : function( $response ) {
                     var $webhook_response = $.parseJSON( $response );
@@ -4727,11 +4727,11 @@
             url : ironikus.ajax_url,
             type : 'post',
             data : {
-                action : 'ironikus_change_status_webhook_action',
+                action : 'ww_deactivate_webhook',
                 webhook : $webhook,
                 webhook_status : $webhook_status,
                 webhook_group : $webhook_group,
-                ironikus_nonce: ironikus.ajax_nonce
+                ww_nonce: ironikus.ajax_nonce
             },
             success : function( $response ) {
                 var $webhook_response = $.parseJSON( $response );
@@ -4773,11 +4773,11 @@
             url : ironikus.ajax_url,
             type : 'post',
             data : {
-                action : 'ironikus_test_webhook_trigger',
+                action : 'ww_test_webhook_trigger',
                 webhook : $webhook,
                 webhook_group : $webhook_group,
                 webhook_callback : $webhook_callback,
-                ironikus_nonce: ironikus.ajax_nonce
+                ww_nonce: ironikus.ajax_nonce
             },
             success : function( $response ) {
                 var $webhook_response = $.parseJSON( $response );
@@ -4824,7 +4824,7 @@
             data : {
                 action : 'ironikus_save_main_settings',
                 main_settings : $datastring,
-                ironikus_nonce: ironikus.ajax_nonce
+                ww_nonce: ironikus.ajax_nonce
             },
             success : function( $response ) {
                 // var $settings_response = $.parseJSON( $response );
@@ -4874,7 +4874,7 @@
             data : {
                 action : 'ironikus_save_whitelabel_settings',
                 whitelabel_settings : $datastring,
-                ironikus_nonce: ironikus.ajax_nonce
+                ww_nonce: ironikus.ajax_nonce
             },
             success : function( $response ) {
                 // var $settings_response = $.parseJSON( $response );
@@ -4928,7 +4928,7 @@
                 webhook_id : $webhook,
                 webhook_group : $webhook_group,
                 trigger_settings : $datastring,
-                ironikus_nonce: ironikus.ajax_nonce
+                ww_nonce: ironikus.ajax_nonce
             },
             success : function( $response ) {
                 //var $webhook_response = $.parseJSON( $response );
@@ -4977,7 +4977,7 @@
                 action : 'ironikus_save_webhook_action_settings',
                 webhook_id : $webhook,
                 action_settings : $datastring,
-                ironikus_nonce: ironikus.ajax_nonce
+                ww_nonce: ironikus.ajax_nonce
             },
             success : function( $response ) {
                 //var $webhook_response = $.parseJSON( $response );
@@ -5026,7 +5026,7 @@
                 data : {
                     action : 'ironikus_load_data_mapping_data',
                     data_mapping_id : $data_mapping_id,
-                    ironikus_nonce: ironikus.ajax_nonce
+                    ww_nonce: ironikus.ajax_nonce
                 },
                 success : function( $response ) {
                     var $mapping_response = $.parseJSON( $response );
@@ -5096,7 +5096,7 @@
                 original_data : $original_data,
                 current_mapping_template : $current_mapping_template,
                 mapping_type : $mapping_type,
-                ironikus_nonce: ironikus.ajax_nonce
+                ww_nonce: ironikus.ajax_nonce
             },
             success : function( $response ) {
                 var $webhook_response = $.parseJSON( $response );
@@ -5746,7 +5746,7 @@
                     action : 'ironikus_save_data_mapping_template',
                     data_mapping_id : $data_mapping_id,
                     data_mapping_json : $template_json,
-                    ironikus_nonce: ironikus.ajax_nonce
+                    ww_nonce: ironikus.ajax_nonce
                 },
                 success : function( $response ) {
                     var $saving_response = $.parseJSON( $response );
@@ -5785,7 +5785,7 @@
                 data : {
                     action : 'ironikus_delete_data_mapping_template',
                     data_mapping_id : $data_mapping_id,
-                    ironikus_nonce: ironikus.ajax_nonce
+                    ww_nonce: ironikus.ajax_nonce
                 },
                 success : function( $response ) {
                     var $deleting_response = $.parseJSON( $response );
@@ -5827,7 +5827,7 @@
                 data : {
                     action : 'ironikus_add_data_mapping_template',
                     data_mapping_name : $data_mapping_name,
-                    ironikus_nonce: ironikus.ajax_nonce
+                    ww_nonce: ironikus.ajax_nonce
                 },
                 success : function( $response ) {
                     var $add_response = $.parseJSON( $response );
@@ -5864,7 +5864,7 @@
                     action : 'ironikus_add_authentication_template',
                     auth_template : $auth_template,
                     auth_type : $auth_type,
-                    ironikus_nonce: ironikus.ajax_nonce
+                    ww_nonce: ironikus.ajax_nonce
                 },
                 success : function( $response ) {
                     var $add_response = $.parseJSON( $response );
@@ -5909,7 +5909,7 @@
                 data : {
                     action : 'ironikus_load_authentication_template_data',
                     auth_template_id : $auth_template_id,
-                    ironikus_nonce: ironikus.ajax_nonce
+                    ww_nonce: ironikus.ajax_nonce
                 },
                 success : function( $response ) {
                     var $auth_response = $.parseJSON( $response );
@@ -5963,7 +5963,7 @@
                     action : 'ironikus_save_authentication_template',
                     data_auth_id : $data_auth_id,
                     datastring : $datastring,
-                    ironikus_nonce: ironikus.ajax_nonce
+                    ww_nonce: ironikus.ajax_nonce
                 },
                 success : function( $response ) {
                     var $saving_response = $.parseJSON( $response );
@@ -6002,7 +6002,7 @@
                 data : {
                     action : 'ironikus_delete_authentication_template',
                     data_auth_id : $data_auth_id,
-                    ironikus_nonce: ironikus.ajax_nonce
+                    ww_nonce: ironikus.ajax_nonce
                 },
                 success : function( $response ) {
                     var $deleting_response = $.parseJSON( $response );
@@ -6106,7 +6106,7 @@
                 extension_download : $extension_download,
                 extension_id : $extension_id,
                 extension_version : $extension_version,
-                ironikus_nonce: ironikus.ajax_nonce
+                ww_nonce: ironikus.ajax_nonce
             },
             success : function( $response ) {
                 var $webhook = $.parseJSON( $response );
@@ -6175,7 +6175,7 @@
                 extension_download : $extension_download,
                 extension_id : $extension_id,
                 extension_version : $extension_version,
-                ironikus_nonce: ironikus.ajax_nonce
+                ww_nonce: ironikus.ajax_nonce
             },
             success : function( $response ) {
                 var $webhook = $.parseJSON( $response );

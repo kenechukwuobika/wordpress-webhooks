@@ -58,12 +58,14 @@ class WordPress_Webhooks_Run{
 
 		// Ajax related
 		add_action( 'wp_ajax_ww_create_webhook_trigger',  array( $this, 'ww_create_webhook_trigger' ) );
+		add_action( 'wp_ajax_ww_get_webhook_triggers',  array( $this, 'ww_get_webhook_triggers' ) );
+		add_action( 'wp_ajax_ww_get_webhook_actions',  array( $this, 'ww_get_webhook_actions' ) );
 		add_action( 'wp_ajax_ww_get_trigger_description',  array( $this, 'ww_get_trigger_description' ) );
-		add_action( 'wp_ajax_ironikus_add_webhook_action',  array( $this, 'ironikus_add_webhook_action' ) );
-		add_action( 'wp_ajax_ironikus_remove_webhook_trigger',  array( $this, 'ironikus_remove_webhook_trigger' ) );
-		add_action( 'wp_ajax_ironikus_remove_webhook_action',  array( $this, 'ironikus_remove_webhook_action' ) );
-		add_action( 'wp_ajax_ironikus_change_status_webhook_action',  array( $this, 'ironikus_change_status_webhook_action' ) );
-		add_action( 'wp_ajax_ironikus_test_webhook_trigger',  array( $this, 'ironikus_test_webhook_trigger' ) );
+		add_action( 'wp_ajax_ww_create_webhook_action',  array( $this, 'ww_create_webhook_action' ) );
+		add_action( 'wp_ajax_ww_delete_webhook_trigger',  array( $this, 'ww_delete_webhook_trigger' ) );
+		add_action( 'wp_ajax_ww_delete_webhook_action',  array( $this, 'ww_delete_webhook_action' ) );
+		add_action( 'wp_ajax_ww_deactivate_webhook',  array( $this, 'ww_deactivate_webhook' ) );
+		add_action( 'wp_ajax_ww_test_webhook_trigger',  array( $this, 'ww_test_webhook_trigger' ) );
 		add_action( 'wp_ajax_ironikus_save_webhook_trigger_settings',  array( $this, 'ironikus_save_webhook_trigger_settings' ) );
 		add_action( 'wp_ajax_ironikus_save_webhook_action_settings',  array( $this, 'ironikus_save_webhook_action_settings' ) );
 		add_action( 'wp_ajax_ironikus_load_data_mapping_data',  array( $this, 'ironikus_load_data_mapping_data' ) );
@@ -212,6 +214,7 @@ class WordPress_Webhooks_Run{
         $webhook_name            = isset( $_REQUEST['webhook_name'] ) ? sanitize_title( $_REQUEST['webhook_name'] ) : '';
         $webhook_current_url    = isset( $_REQUEST['current_url'] ) ? sanitize_text_field( $_REQUEST['current_url'] ) : '';
         $webhook_group          = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
+        $webhook_status       = isset( $_REQUEST['webhook_status'] ) ? sanitize_text_field( $_REQUEST['webhook_status'] ) : '';
         $webhook_callback       = isset( $_REQUEST['webhook_callback'] ) ? sanitize_text_field( $_REQUEST['webhook_callback'] ) : '';
 		$webhooks               = wordpress_webhooks()->webhook->get_hooks( 'trigger');
 		$response               = array( 'success' => false );
@@ -226,14 +229,16 @@ class WordPress_Webhooks_Run{
 		}
 
         if( ! isset( $webhooks[ $new_webhook ] ) ){
-            wordpress_webhooks()->webhook->create( $new_webhook, 'trigger', array( 'group' => $webhook_group, 'webhook_url' => $webhook_url ) );
+            wordpress_webhooks()->webhook->create( $new_webhook, 'trigger', array( 'group' => $webhook_group, 'webhook_url' => $webhook_url, 'webhook_status' => $webhook_status, 'webhook_callback' => $webhook_callback ) );
 
 	        $response['success']            = true;
 	        $response['webhook']            = $new_webhook;
-	        $response['webhook_group']      = $webhook_group;
+	        $response['webhook_name']      = $webhook_group;
 	        $response['webhook_url']        = $webhook_url;
 	        $response['webhook_callback']   = $webhook_callback;
-	        $response['delete_url']         = wordpress_webhooks()->helpers->built_url( $clean_url, array_merge( $query_params, array( 'ww_delete' => $new_webhook, ) ) );
+	        $response['webhook_status']   = $webhook_status;
+			$response['delete_url']         = wordpress_webhooks()->helpers->built_url( $clean_url, array_merge( $query_params, array( 'ww_delete' => $new_webhook, ) ) );
+			$response['date_created']  		= date( 'Y-m-d H:i:s' );
         } else {
 			$response['msg'] = wordpress_webhooks()->helpers->translate( 'This key already exists. Please use a different one.', 'ww-page-actions' );
 		}
@@ -245,7 +250,24 @@ class WordPress_Webhooks_Run{
 	
 	
 	/**
-	 * Handler for getting trigger descritpion from template
+	 * Handler for getting trigger list with ajax
+	 *
+	 * @return void
+	 */
+	public function ww_get_webhook_triggers(){
+		$triggers = wordpress_webhooks()->webhook->get_hooks( 'trigger' );
+		echo wp_send_json_success($triggers);
+		die();
+	}
+
+	public function ww_get_webhook_actions(){
+		$actions = wordpress_webhooks()->webhook->get_hooks( 'action' );
+		echo wp_send_json_success($actions);
+		die();
+	}
+
+	/**
+	 * Handler for getting trigger from template
 	 *
 	 * @return void
 	 */
@@ -264,27 +286,29 @@ class WordPress_Webhooks_Run{
 	 *
 	 * @return void
 	 */
-	public function ironikus_add_webhook_action(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+	public function ww_create_webhook_action(){
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
-        $webhook_slug   = isset( $_REQUEST['webhook_slug'] ) ? $_REQUEST['webhook_slug'] : '';
+        $webhook_name   = isset( $_REQUEST['webhook_name'] ) ? $_REQUEST['webhook_name'] : '';
+        $webhook_status   = isset( $_REQUEST['webhook_status'] ) ? $_REQUEST['webhook_status'] : '';
         $webhooks 		= wordpress_webhooks()->webhook->get_hooks( 'action' ) ;
 		$response       = array( 'success' => false );
 
 		//Sanitize webhook slug properly
-		$webhook_slug = str_replace( '§', '', $webhook_slug );
-		$webhook_slug = sanitize_title( $webhook_slug );
+		$webhook_name = str_replace( '§', '', $webhook_name );
+		$webhook_name = sanitize_title( $webhook_name );
 		
-		if( ! isset( $webhooks[ $webhook_slug ] ) ){
-			wordpress_webhooks()->webhook->create( $webhook_slug, 'action' );
+		if( ! isset( $webhooks[ $webhook_name ] ) ){
+			wordpress_webhooks()->webhook->create( $webhook_name, 'action', array('webhook_status' => $webhook_status) );
 
 			$webhooks_updated 		= wordpress_webhooks()->webhook->get_hooks( 'action' ) ;
-			if( isset( $webhooks_updated[ $webhook_slug ] ) ){
+			if( isset( $webhooks_updated[ $webhook_name ] ) ){
 				$response['success'] = true;
-				$response['webhook'] = $webhook_slug;
+				$response['webhook'] = $webhook_name;
+				$response['status'] = $webhook_status;
 				$response['webhook_action_delete_name'] = wordpress_webhooks()->helpers->translate( 'Delete', 'ww-page-actions' );
-				$response['webhook_url'] = wordpress_webhooks()->webhook->built_url( $webhook_slug, $webhooks_updated[ $webhook_slug ]['api_key'] );
-				$response['webhook_api_key'] = $webhooks_updated[ $webhook_slug ]['api_key'];
+				$response['webhook_url'] = wordpress_webhooks()->webhook->built_url( $webhook_name, $webhooks_updated[ $webhook_name ]['api_key'] );
+				$response['api_key'] = $webhooks_updated[ $webhook_name ]['api_key'];
 			}
 		}
 
@@ -295,8 +319,8 @@ class WordPress_Webhooks_Run{
     /*
      * Remove the action via ajax
      */
-	public function ironikus_remove_webhook_action(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+	public function ww_delete_webhook_action(){
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $webhook        = isset( $_REQUEST['webhook'] ) ? sanitize_title( $_REQUEST['webhook'] ) : '';
 		$response       = array( 'success' => false );
@@ -304,6 +328,7 @@ class WordPress_Webhooks_Run{
 		$check = wordpress_webhooks()->webhook->unset_hooks( $webhook, 'action' );
 		if( $check ){
 			$response['success'] = true;
+			$response['webhook'] = $webhook;
 		}
 
         echo json_encode( $response );
@@ -313,16 +338,15 @@ class WordPress_Webhooks_Run{
     /*
      * Change the status of the action via ajax
      */
-	public function ironikus_change_status_webhook_action(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+	public function ww_deactivate_webhook(){
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
-        $webhook        = isset( $_REQUEST['webhook'] ) ? sanitize_title( $_REQUEST['webhook'] ) : '';
-        $webhook_group = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
-        $webhook_status = isset( $_REQUEST['webhook_status'] ) ? sanitize_title( $_REQUEST['webhook_status'] ) : '';
-		$response       = array( 'success' => false, 'new_status' => '', 'new_status_name' => '' );
+        $webhook        	= 	isset( $_REQUEST['webhook'] ) ? sanitize_title( $_REQUEST['webhook'] ) : '';
+        $webhook_status 	= 	isset( $_REQUEST['webhook_status'] ) ? sanitize_title( $_REQUEST['webhook_status'] ) : '';
+		$response       	= 	array( 'success' => false, 'new_status' => '', 'new_status_name' => '' );
 
-		$new_status = null;
-		$new_status_name = null;
+		$new_status			=	null;
+		$new_status_name	=	null;
 		switch( $webhook_status ){
 			case 'active':
 				$new_status = 'inactive';
@@ -336,12 +360,15 @@ class WordPress_Webhooks_Run{
 
 		if( ! empty( $webhook ) ){
 
-			if( ! empty( $webhook_group ) ){
-				$check = wordpress_webhooks()->webhook->update( $webhook, 'trigger', $webhook_group, array(
+			$webhooks       = wordpress_webhooks()->webhook->get_hooks( 'trigger' );
+
+			if( isset( $webhooks[ $webhook ] ) ){
+				$check = wordpress_webhooks()->webhook->update( $webhook, 'trigger', array(
 					'status' => $new_status
 				) );
-			} else {
-				$check = wordpress_webhooks()->webhook->update( $webhook, 'action', '', array(
+			}
+			else {
+				$check = wordpress_webhooks()->webhook->update( $webhook, 'action', array(
 					'status' => $new_status
 				) );
 			}
@@ -360,18 +387,18 @@ class WordPress_Webhooks_Run{
     /*
      * Remove the trigger via ajax
      */
-	public function ironikus_remove_webhook_trigger(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+	public function ww_delete_webhook_trigger(){
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $webhook        = isset( $_REQUEST['webhook'] ) ? sanitize_title( $_REQUEST['webhook'] ) : '';
-        $webhook_group  = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
-		$webhooks       = wordpress_webhooks()->webhook->get_hooks( 'trigger', $webhook_group );
+		$webhooks       = wordpress_webhooks()->webhook->get_hooks( 'trigger' );
 		$response       = array( 'success' => false );
 
 		if( isset( $webhooks[ $webhook ] ) ){
-			$check = wordpress_webhooks()->webhook->unset_hooks( $webhook, 'trigger', $webhook_group );
+			$check = wordpress_webhooks()->webhook->unset_hooks( $webhook, 'trigger' );
 			if( $check ){
 			    $response['success'] = true;
+			    $response['webhook'] = $webhook;
             }
 		}
 
@@ -383,13 +410,13 @@ class WordPress_Webhooks_Run{
     /*
      * Functionality to load all of the available demo webhook triggers
      */
-	public function ironikus_test_webhook_trigger(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+	public function ww_test_webhook_trigger(){
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $webhook            = isset( $_REQUEST['webhook'] ) ? sanitize_title( $_REQUEST['webhook'] ) : '';
         $webhook_group      = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
-        $webhook_callback   = isset( $_REQUEST['webhook_callback'] ) ? sanitize_text_field( $_REQUEST['webhook_callback'] ) : '';
-		$webhooks           = wordpress_webhooks()->webhook->get_hooks( 'trigger', $webhook_group );
+		$webhook_callback   = isset( $_REQUEST['webhook_callback'] ) ? sanitize_text_field( $_REQUEST['webhook_callback'] ) : '';
+		$webhooks           = wordpress_webhooks()->webhook->get_hooks( 'trigger');
         $response           = array( 'success' => false );
 
 		if( isset( $webhooks[ $webhook ] ) ){
@@ -413,7 +440,7 @@ class WordPress_Webhooks_Run{
      * Functionality to load the currently chosen wdata mapping
      */
 	public function ironikus_load_data_mapping_data(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $data_mapping_id    = isset( $_REQUEST['data_mapping_id'] ) ? intval( $_REQUEST['data_mapping_id'] ) : '';
         $response           = array( 'success' => false );
@@ -450,7 +477,7 @@ class WordPress_Webhooks_Run{
      * Functionality to save the current data mapping template
      */
 	public function ironikus_save_data_mapping_template(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $data_mapping_id    = isset( $_REQUEST['data_mapping_id'] ) ? intval( $_REQUEST['data_mapping_id'] ) : '';
         $data_mapping_template    = isset( $_REQUEST['data_mapping_json'] ) ? $_REQUEST['data_mapping_json'] : '';
@@ -492,7 +519,7 @@ class WordPress_Webhooks_Run{
      * Functionality to save the current data mapping template
      */
 	public function ironikus_data_mapping_create_preview(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $original_data    = isset( $_REQUEST['original_data'] ) ? stripslashes( $_REQUEST['original_data'] ) : '';
         $current_mapping_template    = isset( $_REQUEST['current_mapping_template'] ) ? $_REQUEST['current_mapping_template'] : '';
@@ -561,7 +588,7 @@ class WordPress_Webhooks_Run{
      * Functionality to add the currently chosen data mapping
      */
 	public function ironikus_add_data_mapping_template(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $data_mapping_name    = isset( $_REQUEST['data_mapping_name'] ) ? sanitize_title( $_REQUEST['data_mapping_name'] ) : '';
         $response           = array( 'success' => false );
@@ -584,7 +611,7 @@ class WordPress_Webhooks_Run{
      * Functionality to delete the currently chosen data mapping template
      */
 	public function ironikus_delete_data_mapping_template(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $data_mapping_id    = isset( $_REQUEST['data_mapping_id'] ) ? intval( $_REQUEST['data_mapping_id'] ) : '';
         $response           = array( 'success' => false );
@@ -607,7 +634,7 @@ class WordPress_Webhooks_Run{
      * Functionality to add the currently chosen data mapping
      */
 	public function ironikus_add_authentication_template(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $auth_template    = isset( $_REQUEST['auth_template'] ) ? sanitize_title( $_REQUEST['auth_template'] ) : '';
         $auth_type    = isset( $_REQUEST['auth_type'] ) ? sanitize_title( $_REQUEST['auth_type'] ) : '';
@@ -631,7 +658,7 @@ class WordPress_Webhooks_Run{
      * Functionality to load the currently chosen authentication
      */
 	public function ironikus_load_authentication_template_data(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $auth_template_id    = isset( $_REQUEST['auth_template_id'] ) ? intval( $_REQUEST['auth_template_id'] ) : '';
         $response           = array( 'success' => false );
@@ -670,7 +697,7 @@ class WordPress_Webhooks_Run{
      * Functionality to save the current authentication template
      */
 	public function ironikus_save_authentication_template(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $data_auth_id    = isset( $_REQUEST['data_auth_id'] ) ? intval( $_REQUEST['data_auth_id'] ) : '';
         $datastring    = isset( $_REQUEST['datastring'] ) ? $_REQUEST['datastring'] : '';
@@ -711,7 +738,7 @@ class WordPress_Webhooks_Run{
      * Functionality to delete the currently chosen authentication template
      */
 	public function ironikus_delete_authentication_template(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $data_auth_id    = isset( $_REQUEST['data_auth_id'] ) ? intval( $_REQUEST['data_auth_id'] ) : '';
         $response           = array( 'success' => false );
@@ -816,7 +843,7 @@ class WordPress_Webhooks_Run{
      * Functionality to save the whitelabel settings
      */
 	public function ironikus_save_whitelabel_settings(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $whitelabel_settings    = isset( $_REQUEST['whitelabel_settings'] ) ? $_REQUEST['whitelabel_settings'] : '';
 		$response           = array( 
@@ -845,7 +872,7 @@ class WordPress_Webhooks_Run{
      * Functionality to load all of the available demo webhook triggers
      */
 	public function ironikus_save_webhook_trigger_settings(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $webhook            = isset( $_REQUEST['webhook_id'] ) ? sanitize_title( $_REQUEST['webhook_id'] ) : '';
         $webhook_group      = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
@@ -872,7 +899,7 @@ class WordPress_Webhooks_Run{
      * Functionality to save all available webhook actions
      */
 	public function ironikus_save_webhook_action_settings(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $webhook            = isset( $_REQUEST['webhook_id'] ) ? sanitize_title( $_REQUEST['webhook_id'] ) : '';
         $action_settings   = ( isset( $_REQUEST['action_settings'] ) && ! empty( $_REQUEST['action_settings'] ) ) ? $_REQUEST['action_settings'] : '';
@@ -898,7 +925,7 @@ class WordPress_Webhooks_Run{
      * Manage WP Webhooks extensions
      */
 	public function ironikus_manage_extensions(){
-        check_ajax_referer( md5( $this->page_name ), 'ironikus_nonce' );
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $extension_slug            = isset( $_REQUEST['extension_slug'] ) ? sanitize_text_field( $_REQUEST['extension_slug'] ) : '';
         $extension_status            = isset( $_REQUEST['extension_status'] ) ? sanitize_text_field( $_REQUEST['extension_status'] ) : '';
