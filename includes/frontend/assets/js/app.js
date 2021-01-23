@@ -286,6 +286,33 @@
         $('.ww_modal--2').css({ 'display': 'none' });
     });
 
+    $(".ww_actions--links").each(function () {
+        $(this).on('click', function (e) {
+            e.preventDefault();
+            // const short_description     =   $(this).siblings()[0].value;
+            // const return_value          =   $(this).siblings()[1].value;
+           
+           $.ajax({
+            url     :   ww_ajax.ajax_url,
+            type    :   'get',
+            data    :   {
+                action  :   'ww_get_trigger_description',
+                id      :   e.target.id
+            },
+
+            success : function( response ) {     
+                console.log(response)       
+                $('#home').html(response.data.page);
+                $('#profile').html(response.data.page);
+            }
+    
+           });
+
+            $('.ww_modal--1').css({ 'display': 'none' });
+            $('.ww_modal--2').css({ 'display': 'block' });
+        });
+    });
+
     $(".ww_triggers--links").each(function () {
         $(this).on('click', function (e) {
             e.preventDefault();
@@ -521,7 +548,8 @@
 
     }
     
-    $( "tbody" ).on( "click", function(e) {
+    $( ".tbody" ).on( "click", function(e) {
+        e.preventDefault();
         let element = $(e.target);
         if(element.attr('ww-data-callback')){
             send_demo(e, element);
@@ -542,8 +570,15 @@
     const display_webhook_triggers = (term='', filter='') => {
         
         const data =  {...state.triggers};
+        
         const keys = Object.keys(data);
         let values = Object.values(data);
+
+        if(values.length === 0){
+            console.log(values);
+            $( '.tbody' ).html( `<div class="alert alert-info">There are no available webhook triggers</div>` );
+            return;
+        }
         let webhook_html = '';
 
         if(filter){
@@ -565,7 +600,7 @@
 
             if(values.length === 0){
                 $( '.ww_send--table > tbody' ).html( `<div class="alert alert-info">"${term}" does not match any trigger</div>` );
-        return;
+                return;
             }
         }
 
@@ -695,6 +730,11 @@
         const data =  {...state.actions};
         const keys = Object.keys(data);
         let values = Object.values(data);
+        if(values.length === 0){
+
+            $( '.tbody' ).html( `<div class="alert alert-info">There are no available webhook actions</div>` );
+            return;
+        }
         let webhook_html = '';
          if(term){
             const arr = [];
@@ -851,6 +891,16 @@
         })
     }
 
+    const get_actions = () => {
+        return $.ajax({
+            url : ww_ajax.ajax_url,
+            type : 'get',
+            data :  {
+                action : 'ww_get_actions',   
+            }      
+        })
+    }
+
     $('#ww_search--term').on('input', function (e) {
         e.preventDefault();
         const timer = setTimeout(() => {
@@ -870,6 +920,42 @@
     $('#ww_filter--trigger').on('change', function (e) {
         display_webhook_triggers('', e.target.value);     
         $('#ww_search--term').val('');
+    });
+
+    $('#ww_test--webhook').on('change', function (e) {
+        const webhook_url      =   $('#ww_test--webhook').val();
+        $('.ww_test--form').attr('action', webhook_url);
+    });
+    
+    $('#ww_test--action').on('change', function (e) {
+        webhook_action     =   $(this).val();
+        action              =   '';
+
+        if(!webhook_action){
+            $('.ww_parameter--group').html('');
+            return;
+        }
+
+        get_actions().then(result => {
+            let values = Object.values(result.data)
+            let action = values.find(element => {
+                if(element.action === webhook_action){
+                    return element;
+                }
+            })
+
+            let parameters = Object.keys(action.parameter);
+            let html = '';
+            parameters.forEach(element => {
+                html += `<input type="text" class="ww_input--sm ww_param mb-4 mt-4 form-control" name=${element} placeholder=${element} >`
+            });
+            html += `<input type="text" class="ww_input--sm ww_param mb-4 mt-4 form-control" name="access_token" placeholder="access token" >`
+
+
+            $('.ww_parameter--group').html(html);
+        
+        });
+        
     });
     
 
