@@ -60,16 +60,17 @@
     max-width: 82.19rem;
   }
 
-  .ww_info>*:not(:last-child){
+  .ww_card:not(:last-child){
     margin-right: 6.875rem;
   }
 
   .ww_card{
     border: solid .1rem #000;
+    max-width: 100%;
   }
   
   .ww_card--text{
-    width: 265px;
+    /* width: 265px; */
   }
 
   .ww_btn{
@@ -97,7 +98,9 @@
   }
 
   .ww_plugin--rate{
-    width: 100%;
+    /* width: 38rem; */
+    margin-top: 2.5rem;
+    margin-bottom: 8rem;
   }
 
   .ww_senddata--text{
@@ -397,4 +400,25 @@ input:checked + .slider:before {
   transform: translateX(0rem);
 }
 
+.ww_license{
+  width: 38rem;
+}
 
+#ww_license--input{
+  align-self: flex-start;
+  padding: .5rem 1rem;
+  width: 30rem;
+}
+
+.ww_connect{
+  position: absolute;
+  bottom: 2rem;
+}
+
+.ww_plugin--icons>*:not(:last-child){
+  margin-right: .15rem;
+}
+
+.nav-link{
+  padding: 0.5rem 1rem ;
+}
