@@ -60,7 +60,9 @@ class WordPress_Webhooks_Run{
 		add_action( 'wp_ajax_ww_create_webhook_trigger',  array( $this, 'ww_create_webhook_trigger' ) );
 		add_action( 'wp_ajax_ww_get_webhook_triggers',  array( $this, 'ww_get_webhook_triggers' ) );
 		add_action( 'wp_ajax_ww_get_webhook_actions',  array( $this, 'ww_get_webhook_actions' ) );
+		add_action( 'wp_ajax_ww_get_actions',  array( $this, 'ww_get_actions' ) );
 		add_action( 'wp_ajax_ww_get_trigger_description',  array( $this, 'ww_get_trigger_description' ) );
+		add_action( 'wp_ajax_ww_get_action_description',  array( $this, 'ww_get_action_description' ) );
 		add_action( 'wp_ajax_ww_create_webhook_action',  array( $this, 'ww_create_webhook_action' ) );
 		add_action( 'wp_ajax_ww_delete_webhook_trigger',  array( $this, 'ww_delete_webhook_trigger' ) );
 		add_action( 'wp_ajax_ww_delete_webhook_action',  array( $this, 'ww_delete_webhook_action' ) );
@@ -266,17 +268,31 @@ class WordPress_Webhooks_Run{
 		die();
 	}
 
+	public function ww_get_actions(){
+		$actions = wordpress_webhooks()->webhook->get_actions();
+		echo wp_send_json_success($actions);
+		die();
+	}
+
 	/**
 	 * Handler for getting trigger from template
 	 *
 	 * @return void
 	 */
 	public function ww_get_trigger_description(){
-		// get_template_part(WW_PLUGIN_DIR.'includes/frontend/templates/descriptions/trigger', $_REQUEST['id']);
 		include(WW_PLUGIN_DIR.'includes/frontend/templates/descriptions/trigger-'.$_REQUEST['id'].'.php');
 		$my_html = ob_get_contents();
 		ob_end_clean();
 		echo wp_send_json_success(['page'=> $my_html]);
+		die();
+	}
+
+	public function ww_get_action_description(){
+		$url = WW_PLUGIN_DIR.'includes/frontend/templates/descriptions/action-'.$_REQUEST['id'].'.php';
+		include(WW_PLUGIN_DIR.'includes/frontend/templates/descriptions/action-'.$_REQUEST['id'].'.php');
+		$my_html = ob_get_contents();
+		ob_end_clean();
+		echo wp_send_json_success(['page'=> $my_html, 'url' => $url]);
 		die();
 	}
 
@@ -1242,28 +1258,28 @@ class WordPress_Webhooks_Run{
 		$tabs['send-data']      = wordpress_webhooks()->helpers->translate( 'Send Data', 'admin-menu' );
 		$tabs['receive-data']   = wordpress_webhooks()->helpers->translate( 'Receive Data', 'admin-menu' );
 
-		if( wordpress_webhooks()->whitelist->is_active() ){
-			$tabs['whitelist']  = wordpress_webhooks()->helpers->translate( 'Whitelist', 'admin-menu' );
-		}
+		// if( wordpress_webhooks()->whitelist->is_active() ){
+		// 	$tabs['whitelist']  = wordpress_webhooks()->helpers->translate( 'Whitelist', 'admin-menu' );
+		// }
 
-		if( wordpress_webhooks()->logs->is_active() ){
-			$tabs['logs']  = wordpress_webhooks()->helpers->translate( 'Logs', 'admin-menu' );
-		}
+		// if( wordpress_webhooks()->logs->is_active() ){
+		// 	$tabs['logs']  = wordpress_webhooks()->helpers->translate( 'Logs', 'admin-menu' );
+		// }
 
-		if( wordpress_webhooks()->data_mapping->is_active() ){
-			$tabs['data-mapping']  = wordpress_webhooks()->helpers->translate( 'Data Mapping', 'admin-menu' );
-		}
+		// if( wordpress_webhooks()->data_mapping->is_active() ){
+		// 	$tabs['data-mapping']  = wordpress_webhooks()->helpers->translate( 'Data Mapping', 'admin-menu' );
+		// }
 
-		if( wordpress_webhooks()->auth->is_active() ){
-			$tabs['authentication']  = wordpress_webhooks()->helpers->translate( 'Authentication', 'admin-menu' );
-		}
+		// if( wordpress_webhooks()->auth->is_active() ){
+		// 	$tabs['authentication']  = wordpress_webhooks()->helpers->translate( 'Authentication', 'admin-menu' );
+		// }
 
 		if( isset( $_GET['wpwh_whitelabel_settings'] ) && $_GET['wpwh_whitelabel_settings'] === 'visible' ){
 			$tabs['whitelabel']  = wordpress_webhooks()->helpers->translate( 'Whitelabel', 'admin-menu' );
 		}
 
 		if( ! wordpress_webhooks()->whitelabel->is_active() || wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_hide_extensions' ) !== 'yes' ){
-			$tabs['extensions']       = wordpress_webhooks()->helpers->translate( 'Extensions', 'admin-menu' );
+			$tabs['extensions']       = wordpress_webhooks()->helpers->translate( 'Integrations', 'admin-menu' );
 		}
 
 		if( ! wordpress_webhooks()->whitelabel->is_active() || wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_hide_settings' ) !== 'yes' ){
@@ -1547,7 +1563,7 @@ class WordPress_Webhooks_Run{
 		$actions[] = $this->action_bulk_webhooks_content();
 
 		//Testing actions
-		$actions[] = $this->action_ironikus_test_content();
+		$actions[] = $this->action_ww_test_content();
 
 		return $actions;
 
@@ -1633,9 +1649,9 @@ class WordPress_Webhooks_Run{
 					$this->action_bulk_webhooks();
 				}
 				break;
-			case 'ironikus_test':
-				if( isset( $available_triggers['ironikus_test'] ) ){
-					$this->action_ironikus_test();
+			case 'ww_test':
+				if( isset( $available_triggers['ww_test'] ) ){
+					$this->action_ww_test();
 				}
 				break;
 		}
@@ -2297,7 +2313,7 @@ $return_args = array(
 	/*
 	 * The core logic to test a webhook
 	 */
-	public function action_ironikus_test_content(){
+	public function action_ww_test_content(){
 
 		$parameter = array(
 			'test_var'       => array( 'required' => true, 'short_description' => wordpress_webhooks()->helpers->translate( 'A test var. Include the following value to get a success message back: test-value123', 'action-ironikus-test-content' ) )
@@ -2322,11 +2338,11 @@ $return_args = array(
 		$returns_code = ob_get_clean();
 
 		ob_start();
-			include( WW_PLUGIN_DIR . 'includes/frontend/templates/descriptions/action-ironikus_test.php' );
+			include( WW_PLUGIN_DIR . 'includes/frontend/templates/descriptions/action-ww_test.php' );
 		$description = ob_get_clean();
 
 		return array(
-			'action'            => 'ironikus_test',
+			'action'            => 'ww_test',
 			'parameter'         => $parameter,
 			'returns'           => $returns,
 			'returns_code'      => $returns_code,
@@ -2345,7 +2361,7 @@ $return_args = array(
 		);
 
 		$identifier = wordpress_webhooks()->helpers->validate_request_value( $response_body['content'], 'wpwh_identifier' );
-		if( empty( $identifier ) && isset( $_GET['wpwh_identifier'] ) ){
+		if( empty( $identifier ) && isset( 	GET['wpwh_identifier'] ) ){
 			$identifier = $_GET['wpwh_identifier'];
 		}
 
@@ -2445,7 +2461,7 @@ $return_args = array(
 
     }
 
-	public function action_ironikus_test(){
+	public function action_ww_test(){
 
 		$response_body = wordpress_webhooks()->helpers->get_response_body();
 		$return_args = array(
