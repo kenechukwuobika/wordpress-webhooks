@@ -5,10 +5,12 @@
  */
 
 $settings = wordpress_webhooks()->settings->get_settings();
-$triggers = wordpress_webhooks()->webhook->get_triggers( '', false );
+// $triggers = wordpress_webhooks()->webhook->get_triggers();
+$triggers = wordpress_webhooks()->webhook->get_triggers(false);
 $actions = wordpress_webhooks()->webhook->get_actions( false );
 $active_webhooks = wordpress_webhooks()->settings->get_active_webhooks();
 $current_url_full = wordpress_webhooks()->helpers->get_current_url();
+
 
 
 
@@ -40,7 +42,7 @@ if( did_action( 'ww_settings_saved' ) ){
 			<p>Here you can configure the global settings for our plugin, enable certain features to extend the possibilities for your site, and activate your available webhook actions and triggers.</p>
 
 			<form action="" method="post" id="ww_form--general" class="d-flex flex-column align-items-center">
-				<table style="width: 80rem;" class="table table-responsive ">
+				<table style="width: 80rem;" class="table ">
 					<thead class="thead-dark">
 						<tr>
 							<th scope="col">Action</th>
@@ -55,6 +57,9 @@ if( did_action( 'ww_settings_saved' ) ){
 								$is_checked = ( $setting_value['type'] == 'checkbox' && $setting_value['value'] == 'yes' ) ? 'checked' : '';
 								$value = ( $setting_value['type'] != 'checkbox' ) ? $setting_value['value'] : '1';
 								$is_checkbox = ( $setting_value['type'] == 'checkbox' ) ? true : false;
+								if($setting_value['label'] === 'Activate Whitelist' || $setting_value['label'] === 'Activate Data Mapping' || $setting_value['label'] === 'Activate Logs'){
+									continue;
+								}
 						?>
 						
 							<tr>
@@ -110,7 +115,7 @@ if( did_action( 'ww_settings_saved' ) ){
 			<p>Here you can configure the send data settings for our plugin, enable certain features to extend the possibilities for your site, and activate your available webhook actions and triggers.</p>
 
 			<form action="" method="post" id="ww_form--trigger" class="d-flex flex-column align-items-center">
-				<table style="width: 80rem;" class="table table-responsive ">
+				<table style="width: 80rem;" class="table ">
 					<thead class="thead-dark">
 						<tr>
 							<th scope="col">Action</th>
@@ -170,7 +175,7 @@ if( did_action( 'ww_settings_saved' ) ){
 			<p>Here you can configure the send data settings for our plugin, enable certain features to extend the possibilities for your site, and activate your available webhook actions and triggers.</p>
 
 			<form action="" method="post" id="ww_form--action" class="d-flex flex-column align-items-center">
-				<table style="width: 80rem;" class="table table-responsive ">
+				<table style="width: 80rem;" class="table ">
 					<thead class="thead-dark">
 						<tr>
 							<th scope="col">Action</th>
