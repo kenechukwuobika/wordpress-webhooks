@@ -5,6 +5,13 @@ $clear_form_url = wordpress_webhooks()->helpers->get_current_url();
 $action_nonce_data = wordpress_webhooks()->settings->get_action_nonce();
 $actions = wordpress_webhooks()->webhook->get_actions();
 
+// foreach($actions as $identkey => $action){
+// 	foreach($action['parameter'] as $key => $value){
+// 		var_dump($key);
+// 	}
+// }
+// foreach( $custom_webhooks as $custom_webhook  => $value) {
+// var_dump($custom_webhooks);}
 
 
 ?>
@@ -12,7 +19,7 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 
 	<div class="d-flex justify-content-between">
 		<div class="ww_receivedata--text">
-			<h2 class=""><?php echo wordpress_webhooks()->helpers->translate( 'Recevie Data To WordPress Webhooks Pro', 'ww-page-triggers' ); ?></h2>
+			<h2 class=""><?php echo wordpress_webhooks()->helpers->translate( 'Recevie Data To WordPress Webhooks', 'ww-page-triggers' ); ?></h2>
 			<div class="main-description">
 				<?php if( wordpress_webhooks()->whitelabel->is_active() && ! empty( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ) ) ) : ?>
 					<?php echo wordpress_webhooks()->helpers->translate( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ), 'admin-settings-license' ); ?>
@@ -56,7 +63,7 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 
 
 
-<table class="ww_receive--table table table-responsive">
+<table class="ww_receive--table table">
   <thead class="thead-dark">
 	<tr>
 		<th style="width:10%" scope="col">Webhook Name</th>
@@ -65,7 +72,7 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 		<th style="width:20%" scope="col">Actions</th>
 	</tr>
   </thead>
-  <tbody></tbody>
+  <tbody class="tbody"></tbody>
 </table>
 
 <div class="ww_modal">
@@ -89,7 +96,7 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 			?>
 
 				<li class="ww_triggers--items">
-					<a href="#" class="ww_triggers--links" id=<?php echo $webhook_name;?>><?php echo $webhook_name;?></a>
+					<a href="#" class="ww_actions--links" id=<?php echo $webhook_name;?>><?php echo $webhook_name;?></a>
 					
 				</li>
 
@@ -106,6 +113,14 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 					<li class="nav-item waves-effect waves-light">
 						<a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Description</a>
 					</li>
+
+					<li class="nav-item waves-effect waves-light">
+						<a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Return Values</a>
+					</li>
+
+					<li class="nav-item waves-effect waves-light">
+						<a class="nav-link" id="profile-tab" data-toggle="tab" href="#test" role="tab" aria-controls="test" aria-selected="false">Test Action</a>
+					</li>
 					
 				</ul>
 
@@ -116,6 +131,37 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 
 					<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="home-tab">
 						loading...
+					</div>
+
+					
+
+					<div class="tab-pane fade" id="test" role="tabpanel" aria-labelledby="test-tab">
+						<form method="post" target="_blank" class="ww_test--form">
+							<select type="text" class="ww_input--sm mb-4 mt-4 form-control" id="ww_test--webhook" placeholder=<?php echo "'".wordpress_webhooks()->helpers->translate( 'Filter by trigger', 'ww-page-triggers' )."'"; ?>>
+								<option  value="">Select webhook</option>
+								<?php foreach( $custom_webhooks as $custom_webhook  => $value) {
+									
+								$webhook_name = !empty( $custom_webhook ) ? $custom_webhook : '';
+								$webhook_url = $value['webhook_url'];
+								?>
+								<option value="<?php echo $webhook_url."&ww_direct_test=1"; ?>"><?php echo $webhook_name; ?></option>
+								<?php } ?>
+							</select>
+
+							<select type="text" class="ww_input--sm mb-4 mt-4 form-control" id="ww_test--action" name="action" placeholder=<?php echo "'".wordpress_webhooks()->helpers->translate( 'Filter by trigger', 'ww-page-triggers' )."'"; ?>>
+								<option  value="">Select action</option>
+								<?php foreach( $actions as $identkey => $action ) {
+
+								$webhook_name = !empty( $action['action'] ) ? $action['action'] : '';
+								?>
+								<option value="<?php echo $webhook_name; ?>"><?php echo $webhook_name; ?></option>
+								<?php } ?>
+							</select>
+								<div class="ww_parameter--group"></div>
+
+								<input type="submit" class="btn btn-primary" value="Test">
+
+						</form>
 					</div>
 				</div>
                 

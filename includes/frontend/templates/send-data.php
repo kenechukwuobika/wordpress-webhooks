@@ -8,9 +8,9 @@ $current_url = wordpress_webhooks()->helpers->get_current_url(false);
 $current_url_full = wordpress_webhooks()->helpers->get_current_url();
 $data_mapping_templates = wordpress_webhooks()->data_mapping->get_data_mapping();
 $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
-$custom = wordpress_webhooks()->webhook->get_triggers('trigger', 'update_user' );
+$custom = wordpress_webhooks()->settings->get_active_webhooks();
 
-
+var_dump($custom);
 
 ?>
 <div class="d-flex flex-column">
@@ -93,7 +93,6 @@ $custom = wordpress_webhooks()->webhook->get_triggers('trigger', 'update_user' )
 		?>
 		<option value="<?php echo $webhook_name; ?>"><?php echo $webhook_name; ?></option>
 		<?php } ?>
-	</select>
 	<input id="ww-current-url" type="hidden" value="<?php echo $current_url_full; ?>" />
 </form>
 
@@ -108,7 +107,7 @@ $custom = wordpress_webhooks()->webhook->get_triggers('trigger', 'update_user' )
 		<th scope="col">Actions</th>
 	</tr>
   </thead>
-  <tbody></tbody>
+  <tbody class="tbody"></tbody>
 </table>
 
 <div class="ww_modal">
