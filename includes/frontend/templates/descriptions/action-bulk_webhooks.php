@@ -53,13 +53,13 @@ $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
           "ww_trigger_allow_unsafe_urls": 1,
       },
       "payload_data": {
-          "action": "ironikus_test",
+          "action": "ww_test",
           "test_var": "test-value123"
       }
   },
   "second_webhook_call": {
       "payload_data": {
-          "action": "ironikus_test",
+          "action": "ww_test",
           "test_var": "test-value123"
       }
   }
