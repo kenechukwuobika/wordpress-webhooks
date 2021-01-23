@@ -320,7 +320,7 @@ class WordPress_Webhooks_Instantiate {
 		$default_wehook = apply_filters( 'ww_default_webhook_name', 'ww_default_' . rand( 1000, 9999 ) );
 
 		$api_key       	= $this->generate_api_key();	
-		$webhook_url	= wordpress_webhooks()->webhook->built_url( $webhook_name, $api_key );
+		$webhook_url	= wordpress_webhooks()->webhook->built_url( $default_wehook, $api_key );
 
 		$data = array(
 			'api_key'       => $api_key,	
