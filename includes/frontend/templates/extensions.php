@@ -16,14 +16,17 @@ if( isset( $plugin_update_list->response ) ){
     <?php if( wordpress_webhooks()->whitelabel->is_active() && ! empty( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_extensions' ) ) ) : ?>
 		<?php echo wordpress_webhooks()->helpers->translate( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_extensions' ), 'admin-settings-license' ); ?>
     <?php else : ?>
-        <?php echo sprintf( wordpress_webhooks()->helpers->translate( 'This page contains all approved extensions for <strong>%1$s</strong>. You will be able to fully manage each of the extensions right within this plugin. In case you want to list your very own plugin here, feel free to <a title="Go to our contact form" target="_blank" href="%2$s">reach out to us</a>.', 'ww-page-logs' ), $this->page_title, 'https://ironikus.com/contact/' ); ?>
+        <?php echo sprintf( wordpress_webhooks()->helpers->translate( 'This page contains all approved extensions for <strong>%1$s</strong>. You will be able to fully manage each of the extensions right within this plugin. In case you want to list your very own plugin here, feel free to <a title="Go to our contact form" target="_blank" href="#">reach out to us</a>.', 'ww-page-logs' ), $this->page_title, 'https://ironikus.com/contact/' ); ?>
     <?php endif; ?>
 </div>
 <div class="wpwh-extensions-wrapper">
 
     <?php if( ! empty( $extensions_list ) ) : ?>
         <?php foreach( $extensions_list as $slug => $data ) : 
-        
+         if( $data['name'] != 'Woocommerce Integration' ){
+            continue;
+         } 
+             
         $plugin_installed = wordpress_webhooks()->helpers->is_plugin_installed( $data['extension_plugin_slug'] );
         $plugin_active = ( in_array( $data['extension_plugin_slug'], $active_plugins ) ) ? true : false;
         $plugin_premium = ( $data['type'] === 'premium' ) ? true : false;
@@ -51,20 +54,21 @@ if( isset( $plugin_update_list->response ) ){
                         <?php if( $data['type'] === 'premium' ) : ?>
                             <span class="golden">Pro</span> 
                         <?php endif; ?>
+
+                        
                         <?php echo sanitize_text_field( $data['name'] ); ?>
                     </h5>
-                    <p class="card-text">
-                        <?php echo sanitize_text_field( $data['description'] ); ?>
-                    </p>
-                    <a href="<?php echo esc_url( $data['extension_info_url'] ); ?>" target="_blank" class="btn btn-info more-info">More info</a>
+                    
+                    <div class="d-flex flex-column">
+                    <a href="#" target="_blank" class="btn btn-info more-info">Premium</a>
 
                     <?php if( $plugin_installed ) : ?>
 
                         <?php if( version_compare( (string) $available_version, (string) $plugin_version, '>') ) : ?>
 
                             <?php if( $plugin_premium && ( $license_status === false || $license_status !== 'valid' ) ) : ?>
-                                <a class="btn btn-secondary h30 ironikus-extension-manage" href="<?php echo get_admin_url(); ?>options-general.php?page=wp-webhooks-pro&tab=license" title="<?php echo wordpress_webhooks()->helpers->translate( 'Activate your licene first', 'ww-page-extensions' ); ?>">
-                                    <?php echo wordpress_webhooks()->helpers->translate( 'License', 'ww-page-extensions' ); ?>
+                                <a class="btn btn-secondary h30 ironikus-extension-manage" href="#" >
+                                    <?php echo wordpress_webhooks()->helpers->translate( 'Coming soon', 'ww-page-extensions' ); ?>
                                 </a>
                             <?php else : 
                             
@@ -76,6 +80,7 @@ if( isset( $plugin_update_list->response ) ){
                                     <img class="ironikus-loader" src="<?php echo WW_PLUGIN_URL . 'includes/frontend/assets/img/loader.gif'; ?>" />
                                 </p>
                             <?php endif; ?>
+                            </div>
 
                         <?php else : ?>
 
@@ -97,7 +102,7 @@ if( isset( $plugin_update_list->response ) ){
 
                         <?php if( $plugin_premium && ( $license_status === false || $license_status !== 'valid' ) ) : ?>
                             <a class="btn btn-secondary h30 ironikus-extension-manage" href="<?php echo get_admin_url(); ?>options-general.php?page=wp-webhooks-pro&tab=license" title="<?php echo wordpress_webhooks()->helpers->translate( 'Activate your licene first', 'ww-page-extensions' ); ?>">
-                                <?php echo wordpress_webhooks()->helpers->translate( 'License', 'ww-page-extensions' ); ?>
+                                <?php echo wordpress_webhooks()->helpers->translate( 'Coming soon', 'ww-page-extensions' ); ?>
                             </a>
                         <?php else : ?>
                             <p class="btn btn-primary h30 ironikus-extension-manage" webhook-extension-id="<?php echo intval( $data['item_id'] ); ?>" webhook-extension-version="<?php echo sanitize_text_field( $data['version'] ); ?>" webhook-extension-status="uninstalled" webhook-extension-slug="<?php echo sanitize_text_field( $data['extension_plugin_slug'] ); ?>" webhook-extension-dl="<?php echo sanitize_text_field( $data['extension_download_url'] ); ?>">
@@ -117,7 +122,7 @@ if( isset( $plugin_update_list->response ) ){
                 </div>
 
                 <div class="card-footer">
-                    Made by <a href="<?php echo esc_url( $data['vendor']['url'] ); ?>" title="Go to <?php echo sanitize_text_field( $data['vendor']['name'] ); ?>" target="_blank"><?php echo sanitize_text_field( $data['vendor']['name'] ); ?></a>
+                    Made by Pull Bytes</a>
                 </div>
             </div>
         <?php endforeach; ?>
