@@ -3,106 +3,11 @@
     const state = {
         triggers: {},
         actions: {},
+        auth_templates: [],
     }
 
-    $("#plugin_rating").bind( 'rated', function(){
-        $(this).rateit( 'readonly', true );
-
-        var form        =   {
-            action:         'r_rate_recipe',
-            rid:            $(this).data( 'rid' ),
-            rating:         $(this).rateit( 'value' )
-        };
-
-        
-    });
-
-    $("#recipe-form").on( 'submit', function(e){
-        e.preventDefault();
-
-        $(this).hide();
-        $("#recipe-status").html(
-            '<div class="alert alert-info">Please wait! We are submitting your recipe.</div>'
-        );
-
-        var form                    =   {
-            action:                     'r_submit_user_recipe',
-            title:                      $("#r_inputTitle").val(),
-            content:                    tinymce.activeEditor.getContent()
-        }
-
-        $.post( recipe_obj.ajax_url, form, function(data){
-            if( data.status == 2 ){
-                $('#recipe-status').html(
-                    '<div class="alert alert-success">Recipe submitted successfully!</div>'
-                );
-            }else{
-                $('#recipe-status').html(
-                    '<div class="alert alert-danger">Unable to submit recipe. Please fill in all fields.</div>'
-                );
-                $("#recipe-form").show();
-            }
-        });
-    });
-
-    $(document).on( 'submit', '#register-form', function(e){
-        e.preventDefault();
-
-        $("#register-status").html(
-            '<div class="alert alert alert-info">Please wait!</div>'
-        );
-        $(this).hide();
-
-        var form                            =   {
-            _wpnonce:                           $("#_wpnonce").val(),
-            action:                             "recipe_create_account",
-            name:                               $("#register-form-name").val(),
-            username:                           $("#register-form-username").val(),
-            email:                              $("#register-form-email").val(),
-            pass:                               $("#register-form-password").val(),
-            confirm_pass:                       $("#register-form-repassword").val()
-        };
-
-        $.post( recipe_obj.ajax_url, form ).always(function(data){
-            if( data.status == 2 ){
-                $("#register-status").html(
-                    '<div class="alert alert-success">Account created!</div>'
-                );
-                location.href               =   recipe_obj.home_url;
-            }else{
-                $("#register-status").html(
-                    '<div class="alert alert-danger">Unable to create an account.</div>'
-                );
-                $("#register-form").show();
-            }
-        });
-    });
-
-    $(document).on( 'submit', '#login-form', function(e){
-        e.preventDefault();
-
-        $("#login-status").html('<div class="alert alert-info">Please wait while we log you in.</div>');
-        $(this).hide();
-
-        var form                                    =   {
-            _wpnonce:                                   $("#_wpnonce").val(),
-            action:                                     "recipe_user_login",
-            username:                                   $("#login-form-username").val(),
-            pass:                                       $("#login-form-password").val()
-        };
-
-        $.post( recipe_obj.ajax_url, form ).always(function(data){
-            if( data.status == 2 ){
-                $("#login-status").html('<div class="alert alert-success">Success!</div>');
-                location.href                       =   recipe_obj.home_url;
-            }else{
-                $("#login-status").html(
-                    '<div class="alert alert-danger">Unable to login.</div>'
-                );
-                $("#login-form").show();
-            }
-        });
-    });
+    $('[data-toggle="popover"]').popover();
+    
 
     
     $('.ww_input--item').each(function (element) {
@@ -275,8 +180,93 @@
         });
     });
 
+    $( "#ww_create--auth" ).on( "click", function(e) {
+        let error = [];
+        let values = [];
+        e.preventDefault();
+        // console.log($('.ww_append').children());
+        $('.ww_append').children().each(function (el) {
+            values.push({'name': $(this['name']).selector, 'value': $(this).val()})
+        });
+
+        const template = $.param(values);
+        
+        const template_name = $( '#ww_template--name').val();
+        const auth_type = $( '#ww_choose--auth').val();
+
+        
+        if(!template_name){
+            error.push( "Please enter a name for your auth template");
+            $('.ww_alert').addClass('ww_alert--active alert-danger ');
+            $('.ww_alert').text(error);
+            clear_error();
+            return;
+            
+        }
+
+        else if(!auth_type){
+            error.push( "Please enter an auth type");
+            $('.ww_alert').addClass('ww_alert--active alert-danger ');
+            $('.ww_alert').text(error);
+            clear_error();
+            return;
+            
+        }
+
+        $.ajax({
+            url : ww_ajax.ajax_url,
+            type : 'post',
+            data : {
+                action : 'ww_create_auth_template',
+                template_name,
+                auth_type,
+                template,
+                ww_nonce: ww_ajax.ajax_nonce
+            },
+            success : function( $response ) {
+                let auth_template = $.parseJSON( $response );
+                console.log(auth_template.id)
+                setTimeout(function(){
+                    $( '#ww_webook--action' ).val( '' );
+    
+                    if( auth_template['success'] != 'false' && auth_template['success'] != false ){
+                        $('.ww_alert').addClass('ww_alert--active alert-success');
+                        $('.ww_alert').text("Auth template was successfully created");
+                        clear_error();
+
+                        state.auth_templates[auth_template.id] = auth_template
+                       
+                        setTimeout(()=>{
+                            window.location.reload();
+                        }, 2000);
+                        
+                    } else {
+                        $( this ).css( { 'background': '#a70000' } );
+                        confirm( auth_template['msg'] );
+                        
+                    }
+    
+                }, 200);
+                setTimeout(function(){
+                    $( this ).css( { 'background': '' } );
+                }, 2700);
+            },
+            error: function( errorThrown ){
+                setTimeout(function(){
+                    $( this ).children( '.ironikus-save-text' ).toggleClass( 'active' );
+                    $( this ).children( '.ironikus-loader' ).toggleClass( 'active' );
+                    $( this ).css( { 'background': '#a70000' } );
+                }, 200);
+                setTimeout(function(){
+                    $( this ).css( { 'background': '' } );
+                }, 2700);
+            }
+        });
+    });
+
     $('.ww_doc--help').on('click', function () {
         $('.ww_modal').addClass('ww_modal--active');
+        console.log('clicked')
     });
 
     $('.ww_modal--close').on('click', function (e) {
@@ -297,7 +287,7 @@
             type    :   'get',
             data    :   {
                 action  :   'ww_get_trigger_description',
-                id      :   e.target.id
+                id      :   'create_user'
             },
 
             success : function( response ) {     
@@ -340,6 +330,64 @@
         });
     });
 
+
+    $('#ww_trigger--settings_form').on('submit', function(e) {
+    
+        e.preventDefault();
+        let trigger_settings = $(this).serialize();
+        // console.log(trigger_settings); return
+        let webhook = $( this ).attr( 'ww-webhook-name' );
+        let btn = $( `.ww_trigger--setting_btn` );
+        let btn_text = btn.children()[0];
+        let btn_loader = btn.children()[1];
+        
+
+        $.ajax({
+            url : ww_ajax.ajax_url,
+            type : 'post',
+            data : {
+                action: 'ww_save_webhook_trigger_settings',
+                trigger_settings,
+                webhook,
+                ww_nonce: ww_ajax.ajax_nonce
+            },
+            success : ( response ) => {
+                setTimeout(() => {
+                    $(btn_text).addClass('ww_btn--text_inactive');
+                    $(btn_loader).addClass('ww_btn--icon_active');
+                    $(btn).prop('disabled', true);
+
+                }, 200);
+
+                setTimeout(() => {
+                $('.ww_alert').addClass('ww_alert--active');
+                $(btn_loader).removeClass('ww_btn--icon_active');
+                $(btn_text).removeClass('ww_btn--text_inactive');
+                $(btn).prop('disabled', false);
+
+                    
+                    
+                }, 4000);
+
+                setTimeout(() => {
+                    $('.ww_alert').remove();
+
+                    
+                }, 10000);
+                
+            
+                setTimeout(() => {
+                    // window.location.reload();
+                }, 6000);
+            },
+            error: function( errorThrown ){
+                console.log(errorThrown);
+            }
+        });
+    
+    
+    })
+
     //Save the general settings via Ajax
     $("#ww_form--general").on( "submit", submitForm('ww_save_general_settings'));
     //Save the trigger settings via Ajax
@@ -379,12 +427,21 @@
                     $(btn_loader).removeClass('ww_btn--icon_active');
                     $(btn_text).removeClass('ww_btn--text_inactive');
                     $(btn).prop('disabled', false);
+
+                        
+                        
                     }, 4000);
 
-                    setTimeout(() => {
-                        $('.ww_alert').removeClass('ww_alert--active');
-                    }, 10000);
+                    // setTimeout(() => {
+                    //     $('.ww_alert').removeClass('ww_alert--active');
+
+                        
+                    // }, 10000);
+                    
                 
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 6000);
                 },
                 error: function( errorThrown ){
                     console.log(errorThrown);
@@ -547,6 +604,367 @@
         }
 
     }
+
+    function delete_auth_template (e, element) {
+        e.preventDefault();
+        let auth_id = $(element).attr('ww-data-id');
+
+        console.log(auth_id);
+        if( auth_id && confirm( "Are you sure you want to delete this template?" ) ){
+            $.ajax({
+                url : ww_ajax.ajax_url,
+                type : 'post',
+                data : {
+                    action : 'ww_delete_auth_template',
+                    auth_id,
+                    ww_nonce: ww_ajax.ajax_nonce
+                },
+                success : function( $response ) {
+                    let auth_template = $.parseJSON( $response );
+                    console.log(auth_template);
+                    setTimeout(function(){
+        
+                        if( auth_template['success'] != 'false' && auth_template['success'] != false ){
+                            $('.ww_alert').addClass('ww_alert--active alert-success');
+                            $('.ww_alert').text("Auth template was successfully deleted");
+                            clear_error();
+
+                            delete(state.auth_templates[auth_id]);
+                            console.log(state.auth_templates)
+                            display_auth_templates();
+                        } else {
+                            $( this ).css( { 'background': '#a70000' } );
+                            confirm( auth_template['msg'] );
+                            
+                        }
+        
+                    }, 200);
+                    setTimeout(function(){
+                        $( this ).css( { 'background': '' } );
+                    }, 2700);
+                },
+                error: function( errorThrown ){
+                   console.log(errorThrown)
+                }
+            });
+
+        }   
+    };
+
+    function ww_get_auth_methods() {
+        return $.ajax({
+            url : ww_ajax.ajax_url,
+            type : 'get',
+            data : {
+                action : 'ww_get_auth_methods',
+                ww_nonce: ww_ajax.ajax_nonce
+            }
+        })
+    }
+
+    function ww_get_post_type() {
+        return $.ajax({
+            url : ww_ajax.ajax_url,
+            type : 'get',
+            data : {
+                action : 'ww_get_post_types',
+                ww_nonce: ww_ajax.ajax_nonce
+            }
+        })
+    }
+    
+    
+    async function ww_trigger_settings(e, element) {
+
+        const ww_auth_methods_obj = await ww_get_auth_methods();
+        const ww_auth_methods = Object.values(ww_auth_methods_obj.data);
+        const ww_get_post_types_obj = await ww_get_post_type();
+        const ww_get_post_types = Object.values(ww_get_post_types_obj.data);
+        
+
+        const ww_data_request_type = ['JSON', 'XML', 'X-WWW-FORM-URLENCODE'];
+        const ww_data_request_method = ['POST', 'GET', 'PUT', 'PATCH', 'DELETE', 'TRACE', 'OPTIONS', 'HEAD'];
+        const ww_post_status = ['Draft', 'Pending Review', 'Private', 'Published'];
+        let webhook_name = e.target.getAttribute('ww-webhook-name');
+        let trigger = state.triggers[webhook_name];        
+        let data1 = '';
+        let data2 = '';
+        let data3 = '';
+        let data4 = '';
+        let data5 = '';
+        let post_settings ='';
+
+        let has_post_types = [];
+        let not_has_post_types = [];
+        let has_post_status = [];
+        let not_has_post_status = [];
+
+        ww_get_post_types.forEach(element => {
+            if(trigger['settings']){
+                if(trigger['settings']['ww_post--type']){
+                    trigger['settings']['ww_post--type'].forEach(element1 => {                    
+
+                        if(element === element1){
+                            has_post_types.push(element1);
+
+                        }
+                        else{
+                           
+                            if(!has_post_types.includes(element) && !not_has_post_types.includes(element)){
+                                not_has_post_types.push(element);           
+                            }
+                        }
+                    })
+                }
+            }
+
+        });
+
+        for (let i = 0; i < ww_get_post_types.length; i++) {
+            if(trigger['settings'] && trigger['settings']['ww_post--type']){
+                for (let j = 0; j < trigger['settings']['ww_post--type'].length; j++) {
+                    if (trigger['settings']['ww_post--type'][j] === ww_get_post_types[i]) {
+                        data4 += `<option value="${trigger['settings']['ww_post--type'][j]}" selected>${trigger['settings']['ww_post--type'][j]}</option>`;
+                        break;
+                    }                
+                    else{
+                        if(!has_post_types.includes(ww_get_post_types[i]) && not_has_post_types.includes(ww_get_post_types[i]) ){
+                            data4 += `<option value="${ww_get_post_types[i]}">${ww_get_post_types[i]}</option>`;
+                            break;
+                        }
+    
+                        else{
+                            data4+='';
+                        }
+                        
+                    }
+                }
+            }
+
+            else{
+                data4 += `<option value="${ww_get_post_types[i]}">${ww_get_post_types[i]}</option>`;
+            }
+            
+        }
+
+        ww_post_status.forEach(element => {
+            if(trigger['settings']){
+                if(trigger['settings']['ww_post--status']){
+                    trigger['settings']['ww_post--status'].forEach(element1 => {                    
+
+                        if(element === element1){
+                            has_post_status.push(element1);
+                            console.log(has_post_status)
+
+                        }
+                        else{
+                           
+                            if(!has_post_status.includes(element) && !not_has_post_status.includes(element)){
+                                not_has_post_status.push(element);           
+                            }
+                        }
+                    })
+                }
+            }
+
+        });
+
+        for (let i = 0; i < ww_post_status.length; i++) {
+           if (trigger['settings'] && trigger['settings']['ww_post--status']) {
+            for (let j = 0; j < trigger['settings']['ww_post--status'].length; j++) {
+                if (trigger['settings']['ww_post--status'][j] === ww_post_status[i]) {
+                    data4 += `<option value="${trigger['settings']['ww_post--status'][j]}" selected>${trigger['settings']['ww_post--status'][j]}</option>`;
+                    break;
+                }                
+                else{
+                    if(!has_post_status.includes(ww_post_status[i]) && not_has_post_status.includes(ww_post_status[i]) ){
+                        data4 += `<option value="${ww_post_status[i]}">${ww_post_status[i]}</option>`;
+                        break;
+                    }
+
+                    else{
+                        data4+='';
+                    }
+                    
+                }
+            }
+           }
+            
+        }
+
+
+        ww_post_status.forEach(element => {
+            if(trigger['settings'] && trigger['settings']['ww_post--status']){
+                trigger['settings']['ww_post--status'].forEach(element1 => {
+                    if(element === element1){
+                        data5 += `<option value="${element}" selected>${element}</option>`;
+                    }
+                    else{
+                        data5 += `<option value="${element}">${element}</option>`;
+                    }
+                });
+                
+            }
+            
+        });
+
+        if(trigger.webhook_name.includes('post') || trigger.webhook_name.includes('custom')){
+            post_settings += `<div class="d-flex align-items-center mb-4">
+                <label class="switch mr-4">
+                <input class="default primary" name="user_logged_in" type="checkbox" class="regular-text" ${trigger['settings'] && trigger['settings']['user_logged_in'] === 'on' ? 'checked' : ''} />
+                    <span class="slider round"></span>
+                </label>
+                
+                <span class="mr-2">User must be logged in</span>
+                <svg data-container="body" data-toggle="popover" data-placement="right" data-content="Check this button if you want to fire this webhook only when the user is logged in ( is_user_logged_in() function is used )." xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="M17.563,9.063a8.5,8.5,0,1,1-8.5-8.5A8.5,8.5,0,0,1,17.563,9.063ZM9.291,3.373A4.439,4.439,0,0,0,5.3,5.558a.412.412,0,0,0,.093.557l1.189.9a.411.411,0,0,0,.571-.073c.612-.777,1.032-1.227,1.964-1.227.7,0,1.566.451,1.566,1.13,0,.513-.424.777-1.115,1.164-.806.452-1.873,1.015-1.873,2.422v.137a.411.411,0,0,0,.411.411h1.919a.411.411,0,0,0,.411-.411v-.046c0-.976,2.851-1.016,2.851-3.656C13.285,4.881,11.222,3.373,9.291,3.373Zm-.228,8.5a1.577,1.577,0,1,0,1.577,1.577A1.578,1.578,0,0,0,9.063,11.873Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
+
+            </div>`;
+
+            post_settings += `<div class="d-flex align-items-center mb-4">
+                <label class="switch mr-4">
+                <input class="default primary" name="user_logged_out" type="checkbox" class="regular-text" ${trigger['settings'] && trigger['settings']['user_logged_out'] === 'on' ? 'checked' : ''} />
+                    <span class="slider round"></span>
+                </label>
+                
+                <span class="mr-2">User must be logged out</span>
+                <svg data-container="body" data-toggle="popover" data-placement="right" data-content="Check this button if you want to fire this webhook only when the user is logged in ( !is_user_logged_in() function is used )." xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="M17.563,9.063a8.5,8.5,0,1,1-8.5-8.5A8.5,8.5,0,0,1,17.563,9.063ZM9.291,3.373A4.439,4.439,0,0,0,5.3,5.558a.412.412,0,0,0,.093.557l1.189.9a.411.411,0,0,0,.571-.073c.612-.777,1.032-1.227,1.964-1.227.7,0,1.566.451,1.566,1.13,0,.513-.424.777-1.115,1.164-.806.452-1.873,1.015-1.873,2.422v.137a.411.411,0,0,0,.411.411h1.919a.411.411,0,0,0,.411-.411v-.046c0-.976,2.851-1.016,2.851-3.656C13.285,4.881,11.222,3.373,9.291,3.373Zm-.228,8.5a1.577,1.577,0,1,0,1.577,1.577A1.578,1.578,0,0,0,9.063,11.873Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
+
+            </div>`;
+
+            post_settings += `<div class="d-flex align-items-center mb-4">
+            <label class="switch mr-4">
+            <input class="default primary" name="trigger_backend" type="checkbox" class="regular-text" ${trigger['settings'] && trigger['settings']['trigger_backend'] === 'on' ? 'checked' : ''} />
+                <span class="slider round"></span>
+            </label>
+            
+            <span class="mr-2">Trigger from backend only</span>
+            <svg data-container="body" data-toggle="popover" data-placement="right" data-content="Check this button if you want to fire this trigger only from the backend. Every post submitted through the frontend is ignored ( is_admin() function is used )." xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="M17.563,9.063a8.5,8.5,0,1,1-8.5-8.5A8.5,8.5,0,0,1,17.563,9.063ZM9.291,3.373A4.439,4.439,0,0,0,5.3,5.558a.412.412,0,0,0,.093.557l1.189.9a.411.411,0,0,0,.571-.073c.612-.777,1.032-1.227,1.964-1.227.7,0,1.566.451,1.566,1.13,0,.513-.424.777-1.115,1.164-.806.452-1.873,1.015-1.873,2.422v.137a.411.411,0,0,0,.411.411h1.919a.411.411,0,0,0,.411-.411v-.046c0-.976,2.851-1.016,2.851-3.656C13.285,4.881,11.222,3.373,9.291,3.373Zm-.228,8.5a1.577,1.577,0,1,0,1.577,1.577A1.578,1.578,0,0,0,9.063,11.873Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
+
+            </div>`;
+
+            post_settings += `<div class="d-flex align-items-center mb-4">
+            <label class="switch mr-4">
+            <input class="default primary" name="trigger_frontend" type="checkbox" class="regular-text" ${trigger['settings'] && trigger['settings']['trigger_frontend'] === 'on' ? 'checked' : ''} />
+                <span class="slider round"></span>
+            </label>
+            
+            <span class="mr-2">Trigger from frontend only</span>
+            <svg data-container="body" data-toggle="popover" data-placement="right" data-content="Check this button if you want to fire this trigger only from the frontend. Every post submitted through the backend is ignored ( is_admin() function is used )." xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="M17.563,9.063a8.5,8.5,0,1,1-8.5-8.5A8.5,8.5,0,0,1,17.563,9.063ZM9.291,3.373A4.439,4.439,0,0,0,5.3,5.558a.412.412,0,0,0,.093.557l1.189.9a.411.411,0,0,0,.571-.073c.612-.777,1.032-1.227,1.964-1.227.7,0,1.566.451,1.566,1.13,0,.513-.424.777-1.115,1.164-.806.452-1.873,1.015-1.873,2.422v.137a.411.411,0,0,0,.411.411h1.919a.411.411,0,0,0,.411-.411v-.046c0-.976,2.851-1.016,2.851-3.656C13.285,4.881,11.222,3.373,9.291,3.373Zm-.228,8.5a1.577,1.577,0,1,0,1.577,1.577A1.578,1.578,0,0,0,9.063,11.873Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
+
+            </div>`;
+
+            if(trigger.webhook_name.includes('post') ){
+                post_settings +=`<div class="d-flex align-items-center mb-4">
+                    <select multiple=multiple class="mr-2" name="ww_post--type[]" id="ww_post--type">
+                    ${data4}
+                        
+                    </select>
+                    <svg data-container="body" data-toggle="popover" data-placement="right" data-content="Select only the post types you want to fire the trigger on. You can also choose multiple ones. If none is selected, all are triggered." xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="M17.563,9.063a8.5,8.5,0,1,1-8.5-8.5A8.5,8.5,0,0,1,17.563,9.063ZM9.291,3.373A4.439,4.439,0,0,0,5.3,5.558a.412.412,0,0,0,.093.557l1.189.9a.411.411,0,0,0,.571-.073c.612-.777,1.032-1.227,1.964-1.227.7,0,1.566.451,1.566,1.13,0,.513-.424.777-1.115,1.164-.806.452-1.873,1.015-1.873,2.422v.137a.411.411,0,0,0,.411.411h1.919a.411.411,0,0,0,.411-.411v-.046c0-.976,2.851-1.016,2.851-3.656C13.285,4.881,11.222,3.373,9.291,3.373Zm-.228,8.5a1.577,1.577,0,1,0,1.577,1.577A1.578,1.578,0,0,0,9.063,11.873Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
+                </div>`;
+            }
+
+        if(trigger.webhook_name === 'post_create'){
+            post_settings +=`<div class="d-flex align-items-center mb-4">
+            <select multiple=multiple class="mr-2" name="ww_post--status[]" id="ww_post--status">
+            ${data5}
+                
+            </select>
+            <svg data-container="body" data-toggle="popover" data-placement="right" data-content="Select only the post status you want to fire the trigger on. You can also choose multiple ones. Important: This trigger only fires after the initial post status change. If you change the status after again, it doesn't fire anymore. We also need to set a post meta value in the database after you chose the post status functionality." xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="M17.563,9.063a8.5,8.5,0,1,1-8.5-8.5A8.5,8.5,0,0,1,17.563,9.063ZM9.291,3.373A4.439,4.439,0,0,0,5.3,5.558a.412.412,0,0,0,.093.557l1.189.9a.411.411,0,0,0,.571-.073c.612-.777,1.032-1.227,1.964-1.227.7,0,1.566.451,1.566,1.13,0,.513-.424.777-1.115,1.164-.806.452-1.873,1.015-1.873,2.422v.137a.411.411,0,0,0,.411.411h1.919a.411.411,0,0,0,.411-.411v-.046c0-.976,2.851-1.016,2.851-3.656C13.285,4.881,11.222,3.373,9.291,3.373Zm-.228,8.5a1.577,1.577,0,1,0,1.577,1.577A1.578,1.578,0,0,0,9.063,11.873Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
+        </div>`;
+        }
+
+
+
+            
+        }
+        ww_data_request_type.forEach(element => {
+            if(trigger['settings']){
+                if(element === trigger['settings']['ww_data--request_type']){
+                    data1 += `<option value="${element}" selected>${element}</option>`;
+                }
+                else{
+                    data1 += `<option value="${element}">${element}</option>`;
+                }
+            }else{
+                data1 += `<option value="${element}">${element}</option>`;
+            }
+            
+        });
+
+        ww_data_request_method.forEach(element => {
+            if(trigger['settings']){
+                if(element === trigger['settings']['ww_data--request_method']){
+                    data2 += `<option value="${element}" selected>${element}</option>`;
+                }
+            }
+            data2 += `<option value="${element}">${element}</option>`;
+        });
+
+        ww_auth_methods.forEach(element => {
+            if(trigger['settings']){
+                if(element.id === trigger['settings']['ww_auth--template']){
+                    data3 += `<option value="${element.id}" selected>${element.name}</option>`;
+                }
+            }
+            data3 += `<option value="${element.id}">${element.name}</option>`;
+        });
+
+        $('#ww_trigger--settings_form').attr( 'ww-webhook-name', $(element).attr( 'ww-webhook-name' ) );
+        let html = '';
+        html += `<div class="d-flex align-items-center mb-4">
+        <select class="mr-2" name="ww_data--request_type" id="ww_data--request_method">
+            
+            ${data1}
+            
+        </select>
+        <svg data-container="body" data-toggle="popover" data-placement="right" data-content="Set a custom request type for the data that gets send to the specified URL. Default is JSON." xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="M17.563,9.063a8.5,8.5,0,1,1-8.5-8.5A8.5,8.5,0,0,1,17.563,9.063ZM9.291,3.373A4.439,4.439,0,0,0,5.3,5.558a.412.412,0,0,0,.093.557l1.189.9a.411.411,0,0,0,.571-.073c.612-.777,1.032-1.227,1.964-1.227.7,0,1.566.451,1.566,1.13,0,.513-.424.777-1.115,1.164-.806.452-1.873,1.015-1.873,2.422v.137a.411.411,0,0,0,.411.411h1.919a.411.411,0,0,0,.411-.411v-.046c0-.976,2.851-1.016,2.851-3.656C13.285,4.881,11.222,3.373,9.291,3.373Zm-.228,8.5a1.577,1.577,0,1,0,1.577,1.577A1.578,1.578,0,0,0,9.063,11.873Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
+    </div>
+    
+    
+    <div class="d-flex align-items-center mb-4">
+        <select class="mr-2" name="ww_data--request_method" id="ww_data--request_method">
+        ${data2}
+            
+        </select>
+        <svg data-container="body" data-toggle="popover" data-placement="right" data-content="Set a custom request method for the data that gets send to the specified URL. Default is POST." xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="M17.563,9.063a8.5,8.5,0,1,1-8.5-8.5A8.5,8.5,0,0,1,17.563,9.063ZM9.291,3.373A4.439,4.439,0,0,0,5.3,5.558a.412.412,0,0,0,.093.557l1.189.9a.411.411,0,0,0,.571-.073c.612-.777,1.032-1.227,1.964-1.227.7,0,1.566.451,1.566,1.13,0,.513-.424.777-1.115,1.164-.806.452-1.873,1.015-1.873,2.422v.137a.411.411,0,0,0,.411.411h1.919a.411.411,0,0,0,.411-.411v-.046c0-.976,2.851-1.016,2.851-3.656C13.285,4.881,11.222,3.373,9.291,3.373Zm-.228,8.5a1.577,1.577,0,1,0,1.577,1.577A1.578,1.578,0,0,0,9.063,11.873Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
+    </div>
+
+    <div class="d-flex align-items-center mb-4">
+        <select class="mr-2" name="ww_auth--template" id="ww_auth--template">
+        ${data3}           
+        </select>
+        <svg data-container="body" data-toggle="popover" data-placement="right" data-content="Set a custom request method for the data that gets send to the specified URL. Default is POST." xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="M17.563,9.063a8.5,8.5,0,1,1-8.5-8.5A8.5,8.5,0,0,1,17.563,9.063ZM9.291,3.373A4.439,4.439,0,0,0,5.3,5.558a.412.412,0,0,0,.093.557l1.189.9a.411.411,0,0,0,.571-.073c.612-.777,1.032-1.227,1.964-1.227.7,0,1.566.451,1.566,1.13,0,.513-.424.777-1.115,1.164-.806.452-1.873,1.015-1.873,2.422v.137a.411.411,0,0,0,.411.411h1.919a.411.411,0,0,0,.411-.411v-.046c0-.976,2.851-1.016,2.851-3.656C13.285,4.881,11.222,3.373,9.291,3.373Zm-.228,8.5a1.577,1.577,0,1,0,1.577,1.577A1.578,1.578,0,0,0,9.063,11.873Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
+    </div>
+    
+    <div class="d-flex align-items-center mb-4">
+        <label class="switch mr-4">
+        <input class="default primary" name="url" type="checkbox" class="regular-text" ${trigger['settings'] && trigger['settings']['url'] === 'on' ? 'checked' : ''} />
+            <span class="slider round"></span>
+        </label>
+        
+        <span class="mr-2">Allow unsafe URLs</span>
+        <svg data-container="body" data-toggle="popover" data-placement="right" data-content="Activating this setting allows you to use unsafe looking URLs like zfvshjhfbssdf.szfdhdf.com." xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="M17.563,9.063a8.5,8.5,0,1,1-8.5-8.5A8.5,8.5,0,0,1,17.563,9.063ZM9.291,3.373A4.439,4.439,0,0,0,5.3,5.558a.412.412,0,0,0,.093.557l1.189.9a.411.411,0,0,0,.571-.073c.612-.777,1.032-1.227,1.964-1.227.7,0,1.566.451,1.566,1.13,0,.513-.424.777-1.115,1.164-.806.452-1.873,1.015-1.873,2.422v.137a.411.411,0,0,0,.411.411h1.919a.411.411,0,0,0,.411-.411v-.046c0-.976,2.851-1.016,2.851-3.656C13.285,4.881,11.222,3.373,9.291,3.373Zm-.228,8.5a1.577,1.577,0,1,0,1.577,1.577A1.578,1.578,0,0,0,9.063,11.873Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
+
+    </div>
+
+    <div class="d-flex align-items-center mb-4">
+        <label class="switch mr-4">
+        
+            <input class="default primary" name="ssl" type="checkbox" class="regular-text" ${trigger['settings'] && trigger['settings']['ssl'] === 'on' ? 'checked' : ''} />
+            <span class="slider round"></span>
+        </label>
+        
+        <span class="mr-2">Allow unverified SSL</span>
+        <svg data-container="body" data-toggle="popover" data-placement="right" data-content="Activating this setting allows you to use unverified SSL connections for this URL (We won't verify the SSL for this webhook URL)." xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="M17.563,9.063a8.5,8.5,0,1,1-8.5-8.5A8.5,8.5,0,0,1,17.563,9.063ZM9.291,3.373A4.439,4.439,0,0,0,5.3,5.558a.412.412,0,0,0,.093.557l1.189.9a.411.411,0,0,0,.571-.073c.612-.777,1.032-1.227,1.964-1.227.7,0,1.566.451,1.566,1.13,0,.513-.424.777-1.115,1.164-.806.452-1.873,1.015-1.873,2.422v.137a.411.411,0,0,0,.411.411h1.919a.411.411,0,0,0,.411-.411v-.046c0-.976,2.851-1.016,2.851-3.656C13.285,4.881,11.222,3.373,9.291,3.373Zm-.228,8.5a1.577,1.577,0,1,0,1.577,1.577A1.578,1.578,0,0,0,9.063,11.873Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
+
+    </div>
+    ${post_settings}
+    `;
+
+    $('.modal-body').html(html);
+    $('[data-toggle="popover"]').popover();
+    
+    }
     
     $( ".tbody" ).on( "click", function(e) {
         e.preventDefault();
@@ -563,6 +981,13 @@
         else if(element.attr('ww-data-webhook-status')){
             deactivate_trigger(e, element);
         }
+        else if(element.attr('ww-data-id')){
+            delete_auth_template(e, element);
+        }
+
+        else if(element.attr('ww-trigger-setting')){
+            ww_trigger_settings(e, element);
+        }
         
     });
 
@@ -570,6 +995,7 @@
     const display_webhook_triggers = (term='', filter='') => {
         
         const data =  {...state.triggers};
+        
         
         const keys = Object.keys(data);
         let values = Object.values(data);
@@ -660,7 +1086,15 @@
                 <path style="fill: currentColor" id="Icon_ionic-ios-settings" data-name="Icon ionic-ios-settings" d="M15.748,10.63A1.578,1.578,0,0,1,16.76,9.158,6.253,6.253,0,0,0,16,7.335a1.6,1.6,0,0,1-.642.137,1.574,1.574,0,0,1-1.44-2.216A6.235,6.235,0,0,0,12.1,4.5a1.576,1.576,0,0,1-2.944,0,6.253,6.253,0,0,0-1.823.757A1.574,1.574,0,0,1,5.9,7.472a1.547,1.547,0,0,1-.642-.137A6.392,6.392,0,0,0,4.5,9.161a1.577,1.577,0,0,1,0,2.944,6.253,6.253,0,0,0,.757,1.823,1.575,1.575,0,0,1,2.078,2.078,6.29,6.29,0,0,0,1.823.757,1.573,1.573,0,0,1,2.937,0,6.253,6.253,0,0,0,1.823-.757A1.576,1.576,0,0,1,16,13.928a6.29,6.29,0,0,0,.757-1.823A1.585,1.585,0,0,1,15.748,10.63Zm-5.089,2.551a2.554,2.554,0,1,1,2.554-2.554A2.553,2.553,0,0,1,10.659,13.181Z" transform="translate(-4.5 -4.5)" fill="#395ff5"/>
             </svg>
 
-                <a href="#" class="ww_action--links ww_trigger--settings">settings</a>
+                <a href="#" 
+                    class="ww_action--links ww_trigger--settings" 
+                    data-toggle="modal" 
+                    data-target="#exampleModalCenter" 
+                    ww-webhook-name=${webhook_name} 
+                    ww-trigger-setting=true
+                    ww-webhook-group=${webhook_group} 
+                >
+                settings</a>
             </div>`;
 
             webhook_html   +=      `<div class="ww_action--items ww_action--deactivate">
@@ -725,9 +1159,9 @@
         
     }
 
-    const display_webhook_actions = (term='') => {
-        
+    const display_webhook_actions = (term='') => {      
         const data =  {...state.actions};
+        // console.log(data)
         const keys = Object.keys(data);
         let values = Object.values(data);
         if(values.length === 0){
@@ -790,13 +1224,13 @@
             webhook_html += '<td><input style="width: 90%" type=text value =' + webhook_api_key + ' readonly/>';
             webhook_html += '<td class="d-flex mr-auto">';
             
-            webhook_html    += `<div class="ww_action--items ww_action--settings">
-            <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="12.26" height="12.263" viewBox="0 0 12.26 12.263">
-                <path style="fill: currentColor" id="Icon_ionic-ios-settings" data-name="Icon ionic-ios-settings" d="M15.748,10.63A1.578,1.578,0,0,1,16.76,9.158,6.253,6.253,0,0,0,16,7.335a1.6,1.6,0,0,1-.642.137,1.574,1.574,0,0,1-1.44-2.216A6.235,6.235,0,0,0,12.1,4.5a1.576,1.576,0,0,1-2.944,0,6.253,6.253,0,0,0-1.823.757A1.574,1.574,0,0,1,5.9,7.472a1.547,1.547,0,0,1-.642-.137A6.392,6.392,0,0,0,4.5,9.161a1.577,1.577,0,0,1,0,2.944,6.253,6.253,0,0,0,.757,1.823,1.575,1.575,0,0,1,2.078,2.078,6.29,6.29,0,0,0,1.823.757,1.573,1.573,0,0,1,2.937,0,6.253,6.253,0,0,0,1.823-.757A1.576,1.576,0,0,1,16,13.928a6.29,6.29,0,0,0,.757-1.823A1.585,1.585,0,0,1,15.748,10.63Zm-5.089,2.551a2.554,2.554,0,1,1,2.554-2.554A2.553,2.553,0,0,1,10.659,13.181Z" transform="translate(-4.5 -4.5)" fill="#395ff5"/>
-            </svg>
+            // webhook_html    += `<div class="ww_action--items ww_action--settings">
+            // <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="12.26" height="12.263" viewBox="0 0 12.26 12.263">
+            //     <path style="fill: currentColor" id="Icon_ionic-ios-settings" data-name="Icon ionic-ios-settings" d="M15.748,10.63A1.578,1.578,0,0,1,16.76,9.158,6.253,6.253,0,0,0,16,7.335a1.6,1.6,0,0,1-.642.137,1.574,1.574,0,0,1-1.44-2.216A6.235,6.235,0,0,0,12.1,4.5a1.576,1.576,0,0,1-2.944,0,6.253,6.253,0,0,0-1.823.757A1.574,1.574,0,0,1,5.9,7.472a1.547,1.547,0,0,1-.642-.137A6.392,6.392,0,0,0,4.5,9.161a1.577,1.577,0,0,1,0,2.944,6.253,6.253,0,0,0,.757,1.823,1.575,1.575,0,0,1,2.078,2.078,6.29,6.29,0,0,0,1.823.757,1.573,1.573,0,0,1,2.937,0,6.253,6.253,0,0,0,1.823-.757A1.576,1.576,0,0,1,16,13.928a6.29,6.29,0,0,0,.757-1.823A1.585,1.585,0,0,1,15.748,10.63Zm-5.089,2.551a2.554,2.554,0,1,1,2.554-2.554A2.553,2.553,0,0,1,10.659,13.181Z" transform="translate(-4.5 -4.5)" fill="#395ff5"/>
+            // </svg>
 
-                <a href="#" class="ww_action--links ww_trigger--settings">settings</a>
-            </div>`;
+            //     <a href="#" class="ww_action--links ww_trigger--settings">settings</a>
+            // </div>`;
 
             webhook_html   +=      `<div class="ww_action--items ww_action--deactivate">
                 <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11.438 11.438">
@@ -853,9 +1287,145 @@
         
     }
 
+    const display_auth_templates = (term='', filter='') => {
+
+        const filtered =  filter.toLowerCase().split(' ').join('_');
+        const data =  {...state.auth_templates};
+        console.log(data)
+        const keys = Object.keys(data);
+        let values = Object.values(data);
+        if(values.length === 0){
+
+            $( '.tbody' ).html( `<div class="alert alert-info">There are no available auth templates</div>` );
+            return;
+        }
+        let html = '';
+
+        
+        if(filter){
+            values = values.filter(element => {
+                if (element['auth_type'] === filtered) {
+                    return element;
+                }
+            })
+        }
+
+         if(term){
+            const arr = [];
+            values.forEach(element => {
+                if(element.name.includes(term)){
+                    arr.push(element);
+                }
+            });
+            values = [...arr]
+
+            if(values.length === 0){
+                $( '.tbody' ).html( `<div class="alert alert-info">"${term}" does not match any templates</div>` );
+                return;
+            }
+        }
+
+        const compare = (a, b) => b.id.localeCompare(a.id);
+        values.sort( compare );
+
+        if(values.length === 0){
+            $( '.tbody' ).html( `<svg class="" xmlns="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/1999/xlink" width='50' height='50' viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+						
+            <circle cx="50" cy="50" r="24" stroke-width="6" stroke="#fff" stroke-dasharray="50.26548245743669 50.26548245743669" fill="none" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1.5s" keyTimes="0;1" values="0 50 50;360 50 50"/>
+            </circle>
+        </svg>` );
+        }
+
+        values.forEach((template, index) => { 
+            let id = template['id'];
+            let name = template['name'];
+            let auth_type =    template['auth_type'];
+            let template_ =    template['template'];
+            let log_time =    template['log_time'];
+            
+            
+            html += `<tr><th scope="row"> ${name} </th>`;
+            html += `<td> ${auth_type} </td>`;
+            html += '<td class="d-flex mr-auto">';
+            
+            html    +=  `<div class="ww_action--items ww_action--delete">
+            <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="7.98" height="10.26" viewBox="0 0 7.98 10.26">
+                <path style="fill: currentColor" d="M8.07,13.62a1.143,1.143,0,0,0,1.14,1.14h4.56a1.143,1.143,0,0,0,1.14-1.14V6.78H8.07Zm7.41-8.55H13.485l-.57-.57h-2.85l-.57.57H7.5V6.21h7.98Z" transform="translate(-7.5 -4.5)" fill="#395ff5"/>
+            </svg>
+            <a 
+                href="#" 
+                class="ww_action--links ww_delete--auth"
+                ww-data-id=${id}
+            >
+            delete
+            </a>`
+
+            html    += '</div></td></tr>';
+
+        
+
+            
+
+            
+        });
+
+        $( '.tbody' ).html( html );
+        let status    =   $('.ww_action--deactivate > .ww_trigger--deactivate');
+        if(status){
+            status.each(function(element) {
+                if($(this).text().trim() === 'Activate'){
+                    $(this.parentNode).css({ 'color': '#00a73f' })
+                    $($(this).siblings()[0]).addClass('ww_action--icon__inactive');
+                    $($(this).siblings()[1]).addClass('ww_action--icon__active');
+                }
+            });
+        }
+        
+    }
+    
+    $('#ww_choose--auth').on('change', function () {
+        let auth_type = $(this).val();
+        let form_html = '';
+
+
+        switch (auth_type) {
+            case 'api_key':
+                form_html += '<input type="text" class="ww_input mb-4 form-control" name="ww_template--key" id="ww_template--key" placeholder="Enter key" required>';
+                form_html += '<input type="text" class="ww_input mb-4 form-control" name="ww_template--value" id="ww_template--value" placeholder="Enter value" required>';
+                form_html += `<select type="text" class="ww_input mb-4 form-control" name="ww_template--attach" id="ww_template--attach" required>
+                    <option value=header>Add to header</option>
+                    <option value=body>Add to body</option>
+                    <option value=both>Add to header and body</option>
+                </select>`;
+            break;
+
+            case 'basic_auth':
+                form_html += '<input type="text" class="ww_input mb-4 form-control" name="ww_template--username" id="ww_template--username" placeholder="Enter username" required>';
+                form_html += '<input type="text" class="ww_input mb-4 form-control" name="ww_template--password" id="ww_template--password" placeholder="Enter password" required>';
+            break;
+
+            case 'bearer_token':
+                form_html += '<input type="text" class="ww_input mb-4 form-control" name="ww_template--token" id="ww_template--token" placeholder="Enter token" required>';
+            break;
+
+            case 'digest_auth':
+                
+            break;
+        
+            default:
+            break;
+
+        }
+
+        $('.ww_append').html(form_html);
+
+    });
+
     $(window).on('load', function () {
-        let send_table = $('.ww_senddata--text');
-        let receive_table = $('.ww_receivedata--text');
+        let send_table = $('.ww_send--table');
+        let receive_table = $('.ww_receive--table');
+        let auth_table = $('.ww_auth--table');
         if(send_table.length) {
             get_webhook_triggers().then(success => {
                 state.triggers = success.data;
@@ -863,10 +1433,18 @@
             });
         }
 
-        if(receive_table.length) {
+        else if(receive_table.length) {
             get_webhook_actions().then(success => {
                 state.actions = success.data;
+                console.log(success.data)
                 display_webhook_actions();
+            });
+        }
+
+        else if(auth_table.length) {
+            get_auth_templates().then(success => {
+                state.auth_templates = success.data;
+                display_auth_templates();
             });
         }
     });
@@ -900,6 +1478,16 @@
             }      
         })
     }
+    
+    const get_auth_templates = () => {
+        return $.ajax({
+            url : ww_ajax.ajax_url,
+            type : 'get',
+            data :  {
+                action : 'ww_get_auth_templates',   
+            }      
+        })
+    }
 
     $('#ww_search--term').on('input', function (e) {
         e.preventDefault();
@@ -911,6 +1499,7 @@
 
             }
             if(Object.entries(state.actions).length !== 0) display_webhook_actions(e.target.value);
+            if(Object.entries(state.auth_templates).length !== 0) display_auth_templates(e.target.value);
         }, 2000)
 
         
@@ -920,6 +1509,12 @@
     $('#ww_filter--trigger').on('change', function (e) {
         display_webhook_triggers('', e.target.value);     
         $('#ww_search--term').val('');
+    }); 
+
+
+    $('#ww_filter--auth').on('change', function (e) {
+        display_auth_templates('', e.target.value);     
+        $('#ww_search--auth').val('');
     });
 
     $('#ww_test--webhook').on('change', function (e) {

@@ -8,9 +8,6 @@ $current_url = wordpress_webhooks()->helpers->get_current_url(false);
 $current_url_full = wordpress_webhooks()->helpers->get_current_url();
 $data_mapping_templates = wordpress_webhooks()->data_mapping->get_data_mapping();
 $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
-$custom = wordpress_webhooks()->settings->get_active_webhooks();
-
-var_dump($custom);
 
 ?>
 <div class="d-flex flex-column">
@@ -47,6 +44,35 @@ var_dump($custom);
 					$trigger_name = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
 					$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
 					$trigger_callback = !empty( $trigger['callback'] ) ? $trigger['callback'] : '';
+
+					$settings = array();
+				if( ! empty( $trigger['settings'] ) ){
+
+					if( isset( $trigger['settings']['data'] ) ){
+						$settings = (array) $trigger['settings']['data'];
+					}
+
+					if( isset( $trigger['settings']['load_default_settings'] ) && $trigger['settings']['load_default_settings'] === true ){
+							$settings = array_merge( wordpress_webhooks()->settings->get_default_trigger_settings(), $settings );
+					}
+				}
+
+				//Map dynamic settings
+				$required_settings = wordpress_webhooks()->settings->get_required_trigger_settings();
+				foreach( $required_settings as $settings_ident => $settings_data ){
+
+					if( $settings_ident == 'ww_trigger_authentication' ){
+						if( ! empty( $authentication_templates ) ){
+							$required_settings[ $settings_ident ]['choices'] = array_replace( $required_settings[ $settings_ident ]['choices'], wordpress_webhooks()->auth->flatten_authentication_data( $authentication_templates ) );
+						} else {
+							unset( $required_settings[ $settings_ident ] ); //if empty
+						}
+					}
+
+				}
+
+				$settings = array_merge( $required_settings, $settings );
+
 				?>
 
 					<div id="webhook" data-ww-callback=<?php echo $trigger_callback; ?> class="ww_input--item dropdown-item" >
@@ -110,6 +136,56 @@ var_dump($custom);
   <tbody class="tbody"></tbody>
 </table>
 
+<!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+  Launch demo modal
+</button> -->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header flex-column">
+		<div class="d-flex justify-space-between w-100">
+		<h5 class="modal-title" id="exampleModalLongTitle">Trigger Settings</h5>
+		
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+		</button>
+		</div>
+		
+		<div style="margin-bottom: 0;" class="ww_alert alert alert-success">Trigger Settings successfully updated</div>
+
+      </div>
+	  <form action="" id="ww_trigger--settings_form">
+
+		<div class="ww_setttings-modal modal-body d-flex flex-column">
+
+
+		</div>
+
+		<div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			<button class="btn btn-primary ww_trigger--setting_btn position-relative">
+			<span class="ww_btn--text">Save Settings</span>
+				
+				<svg class="ww_btn--icon" xmlns="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/1999/xlink" width='50' height='50' viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+							
+					<circle cx="50" cy="50" r="24" stroke-width="6" stroke="#fff" stroke-dasharray="50.26548245743669 50.26548245743669" fill="none" stroke-linecap="round">
+					<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1.5s" keyTimes="0;1" values="0 50 50;360 50 50"/>
+					</circle>
+				</svg>
+			</button>
+		</div>
+	</form>
+		
+			
+			
+
+  </div>
+</div>
+</div>
+
 <div class="ww_modal">
 	<div class="ww_modal--overlay"></div>
 	
@@ -168,5 +244,6 @@ var_dump($custom);
 
 	
 </div>
+
 
 
