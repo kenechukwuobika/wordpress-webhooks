@@ -1506,7 +1506,7 @@ class WordPress_Webhooks_Settings{
 			return $success;
 		}
 
-		$triggers = wordpress_webhooks()->webhook->get_triggers( '', false );
+		$triggers = wordpress_webhooks()->webhook->get_triggers( false );
 		$active_webhooks = wordpress_webhooks()->settings->get_active_webhooks();
 	
 		// START Trigger Settings

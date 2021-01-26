@@ -68,17 +68,21 @@ class WordPress_Webhooks_Run{
 		add_action( 'wp_ajax_ww_delete_webhook_action',  array( $this, 'ww_delete_webhook_action' ) );
 		add_action( 'wp_ajax_ww_deactivate_webhook',  array( $this, 'ww_deactivate_webhook' ) );
 		add_action( 'wp_ajax_ww_test_webhook_trigger',  array( $this, 'ww_test_webhook_trigger' ) );
-		add_action( 'wp_ajax_ironikus_save_webhook_trigger_settings',  array( $this, 'ironikus_save_webhook_trigger_settings' ) );
+		add_action( 'wp_ajax_ww_get_auth_templates',  array( $this, 'ww_get_auth_templates' ) );
+		add_action( 'wp_ajax_ww_get_auth_methods',  array( $this, 'ww_get_auth_methods' ) );
+		add_action( 'wp_ajax_ww_get_post_types',  array( $this, 'ww_get_post_types' ) );
+		add_action( 'wp_ajax_ww_save_webhook_trigger_settings',  array( $this, 'ww_save_webhook_trigger_settings' ) );
 		add_action( 'wp_ajax_ironikus_save_webhook_action_settings',  array( $this, 'ironikus_save_webhook_action_settings' ) );
 		add_action( 'wp_ajax_ironikus_load_data_mapping_data',  array( $this, 'ironikus_load_data_mapping_data' ) );
 		add_action( 'wp_ajax_ironikus_delete_data_mapping_template',  array( $this, 'ironikus_delete_data_mapping_template' ) );
 		add_action( 'wp_ajax_ironikus_add_data_mapping_template',  array( $this, 'ironikus_add_data_mapping_template' ) );
 		add_action( 'wp_ajax_ironikus_save_data_mapping_template',  array( $this, 'ironikus_save_data_mapping_template' ) );
 		add_action( 'wp_ajax_ironikus_data_mapping_create_preview',  array( $this, 'ironikus_data_mapping_create_preview' ) );
-		add_action( 'wp_ajax_ironikus_add_authentication_template',  array( $this, 'ironikus_add_authentication_template' ) );
-		add_action( 'wp_ajax_ironikus_load_authentication_template_data',  array( $this, 'ironikus_load_authentication_template_data' ) );
+		add_action( 'wp_ajax_ww_create_auth_template',  array( $this, 'ww_create_auth_template' ) );
+		add_action( 'wp_ajax_ww_load_authentication_template_data',  array( $this, 'ww_load_authentication_template_data' ) );
+		add_action( 'wp_ajax_ww_load_authentication_template',  array( $this, 'ww_load_authentication_template' ) );
 		add_action( 'wp_ajax_ironikus_save_authentication_template',  array( $this, 'ironikus_save_authentication_template' ) );
-		add_action( 'wp_ajax_ironikus_delete_authentication_template',  array( $this, 'ironikus_delete_authentication_template' ) );
+		add_action( 'wp_ajax_ww_delete_auth_template',  array( $this, 'ww_delete_auth_template' ) );
 		add_action( 'wp_ajax_ww_save_general_settings',  array( $this, 'ww_save_general_settings' ) );
 		add_action( 'wp_ajax_ww_save_trigger_settings',  array( $this, 'ww_save_trigger_settings' ) );
 		add_action( 'wp_ajax_ww_save_action_settings',  array( $this, 'ww_save_action_settings' ) );
@@ -262,15 +266,33 @@ class WordPress_Webhooks_Run{
 		die();
 	}
 
-	public function ww_get_webhook_actions(){
-		$actions = wordpress_webhooks()->webhook->get_hooks( 'action' );
-		echo wp_send_json_success($actions);
+	public function ww_get_auth_templates(){
+		$auth_templates = wordpress_webhooks()->auth->get_auth_templates();
+		echo wp_send_json_success($auth_templates);
 		die();
 	}
 
 	public function ww_get_actions(){
 		$actions = wordpress_webhooks()->webhook->get_actions();
 		echo wp_send_json_success($actions);
+		die();
+	}
+
+	public function ww_get_webhook_actions(){
+		$actions = wordpress_webhooks()->webhook->get_hooks( 'action' );
+		echo wp_send_json_success($actions);
+		die();
+	}
+
+	public function ww_get_auth_methods(){
+		$auth_methods = wordpress_webhooks()->auth->get_auth_templates();
+		echo wp_send_json_success($auth_methods);
+		die();
+	}
+
+	public function ww_get_post_types(){
+		$post_types = get_post_types();
+		echo wp_send_json_success($post_types);
 		die();
 	}
 
@@ -649,15 +671,43 @@ class WordPress_Webhooks_Run{
 	/*
      * Functionality to add the currently chosen data mapping
      */
-	public function ironikus_add_authentication_template(){
+	public function ww_create_auth_template(){
         check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
-        $auth_template    = isset( $_REQUEST['auth_template'] ) ? sanitize_title( $_REQUEST['auth_template'] ) : '';
-        $auth_type    = isset( $_REQUEST['auth_type'] ) ? sanitize_title( $_REQUEST['auth_type'] ) : '';
+        $template_name    = isset( $_REQUEST['template_name'] ) ? sanitize_title( $_REQUEST['template_name'] ) : '';
+		$auth_type    = isset( $_REQUEST['auth_type'] ) ? sanitize_title( $_REQUEST['auth_type'] ) : '';
+        $template    = isset( $_REQUEST['template'] ) ? $_REQUEST['template'] : '';
 		$response           = array( 'success' => false );
 
-		if( ! empty( $auth_template ) && ! empty( $auth_type ) ){
-		    $check = wordpress_webhooks()->auth->add_template( $auth_template, $auth_type );
+		parse_str( $template, $authentication_template );
+		
+		//Maybe validate the incoming template data
+		if( empty( $authentication_template ) ){
+			$authentication_template = array();
+		}
+		
+		//Validate arrays
+		if( is_array( $authentication_template ) ){
+			$authentication_template = json_encode( $authentication_template );
+		}
+
+
+
+		if( ! empty( $template_name ) && ! empty( $auth_type ) && is_string( $authentication_template )){
+
+			$data  = array(
+				'template' => $authentication_template
+			);
+
+			if( isset( $data['name'] ) ){
+				$encoded_name = sanitize_title( $data['name'] );
+			}
+	
+			if( isset( $data['template'] ) ){
+				$encoded_template = base64_encode( $data['template'] );
+			}
+
+		    $check = wordpress_webhooks()->auth->add_template( $template_name, $auth_type, $encoded_template );
 
 		    if( ! empty( $check ) ){
 				
@@ -673,7 +723,43 @@ class WordPress_Webhooks_Run{
 	/*
      * Functionality to load the currently chosen authentication
      */
-	public function ironikus_load_authentication_template_data(){
+	public function ww_load_authentication_template(){
+        check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
+
+        $auth_template_id    = isset( $_REQUEST['auth_template_id'] ) ? intval( $_REQUEST['auth_template_id'] ) : '';
+        $response           = array( 'success' => false );
+
+		if( ! empty( $auth_template_id ) && is_numeric( $auth_template_id ) ){
+		    $check = wordpress_webhooks()->auth->get_auth_templates( intval( $auth_template_id ) );
+
+		    if( ! empty( $check ) ){
+
+				$response['success'] = true;
+		        $response['text'] 	 = array(
+					'save_button_text' => wordpress_webhooks()->helpers->translate( 'Save Template', 'ww-page-authentication' ),
+					'delete_button_text' => wordpress_webhooks()->helpers->translate( 'Delete Template', 'ww-page-authentication' ),
+				);
+				$response['id'] = '';
+				$response['content'] = '';
+
+				if( isset( $check->id ) && ! empty( $check->id ) ){
+					$response['id'] = $check->id;
+				}
+
+				$template_data = ( isset( $check->template ) && ! empty( $check->template ) ) ? base64_decode( $check->template ) : '';
+
+				if( isset( $check->auth_type ) && ! empty( $check->auth_type )  ){
+					$response['content'] = wordpress_webhooks()->auth->get_html_fields_form( $check->auth_type, $template_data );
+				}
+		    
+            }
+        }
+
+        echo json_encode( $response );
+		die();
+	}
+
+	public function ww_load_authentication_template_data(){
         check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
         $auth_template_id    = isset( $_REQUEST['auth_template_id'] ) ? intval( $_REQUEST['auth_template_id'] ) : '';
@@ -753,14 +839,14 @@ class WordPress_Webhooks_Run{
 	/*
      * Functionality to delete the currently chosen authentication template
      */
-	public function ironikus_delete_authentication_template(){
+	public function ww_delete_auth_template(){
         check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
-        $data_auth_id    = isset( $_REQUEST['data_auth_id'] ) ? intval( $_REQUEST['data_auth_id'] ) : '';
+        $auth_id    = isset( $_REQUEST['auth_id'] ) ? intval( $_REQUEST['auth_id'] ) : '';
         $response           = array( 'success' => false );
 
-		if( ! empty( $data_auth_id ) && is_numeric( $data_auth_id ) ){
-		    $check = wordpress_webhooks()->auth->delete_authentication_template( intval( $data_auth_id ) );
+		if( ! empty( $auth_id ) && is_numeric( $auth_id ) ){
+		    $check = wordpress_webhooks()->auth->delete_authentication_template( intval( $auth_id ) );
 
 		    if( ! empty( $check ) ){
 				
@@ -887,27 +973,30 @@ class WordPress_Webhooks_Run{
     /*
      * Functionality to load all of the available demo webhook triggers
      */
-	public function ironikus_save_webhook_trigger_settings(){
+	public function ww_save_webhook_trigger_settings(){
         check_ajax_referer( md5( $this->page_name ), 'ww_nonce' );
 
-        $webhook            = isset( $_REQUEST['webhook_id'] ) ? sanitize_title( $_REQUEST['webhook_id'] ) : '';
-        $webhook_group      = isset( $_REQUEST['webhook_group'] ) ? sanitize_text_field( $_REQUEST['webhook_group'] ) : '';
+        $webhook            = isset( $_REQUEST['webhook'] ) ? sanitize_title( $_REQUEST['webhook'] ) : '';
 		$trigger_settings   = ( isset( $_REQUEST['trigger_settings'] ) && ! empty( $_REQUEST['trigger_settings'] ) ) ? $_REQUEST['trigger_settings'] : '';
         $response           = array( 'success' => false );
 
 		parse_str( $trigger_settings, $trigger_settings_data );
+		$my = explode('&', $trigger_settings);
+		$arr = [];
+		foreach($my as $item){
+			$arr[] = explode('=', $item);
+		}
 
-		if( ! empty( $webhook_group ) && ! empty( $webhook ) ){
-		    $check = wordpress_webhooks()->webhook->update( $webhook, 'trigger', $webhook_group, array(
-                'settings' => $trigger_settings_data
-            ) );
+		$check = wordpress_webhooks()->webhook->update( $webhook, 'trigger', array(
+			'settings' => $trigger_settings_data
+		) );
 
-		    if( ! empty( $check ) ){
-		        $response['success'] = true;
-            }
-        }
+		if( ! empty( $check ) ){
+			$response['success'] = true;
+		}
+	
 
-        echo json_encode( $response );
+        echo json_encode( $trigger_settings_data );
 		die();
     }
 
@@ -1270,9 +1359,9 @@ class WordPress_Webhooks_Run{
 		// 	$tabs['data-mapping']  = wordpress_webhooks()->helpers->translate( 'Data Mapping', 'admin-menu' );
 		// }
 
-		// if( wordpress_webhooks()->auth->is_active() ){
-		// 	$tabs['authentication']  = wordpress_webhooks()->helpers->translate( 'Authentication', 'admin-menu' );
-		// }
+		if( wordpress_webhooks()->auth->is_active() ){
+			$tabs['authentication']  = wordpress_webhooks()->helpers->translate( 'Authentication', 'admin-menu' );
+		}
 
 		if( isset( $_GET['wpwh_whitelabel_settings'] ) && $_GET['wpwh_whitelabel_settings'] === 'visible' ){
 			$tabs['whitelabel']  = wordpress_webhooks()->helpers->translate( 'Whitelabel', 'admin-menu' );

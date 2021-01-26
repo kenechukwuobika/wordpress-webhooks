@@ -272,9 +272,6 @@ class WordPress_Webhooks_Instantiate {
 		}
 
 		$current_hooks = $this->get_hooks();
-		$group = ( ! empty( $group ) ) ? $group : '';
-
-
 		$data = array();
 
 		if( isset( $current_hooks[ $type ] ) ){
@@ -490,7 +487,7 @@ class WordPress_Webhooks_Instantiate {
 	 * The structure to include your recpient looks like this:
 	 * array( 'action' => 'my-action', 'parameter' => array( 'my_parameter' => array( 'short_description => 'my text', 'required' => true ) ), 'short_description' => 'This is my short description.', 'description' => 'My HTML Content' )
 	 */
-	public function get_triggers( $single = '', $trigger_name='', $active_webhooks = true ){
+	public function get_triggers( $active_webhooks = true, $single = '', $trigger_name='' ){
 
 		$triggers = apply_filters( 'ww_get_webhooks_triggers', array(), $active_webhooks );
 		

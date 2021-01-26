@@ -102,7 +102,7 @@ class WordPress_Webhooks_Authentication {
 
 		$this->setup_authentication_table();
 
-		$sql = 'SELECT * FROM {prefix}' . $this->authentication_table_data['table_name'] . ' ORDER BY name ASC;';
+		$sql = 'SELECT * FROM {prefix}' . $this->authentication_table_data['table_name'] . ' ORDER BY log_time DESC;';
 
 		$data = wordpress_webhooks()->sql->run($sql);
 
@@ -202,7 +202,7 @@ class WordPress_Webhooks_Authentication {
 	 * @param string $name - the name of the authentication template
 	 * @return bool - True if the creation was successful, false if not
 	 */
-	public function add_template( $name, $auth_type ){
+	public function add_template( $name, $auth_type, $token=null ){
 		if( ! $this->is_active() ){
 			return false;
 		}
@@ -210,6 +210,7 @@ class WordPress_Webhooks_Authentication {
 		$sql_vals = array(
 			'name' => $name,
 			'auth_type' => $auth_type,
+			'template' => $token,
 			'log_time' => date( 'Y-m-d H:i:s' )
 		);
 
