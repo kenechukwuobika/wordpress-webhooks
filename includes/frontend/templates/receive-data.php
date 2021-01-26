@@ -5,14 +5,6 @@ $clear_form_url = wordpress_webhooks()->helpers->get_current_url();
 $action_nonce_data = wordpress_webhooks()->settings->get_action_nonce();
 $actions = wordpress_webhooks()->webhook->get_actions();
 
-// foreach($actions as $identkey => $action){
-// 	foreach($action['parameter'] as $key => $value){
-// 		var_dump($key);
-// 	}
-// }
-// foreach( $custom_webhooks as $custom_webhook  => $value) {
-// var_dump($custom_webhooks);}
-
 
 ?>
 <div class="d-flex flex-column">

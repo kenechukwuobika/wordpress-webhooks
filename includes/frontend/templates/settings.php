@@ -5,12 +5,10 @@
  */
 
 $settings = wordpress_webhooks()->settings->get_settings();
-// $triggers = wordpress_webhooks()->webhook->get_triggers();
-$triggers = wordpress_webhooks()->webhook->get_triggers(false);
+$triggers = wordpress_webhooks()->webhook->get_triggers( false );
 $actions = wordpress_webhooks()->webhook->get_actions( false );
 $active_webhooks = wordpress_webhooks()->settings->get_active_webhooks();
 $current_url_full = wordpress_webhooks()->helpers->get_current_url();
-
 
 
 
@@ -187,6 +185,7 @@ if( did_action( 'ww_settings_saved' ) ){
 						
 						<?php 
 							foreach ($actions as $action => $action_value){ 
+								if($action_value['action'] === 'bulk_webhooks') continue;
 								$is_checked = isset( $active_webhooks['actions'][ $action_value['action'] ] ) ?  'checked' : '';
 						?>
 						
