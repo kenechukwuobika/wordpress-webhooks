@@ -476,7 +476,6 @@ const display_select = (id='', name='', title='', required=false, label='') => {
                     $(btn_text).addClass('ww_btn--text_inactive');
                     $(btn_loader).addClass('ww_btn--icon_active');
                     $(btn).prop('disabled', true);
-
                 }, 200);
 
                 setTimeout(() => {
@@ -484,7 +483,7 @@ const display_select = (id='', name='', title='', required=false, label='') => {
                 $(btn_loader).removeClass('ww_btn--icon_active');
                 $(btn_text).removeClass('ww_btn--text_inactive');
                 $(btn).prop('disabled', false);
-
+                    window.location.reload();
                     
                     
                 }, 4000);
@@ -550,14 +549,7 @@ const display_select = (id='', name='', title='', required=false, label='') => {
 
                         
                         
-                    }, 4000);
-
-                    // setTimeout(() => {
-                    //     $('.ww_alert').removeClass('ww_alert--active');
-
-                        
-                    // }, 10000);
-                    
+                    }, 4000);                    
                 
                     setTimeout(() => {
                         window.location.reload();
@@ -1111,7 +1103,6 @@ const display_select = (id='', name='', title='', required=false, label='') => {
 
 
     const display_webhook_triggers = (term='', filter='') => {
-        
         const data =  {...state.triggers};        
         const keys = Object.keys(data);
         let values = Object.values(data);
