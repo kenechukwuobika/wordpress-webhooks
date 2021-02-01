@@ -35,54 +35,59 @@ if( did_action( 'ww_settings_saved' ) ){
 	<div class="tab-content" id="myTabContent">
 		<div class="tab-pane fade active show" id="general" role="tabpanel" aria-labelledby="general-tab">
 		
+
+		
 			<h4>General Settings</h4>
 
 			<p>Here you can configure the global settings for our plugin, enable certain features to extend the possibilities for your site, and activate your available webhook actions and triggers.</p>
 
 			<form action="" method="post" id="ww_form--general" class="d-flex flex-column align-items-center">
-				<table style="width: 80rem;" class="table ">
-					<thead class="thead-dark">
-						<tr>
-							<th scope="col">Action</th>
-							<th scope="col">Title</th>
-							<th scope="col">Description</th>
-						</tr>
-					</thead>
-					<tbody>
-						
-						<?php 
-							foreach ($settings as $setting => $setting_value){ 
-								$is_checked = ( $setting_value['type'] == 'checkbox' && $setting_value['value'] == 'yes' ) ? 'checked' : '';
-								$value = ( $setting_value['type'] != 'checkbox' ) ? $setting_value['value'] : '1';
-								$is_checkbox = ( $setting_value['type'] == 'checkbox' ) ? true : false;
-								if($setting_value['label'] === 'Activate Whitelist' || $setting_value['label'] === 'Activate Data Mapping' || $setting_value['label'] === 'Activate Logs'){
-									continue;
-								}
-						?>
-						
+			
+				<div class="table-responsive">
+					<table class="ww_settings--table table">
+						<thead class="thead-dark">
 							<tr>
-								<td>
-								<?php if( $is_checkbox ) : ?>
-									
-								<label class="switch ">
-									<input id="<?php echo $setting_value['id']; ?>" class="default primary" name="<?php echo $setting; ?>" type="<?php echo $setting_value['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
-									<span class="slider round"></span>
-								</label>
-								<?php else : ?>
-									<input id="<?php echo $setting_value['id']; ?>" name="<?php echo $setting; ?>" type="<?php echo $setting_value['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
-								<?php endif; ?>
-								</td>
-								<th scope="row"><?php echo $setting_value['label']; ?></th>
-								<td><?php echo $setting_value['description'];?></td>
-								
+								<th scope="col">Action</th>
+								<th scope="col">Title</th>
+								<th scope="col">Description</th>
 							</tr>
+						</thead>
+						<tbody>
+							
+							<?php 
+								foreach ($settings as $setting => $setting_value){ 
+									$is_checked = ( $setting_value['type'] == 'checkbox' && $setting_value['value'] == 'yes' ) ? 'checked' : '';
+									$value = ( $setting_value['type'] != 'checkbox' ) ? $setting_value['value'] : '1';
+									$is_checkbox = ( $setting_value['type'] == 'checkbox' ) ? true : false;
+									if($setting_value['label'] === 'Activate Whitelist' || $setting_value['label'] === 'Activate Data Mapping' || $setting_value['label'] === 'Activate Logs'){
+										continue;
+									}
+							?>
+							
+								<tr>
+									<td>
+									<?php if( $is_checkbox ) : ?>
+										
+									<label class="switch ">
+										<input id="<?php echo $setting_value['id']; ?>" class="default primary" name="<?php echo $setting; ?>" type="<?php echo $setting_value['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
+										<span class="slider round"></span>
+									</label>
+									<?php else : ?>
+										<input id="<?php echo $setting_value['id']; ?>" name="<?php echo $setting; ?>" type="<?php echo $setting_value['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
+									<?php endif; ?>
+									</td>
+									<th scope="row"><?php echo $setting_value['label']; ?></th>
+									<td><?php echo $setting_value['description'];?></td>
+									
+								</tr>
 
-						<?php
-							};
-						?>
+							<?php
+								};
+							?>
 
-					</tbody>
-				</table>
+						</tbody>
+					</table>
+				</div>
 
 				<!-- <input type="submit" data-keiks="keiks" id="ww_btn--general" value="Save Settings" class="ww_btn ww_form--btn"> -->
 
@@ -113,7 +118,7 @@ if( did_action( 'ww_settings_saved' ) ){
 			<p>Here you can configure the send data settings for our plugin, enable certain features to extend the possibilities for your site, and activate your available webhook actions and triggers.</p>
 
 			<form action="" method="post" id="ww_form--trigger" class="d-flex flex-column align-items-center">
-				<table style="width: 80rem;" class="table ">
+				<table class="ww_settings--table table">
 					<thead class="thead-dark">
 						<tr>
 							<th scope="col">Action</th>
@@ -173,7 +178,7 @@ if( did_action( 'ww_settings_saved' ) ){
 			<p>Here you can configure the send data settings for our plugin, enable certain features to extend the possibilities for your site, and activate your available webhook actions and triggers.</p>
 
 			<form action="" method="post" id="ww_form--action" class="d-flex flex-column align-items-center">
-				<table style="width: 80rem;" class="table ">
+				<table class="ww_settings--table table ">
 					<thead class="thead-dark">
 						<tr>
 							<th scope="col">Action</th>

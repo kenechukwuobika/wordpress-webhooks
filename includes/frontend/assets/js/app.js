@@ -1,3 +1,115 @@
+const display_input = (id='', name='', label='', placeholder='', value='', required=false, readonly='') => {
+    return `
+    <div class="ant-row ant-form-item" style="width: 25rem;">
+        <div class="ant-col ant-form-item-label">
+            <label for="${id}" class="${required ? 'ant-form-item-required' : ''}" title="${label}">${label}</label>
+        </div>
+        <div class="ant-col ant-form-item-control">
+            <div class="ant-form-item-control-input">
+                <div class="ant-form-item-control-input-content">
+                    <span class="ant-input-affix-wrapper">
+                        <input type="text" id=${id} name=${name} style="min-width:15rem;" class="ant-input" placeholder="${placeholder}" value="${value}" ${readonly} />
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    `
+}
+
+const display_options = (arr, name='', title='', required=false, label='keiks', options='') => {
+ 
+    return `
+        <div class="ant-select-dropdown ant-select-dropdown-placement-bottomLeft ant-select-dropdown-hidden" >
+            <div role="listbox" id="rc_select_7_list" style="height: 0px; width: 0px; overflow: hidden;">
+                <div aria-label="All" role="option" id="rc_select_7_list_0" aria-selected="true">${title}</div>
+                    <div aria-label="Cloths" role="option" id="rc_select_7_list_1" aria-selected="false">${title}</div>
+                </div>
+                <div class="rc-virtual-list" style="position: relative;">
+                    <div class="rc-virtual-list-holder" style="max-height: 256px; overflow-y: hidden; overflow-anchor: none;"><div>
+                    <div class="rc-virtual-list-holder-inner" style="display: flex; flex-direction: column;">
+                        <div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-active ant-select-item-option-selected" title="All">
+                            <div class="ant-select-item-option-content">${title}</div>
+                            <span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
+                        </div>
+                        
+                        ${options}
+                        
+                    </div>
+                </div>
+                <div class="rc-virtual-list-scrollbar" style="width: 8px; top: 0px; bottom: 0px; right: 0px; position: absolute; display: none;">
+                    <div class="rc-virtual-list-scrollbar-thumb" style="width: 100%; height: 128px; top: 0px; left: 0px; position: absolute; background: rgba(0, 0, 0, 0.5); border-radius: 99px; cursor: pointer; user-select: none;"></div>
+                </div>
+            </div>
+        </div>
+
+    `;
+}
+
+const display_select = (id='', name='', title='', required=false, label='') => {
+     
+    return `
+    <div class="ant-row ant-form-item" style="width: 25rem;">
+        <div class="ant-col ant-form-item-label">
+            <label for="${id}" class="${required ? 'ant-form-item-required' : ''}" title="${label}">${label}</label>
+        </div>
+        <div class="ant-select ant-select-single ant-select-show-arrow ant-select-open" style="height:32px">
+            <div class="ant-select-selector">
+            
+            <span class="ant-select-selection-search">
+                <input autocomplete="off" name="${name}" id="${id}" type="search" class="ant-select-selection-search-input" role="combobox" aria-haspopup="listbox" aria-owns="rc_select_7_list" aria-autocomplete="list" aria-controls="rc_select_7_list" aria-activedescendant="rc_select_7_list_0" readonly="" unselectable="on" value="" id="rc_select_7" style="opacity: 0;" aria-expanded="true">
+            </span>
+            <span class="ant-select-selection-item" title="${title}">${title}</span>
+        </div>
+        <span class="ant-select-arrow" unselectable="on" aria-hidden="true" style="user-select: none;">
+            <span role="img" aria-label="down" class="anticon anticon-down ant-select-suffix">
+                <svg viewBox="64 64 896 896" focusable="false" data-icon="down" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+                    <path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+                </svg>
+            </span>
+        </span>
+
+        <div class="ant-select-dropdown ant-select-dropdown-placement-bottomLeft ant-select-dropdown-hidden" >
+        <div role="listbox" id="rc_select_7_list" style="height: 0px; width: 0px; overflow: hidden;">
+            <div aria-label="All" role="option" id="rc_select_7_list_0" aria-selected="true">Select an option</div>
+                <div aria-label="Cloths" role="option" id="rc_select_7_list_1" aria-selected="false">Select an option</div>
+            </div>
+            <div class="rc-virtual-list" style="position: relative;">
+                <div class="rc-virtual-list-holder" style="max-height: 256px; overflow-y: hidden; overflow-anchor: none;"><div>
+                <div class="rc-virtual-list-holder-inner" style="display: flex; flex-direction: column;">
+                    <div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-active ant-select-item-option-selected" title="All">
+                        <div class="ant-select-item-option-content">Select an option</div>
+                        <span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
+                    </div>
+                    <div aria-selected="false" class="ant-select-item ant-select-item-option" title="Add to header">
+            <div class="ant-select-item-option-content" ww-data-value="header">Add to header</div>
+            <span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
+        </div>
+
+        <div aria-selected="false" class="ant-select-item ant-select-item-option" title="Add to body">
+            <div class="ant-select-item-option-content" ww-data-value="body">Add to body</div>
+            <span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
+        </div>
+
+        <div aria-selected="false" class="ant-select-item ant-select-item-option" title="Add to header and body">
+            <div class="ant-select-item-option-content" ww-data-value="both">Add to header and body</div>
+            <span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
+        </div>
+                </div>
+            </div>
+            <div class="rc-virtual-list-scrollbar" style="width: 8px; top: 0px; bottom: 0px; right: 0px; position: absolute; display: none;">
+                <div class="rc-virtual-list-scrollbar-thumb" style="width: 100%; height: 128px; top: 0px; left: 0px; position: absolute; background: rgba(0, 0, 0, 0.5); border-radius: 99px; cursor: pointer; user-select: none;"></div>
+            </div>
+        </div>
+    </div>
+
+        
+				
+    </div>
+    `
+}
+
+
 (function($){
 
     const state = {
@@ -9,11 +121,10 @@
     $('[data-toggle="popover"]').popover();
     
 
-    
     $('.ww_input--item').each(function (element) {
         $(this).on('click', function () {
-            $('.ww_input').text(this.childNodes[1].textContent);
-            $('.ww_input').attr('ww-data-callback', this.getAttribute('data-ww-callback'))
+            $('.ww_input--select').text(this.childNodes[1].textContent);
+            $('.ww_input--select').attr('ww-data-callback', this.getAttribute('data-ww-callback'))
 
             $('#webhook-name').css({ 'visibility': 'visible'});
             $('#webhook-name').css({ 'opacity': '1'});
@@ -29,45 +140,48 @@
         
     const clear_error = () => {
         setTimeout(() => {
-            $('.ww_alert').removeClass('ww_alert--active alert-danger alert-success');
-            $('.ww_alert').text('');
+            $('.ww_alert').removeClass('ww_alert--active ant-alert-error ant-alert-success');
+            $('.ant-alert-message').text('');
         }, 5000);
     }
     
     $( "#ww_submit" ).on( "click", function(e) {
         let error = [];
+        let $this = this;
         e.preventDefault();
-        const webhook_group = document.querySelector('.ww_input').textContent;
-        const webhook_callback = $( '.ww_input').attr( 'ww-data-callback' );
+        const webhook_group = document.querySelector('.ww_input--select').textContent;
+        const webhook_callback = $( '.ww_input--select').attr( 'ww-data-callback' );
         const webhook_url = $( '#webhook-url').val();
         const webhook_name = $( '#webhook-name').val();
         const webhook_current_url = $( '#ww-current-url' ).val();  
 
-        if(!webhook_group){
+        if(!webhook_callback){
             error.push( "Please select a trigger");
-            $('.ww_alert').addClass('ww_alert--active alert-danger');
-            $('.ww_alert').text(error);
+            $('.ww_alert').addClass('ww_alert--active ant-alert-error');
+            $('.ant-alert-message').text(error);
             clear_error();
             return;
         }
         else{
             if(!webhook_name){
                 error.push( "Please enter a name for your webhook trigger");
-                $('.ww_alert').addClass('ww_alert--active alert-danger ');
-                $('.ww_alert').text(error);
+                $('.ww_alert').addClass('ww_alert--active ant-alert-error');
+                $('.ant-alert-message').text(error);
                 clear_error();
                 return;
             }
             if(!webhook_url){
                 error.push( "Please enter a url for your webhook trigger");
-                $('.ww_alert').addClass('ww_alert--active alert-danger');
-                $('.ww_alert').text(error);
+                $('.ww_alert').addClass('ww_alert--active ant-alert-error');
+                $('.ant-alert-message').text(error);
                 clear_error();
                 return;
             }
         }
         
-    
+        $('.ant-btn .ant-btn-loading-icon').css({'display': 'inline-block' });
+        $(this).prop('disabled', true);
+        
         $.ajax({
             url : ww_ajax.ajax_url,
             type : 'post',
@@ -81,15 +195,14 @@
                 current_url : webhook_current_url,
                 ww_nonce: ww_ajax.ajax_nonce
             },
-            success : function( $response ) {
+            success : ( $response ) => {
                 let webhook = $.parseJSON( $response );
                 setTimeout(function(){
-                   //load spinner here
                     $( '#webhook-url' ).val( '' );
                     $( '#webhook-name' ).val( '' );
     
                     if( webhook['success'] != 'false' && webhook['success'] != false ){
-                        $('.ww_alert').addClass('ww_alert--active alert-success');
+                        $('.ww_alert').addClass('ww_alert--active ant-alert-success');
                         $('.ww_alert').text("Trigger was successfully created");
                         clear_error();
                        
@@ -100,6 +213,9 @@
                         confirm( webhook['msg'] );
                         
                     }
+
+                    $($this).prop('disabled', false);
+                    $('.ant-btn .ant-btn-loading-icon').css({'display': 'none' });
     
                 }, 200);
                 setTimeout(function(){
@@ -120,19 +236,22 @@
     });
 
     $( "#ww_create--action" ).on( "click", function(e) {
-        let error = [];
         e.preventDefault();
+        let error = [];
+        let $this = this;
         const webhook_name = $( '#ww_webook--action').val();
         
         if(!webhook_name){
             error.push( "Please enter a name for your webhook action");
-            $('.ww_alert').addClass('ww_alert--active alert-danger ');
+            $('.ww_alert').addClass('ww_alert--active ant-alert-error ');
             $('.ww_alert').text(error);
             clear_error();
             return;
             
         }
-        
+
+        $('.ant-btn .ant-btn-loading-icon').css({'display': 'inline-block' });
+        $(this).prop('disabled', true);
     
         $.ajax({
             url : ww_ajax.ajax_url,
@@ -146,11 +265,10 @@
             success : function( $response ) {
                 let webhook = $.parseJSON( $response );
                 setTimeout(function(){
-                   //load spinner here
                     $( '#ww_webook--action' ).val( '' );
     
                     if( webhook['success'] != 'false' && webhook['success'] != false ){
-                        $('.ww_alert').addClass('ww_alert--active alert-success');
+                        $('.ww_alert').addClass('ww_alert--active ant-alert-success');
                         $('.ww_alert').text("Trigger was successfully created");
                         clear_error();
                        
@@ -161,6 +279,9 @@
                         confirm( webhook['msg'] );
                         
                     }
+
+                    $($this).prop('disabled', false);
+                    $('.ant-btn .ant-btn-loading-icon').css({'display': 'none' });
     
                 }, 200);
                 setTimeout(function(){
@@ -181,9 +302,11 @@
     });
 
     $( "#ww_create--auth" ).on( "click", function(e) {
+        e.preventDefault();
+        console.log($('#ww_auth--form').serialize());
+        // return
         let error = [];
         let values = [];
-        e.preventDefault();
         // console.log($('.ww_append').children());
         $('.ww_append').children().each(function (el) {
             values.push({'name': $(this['name']).selector, 'value': $(this).val()})
@@ -197,7 +320,7 @@
         
         if(!template_name){
             error.push( "Please enter a name for your auth template");
-            $('.ww_alert').addClass('ww_alert--active alert-danger ');
+            $('.ww_alert').addClass('ww_alert--active ant-alert-error ');
             $('.ww_alert').text(error);
             clear_error();
             return;
@@ -205,8 +328,8 @@
         }
 
         else if(!auth_type){
-            error.push( "Please enter an auth type");
-            $('.ww_alert').addClass('ww_alert--active alert-danger ');
+            error.push( "Please select an auth type");
+            $('.ww_alert').addClass('ww_alert--active ant-alert-error ');
             $('.ww_alert').text(error);
             clear_error();
             return;
@@ -230,7 +353,7 @@
                     $( '#ww_webook--action' ).val( '' );
     
                     if( auth_template['success'] != 'false' && auth_template['success'] != false ){
-                        $('.ww_alert').addClass('ww_alert--active alert-success');
+                        $('.ww_alert').addClass('ww_alert--active ant-alert-success');
                         $('.ww_alert').text("Auth template was successfully created");
                         clear_error();
 
@@ -360,7 +483,7 @@
                 }, 200);
 
                 setTimeout(() => {
-                $('.ww_alert').addClass('ww_alert--active');
+                $('.ww_alert').addClass('ww_alert--active ant-alert-sucess');
                 $(btn_loader).removeClass('ww_btn--icon_active');
                 $(btn_text).removeClass('ww_btn--text_inactive');
                 $(btn).prop('disabled', false);
@@ -423,7 +546,7 @@
                     }, 200);
 
                     setTimeout(() => {
-                    $('.ww_alert').addClass('ww_alert--active');
+                    $('.ww_alert').addClass('ww_alert--active ant-alert-success');
                     $(btn_loader).removeClass('ww_btn--icon_active');
                     $(btn_text).removeClass('ww_btn--text_inactive');
                     $(btn).prop('disabled', false);
@@ -621,16 +744,10 @@
                 },
                 success : function( $response ) {
                     let auth_template = $.parseJSON( $response );
-                    console.log(auth_template);
                     setTimeout(function(){
         
                         if( auth_template['success'] != 'false' && auth_template['success'] != false ){
-                            $('.ww_alert').addClass('ww_alert--active alert-success');
-                            $('.ww_alert').text("Auth template was successfully deleted");
-                            clear_error();
-
                             delete(state.auth_templates[auth_id]);
-                            console.log(state.auth_templates)
                             display_auth_templates();
                         } else {
                             $( this ).css( { 'background': '#a70000' } );
@@ -771,24 +888,28 @@
 
         for (let i = 0; i < ww_post_status.length; i++) {
            if (trigger['settings'] && trigger['settings']['ww_post--status']) {
-            for (let j = 0; j < trigger['settings']['ww_post--status'].length; j++) {
-                if (trigger['settings']['ww_post--status'][j] === ww_post_status[i]) {
-                    data4 += `<option value="${trigger['settings']['ww_post--status'][j]}" selected>${trigger['settings']['ww_post--status'][j]}</option>`;
-                    break;
-                }                
-                else{
-                    if(!has_post_status.includes(ww_post_status[i]) && not_has_post_status.includes(ww_post_status[i]) ){
-                        data4 += `<option value="${ww_post_status[i]}">${ww_post_status[i]}</option>`;
+                for (let j = 0; j < trigger['settings']['ww_post--status'].length; j++) {
+                    if (trigger['settings']['ww_post--status'][j] === ww_post_status[i]) {
+                        data5 += `<option value="${trigger['settings']['ww_post--status'][j]}" selected>${trigger['settings']['ww_post--status'][j]}</option>`;
                         break;
-                    }
-
+                    }                
                     else{
-                        data4+='';
+                        if(!has_post_status.includes(ww_post_status[i]) && not_has_post_status.includes(ww_post_status[i]) ){
+                            data5 += `<option value="${ww_post_status[i]}">${ww_post_status[i]}</option>`;
+                            break;
+                        }
+
+                        else{
+                            data5+='';
+                        }
+                        
                     }
-                    
                 }
             }
-           }
+
+            else{
+                data5 += `<option value="${ww_post_status[i]}">${ww_post_status[i]}</option>`;
+            }
             
         }
 
@@ -866,7 +987,7 @@
         if(trigger.webhook_name === 'post_create'){
             post_settings +=`<div class="d-flex align-items-center mb-4">
             <select multiple=multiple class="mr-2" name="ww_post--status[]" id="ww_post--status">
-            ${data5}
+                ${data5}
                 
             </select>
             <svg data-container="body" data-toggle="popover" data-placement="right" data-content="Select only the post status you want to fire the trigger on. You can also choose multiple ones. Important: This trigger only fires after the initial post status change. If you change the status after again, it doesn't fire anymore. We also need to set a post meta value in the database after you chose the post status functionality." xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="M17.563,9.063a8.5,8.5,0,1,1-8.5-8.5A8.5,8.5,0,0,1,17.563,9.063ZM9.291,3.373A4.439,4.439,0,0,0,5.3,5.558a.412.412,0,0,0,.093.557l1.189.9a.411.411,0,0,0,.571-.073c.612-.777,1.032-1.227,1.964-1.227.7,0,1.566.451,1.566,1.13,0,.513-.424.777-1.115,1.164-.806.452-1.873,1.015-1.873,2.422v.137a.411.411,0,0,0,.411.411h1.919a.411.411,0,0,0,.411-.411v-.046c0-.976,2.851-1.016,2.851-3.656C13.285,4.881,11.222,3.373,9.291,3.373Zm-.228,8.5a1.577,1.577,0,1,0,1.577,1.577A1.578,1.578,0,0,0,9.063,11.873Z" transform="translate(-0.563 -0.563)" fill="#5643fa"/></svg>
@@ -994,25 +1115,29 @@
 
     const display_webhook_triggers = (term='', filter='') => {
         
-        const data =  {...state.triggers};
-        
-        
+        const data =  {...state.triggers};        
         const keys = Object.keys(data);
         let values = Object.values(data);
 
         if(values.length === 0){
-            console.log(values);
-            $( '.tbody' ).html( `<div class="alert alert-info">There are no available webhook triggers</div>` );
+            $( '.ww_append' ).html( `<div class="alert alert-info">There are no available webhook triggers</div>` );
             return;
         }
-        let webhook_html = '';
+        let webhook_html = ``;
 
+    
         if(filter){
             values = values.filter(element => {
                 if (element['webhook_name'] === filter) {
                     return element;
                 }
-            })
+            });
+
+            if(values.length === 0){
+                $( '.ww_send--table > tbody' ).html( `` );
+                $( '.ww_append' ).html( `<div class="alert alert-info"> No trigger was found under '${filter}'</div>` );
+                return;
+            }
         }
                  
         if(term){
@@ -1025,22 +1150,14 @@
             values = [...arr]
 
             if(values.length === 0){
-                $( '.ww_send--table > tbody' ).html( `<div class="alert alert-info">"${term}" does not match any trigger</div>` );
+                $( '.ww_send--table > tbody' ).html( `` );
+                $( '.ww_append' ).html( `<div class="alert alert-info">"${term}" does not match any trigger</div>` );
                 return;
             }
         }
 
         const compare = (a, b) => b.date_created.localeCompare(a.date_created);
         values.sort( compare );
-
-        if(values.length === 0){
-            $( '.ww_send--table > tbody' ).html( `<svg class="" xmlns="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/1999/xlink" width='50' height='50' viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-						
-            <circle cx="50" cy="50" r="24" stroke-width="6" stroke="#fff" stroke-dasharray="50.26548245743669 50.26548245743669" fill="none" stroke-linecap="round">
-            <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1.5s" keyTimes="0;1" values="0 50 50;360 50 50"/>
-            </circle>
-        </svg>` );
-        }
 
         values.forEach((webhook, index) => {   
                         
@@ -1139,16 +1256,16 @@
 
             webhook_html += '</div></td></tr>';
 
-            
-
-            
         });
 
-        $( '.ww_send--table > tbody' ).html( webhook_html );
+        
+            $( '.ww_loader--container' ).remove();
+            $( '.ww_append' ).html('');
+            $( '.ww_send--table > tbody' ).html( webhook_html );
 
         let status    =   $('.ww_action--deactivate > .ww_trigger--deactivate');
         if(status){
-            status.each(function(element) {
+            status.each(function() {
                 if($(this).text().trim() === 'Activate'){
                     $(this.parentNode).css({ 'color': '#00a73f' })
                     $($(this).siblings()[0]).addClass('ww_action--icon__inactive');
@@ -1170,6 +1287,9 @@
             return;
         }
         let webhook_html = '';
+
+        
+
          if(term){
             const arr = [];
             keys.forEach(element => {
@@ -1187,15 +1307,6 @@
 
         const compare = (a, b) => b.date_created.localeCompare(a.date_created);
         values.sort( compare );
-
-        if(values.length === 0){
-            $( '.ww_send--table > tbody' ).html( `<svg class="" xmlns="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/1999/xlink" width='50' height='50' viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-						
-            <circle cx="50" cy="50" r="24" stroke-width="6" stroke="#fff" stroke-dasharray="50.26548245743669 50.26548245743669" fill="none" stroke-linecap="round">
-            <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1.5s" keyTimes="0;1" values="0 50 50;360 50 50"/>
-            </circle>
-        </svg>` );
-        }
 
         values.forEach((webhook, index) => {   
                         
@@ -1220,17 +1331,19 @@
             
             
             webhook_html += '<tr id= ww_trigger--' + webhook_name + '"><th scope="row">' + webhook_name + '</th>';
-            webhook_html += '<td><input style="width: 90%" type=text value =' + webhook_url + ' readonly/>';
-            webhook_html += '<td><input style="width: 90%" type=text value =' + webhook_api_key + ' readonly/>';
+            
+            webhook_html += 
+            `<td>
+            ${display_input(`webhook_name_${index}`, `webhook_name_${index}`, '', '', webhook_url, '', 'readonly')}
+                
+            </td>`;
+
+            webhook_html += 
+            `<td>
+            ${display_input(`webhook_api_key_${index}`, `webhook_api_key_${index}`, '', '', webhook_api_key, '', 'readonly')}
+            </td>`;
             webhook_html += '<td class="d-flex mr-auto">';
             
-            // webhook_html    += `<div class="ww_action--items ww_action--settings">
-            // <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="12.26" height="12.263" viewBox="0 0 12.26 12.263">
-            //     <path style="fill: currentColor" id="Icon_ionic-ios-settings" data-name="Icon ionic-ios-settings" d="M15.748,10.63A1.578,1.578,0,0,1,16.76,9.158,6.253,6.253,0,0,0,16,7.335a1.6,1.6,0,0,1-.642.137,1.574,1.574,0,0,1-1.44-2.216A6.235,6.235,0,0,0,12.1,4.5a1.576,1.576,0,0,1-2.944,0,6.253,6.253,0,0,0-1.823.757A1.574,1.574,0,0,1,5.9,7.472a1.547,1.547,0,0,1-.642-.137A6.392,6.392,0,0,0,4.5,9.161a1.577,1.577,0,0,1,0,2.944,6.253,6.253,0,0,0,.757,1.823,1.575,1.575,0,0,1,2.078,2.078,6.29,6.29,0,0,0,1.823.757,1.573,1.573,0,0,1,2.937,0,6.253,6.253,0,0,0,1.823-.757A1.576,1.576,0,0,1,16,13.928a6.29,6.29,0,0,0,.757-1.823A1.585,1.585,0,0,1,15.748,10.63Zm-5.089,2.551a2.554,2.554,0,1,1,2.554-2.554A2.553,2.553,0,0,1,10.659,13.181Z" transform="translate(-4.5 -4.5)" fill="#395ff5"/>
-            // </svg>
-
-            //     <a href="#" class="ww_action--links ww_trigger--settings">settings</a>
-            // </div>`;
 
             webhook_html   +=      `<div class="ww_action--items ww_action--deactivate">
                 <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11.438 11.438">
@@ -1272,6 +1385,7 @@
             
         });
 
+        $( '.ww_loader--container' ).remove();
         $( '.ww_receive--table > tbody' ).html( webhook_html );
 
         let status    =   $('.ww_action--deactivate > .ww_trigger--deactivate');
@@ -1291,23 +1405,27 @@
 
         const filtered =  filter.toLowerCase().split(' ').join('_');
         const data =  {...state.auth_templates};
-        console.log(data)
         const keys = Object.keys(data);
         let values = Object.values(data);
         if(values.length === 0){
-
-            $( '.tbody' ).html( `<div class="alert alert-info">There are no available auth templates</div>` );
+            $( '.ww_append' ).html( `<div class="alert alert-info">There are no available auth templates</div>` );
             return;
         }
         let html = '';
-
+        
         
         if(filter){
             values = values.filter(element => {
                 if (element['auth_type'] === filtered) {
                     return element;
                 }
-            })
+            });
+
+            if(values.length === 0){
+                $( '.ww_auth--table > tbody' ).html( `` );
+                $( '.ww_append' ).html( `<div class="alert alert-info"> No templates was found under '${filter}'</div>` );
+                return;
+            }
         }
 
          if(term){
@@ -1320,7 +1438,7 @@
             values = [...arr]
 
             if(values.length === 0){
-                $( '.tbody' ).html( `<div class="alert alert-info">"${term}" does not match any templates</div>` );
+                $( '.ww_append' ).html( `<div class="alert alert-info">"${term}" does not match any templates</div>` );
                 return;
             }
         }
@@ -1329,7 +1447,7 @@
         values.sort( compare );
 
         if(values.length === 0){
-            $( '.tbody' ).html( `<svg class="" xmlns="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/1999/xlink" width='50' height='50' viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+            $( '.ww_apend' ).html( `<svg class="" xmlns="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/1999/xlink" width='50' height='50' viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
 						
             <circle cx="50" cy="50" r="24" stroke-width="6" stroke="#fff" stroke-dasharray="50.26548245743669 50.26548245743669" fill="none" stroke-linecap="round">
             <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1.5s" keyTimes="0;1" values="0 50 50;360 50 50"/>
@@ -1346,7 +1464,7 @@
             
             
             html += `<tr><th scope="row"> ${name} </th>`;
-            html += `<td> ${auth_type} </td>`;
+            html += `<td class=ant-table-cell> ${auth_type} </td>`;
             html += '<td class="d-flex mr-auto">';
             
             html    +=  `<div class="ww_action--items ww_action--delete">
@@ -1370,7 +1488,9 @@
             
         });
 
+        $( '.ww_loader--container' ).remove();
         $( '.tbody' ).html( html );
+        $( '.ww_append' ).html( '' );
         let status    =   $('.ww_action--deactivate > .ww_trigger--deactivate');
         if(status){
             status.each(function(element) {
@@ -1391,7 +1511,8 @@
 
         switch (auth_type) {
             case 'api_key':
-                form_html += '<input type="text" class="ww_input mb-4 form-control" name="ww_template--key" id="ww_template--key" placeholder="Enter key" required>';
+                // form_html += '<input type="text" class="ww_input mb-4 form-control" name="ww_template--key" id="ww_template--key" placeholder="Enter key" required>';
+                // form_html += display_input('ww_template--key', 'ww_template--key', 'Enter key');
                 form_html += '<input type="text" class="ww_input mb-4 form-control" name="ww_template--value" id="ww_template--value" placeholder="Enter value" required>';
                 form_html += `<select type="text" class="ww_input mb-4 form-control" name="ww_template--attach" id="ww_template--attach" required>
                     <option value=header>Add to header</option>
@@ -1506,14 +1627,15 @@
 
     });
 
-    $('#ww_filter--trigger').on('change', function (e) {
-        display_webhook_triggers('', e.target.value);     
+    $('.ww_filter--trigger').on('click', function (e) {
+        console.log('leiks')
+        display_webhook_triggers('', $(this).attr('ww-data-value'));     
         $('#ww_search--term').val('');
     }); 
 
 
-    $('#ww_filter--auth').on('change', function (e) {
-        display_auth_templates('', e.target.value);     
+    $('.ww_filter--auth').on('click', function (e) {
+        display_auth_templates('', $(this).attr('ww-data-value'));     
         $('#ww_search--auth').val('');
     });
 
@@ -1552,6 +1674,104 @@
         });
         
     });
+
+    $('.ant-select-selection-item').each(function () {
+        $(this).on('click', function (e) { 
+            const parentNode = $(e.target).parent().parent().parent().children('.ant-select').children('.ant-select-dropdown');
+            parentNode.toggleClass('ant-select-dropdown-hidden');
+        });
+    });
+    
+    $('.ant-select-item-option-content').on('click', function () { 
+        const parentNode = $(this).parent().parent().parent().parent().parent().parent().parent().parent();
+        const input = $(parentNode).children('.ant-select').children('.ant-select-selector').children('.ant-select-selection-search').children('.ant-select-selection-search-input');
+        const selectText = $(parentNode).children('.ant-select').children('.ant-select-selector').children('.ant-select-selection-item');
+
+            selectText.attr('ww-data-value', $(this).attr('ww-data-value'));
+            selectText.text($(this).text());
+            input.val($(this).attr('ww-data-value'));
+            console.log(input.val());
+            let auth_type = input.val();
+            selectText.css({'color': '#455560'})
+            $('.ant-select-dropdown').addClass('ant-select-dropdown-hidden');
+
+    });
+
+    $('#ww_change--auth .ant-select-item-option-content').on('click', function () { 
+        const parentNode = $(this).parent().parent().parent().parent().parent().parent().parent().parent();
+        const input = $(parentNode).children('.ant-select').children('.ant-select-selector').children('.ant-select-selection-search').children('.ant-select-selection-search-input');
+        const selectText = $(parentNode).children('.ant-select').children('.ant-select-selector').children('.ant-select-selection-item');
+
+            console.log($(this));
+            selectText.attr('ww-data-value', $(this).attr('ww-data-value'));
+            selectText.text($(this).text());
+            input.val($(this).attr('ww-data-value'));
+            let auth_type = input.val();
+            selectText.css({'color': '#455560'})
+            $('.ant-select-dropdown').addClass('ant-select-dropdown-hidden');
+
+            let form_html = '';
+
+
+        switch (auth_type) {
+            case 'api_key':
+                form_html += display_input('ww_template--key', 'ww_template--key', 'Key', 'Enter key');
+                form_html += display_input('ww_template--value', 'ww_template--value', 'Value', 'Enter value');
+                form_html += display_select('ww_template--attach', 'ww_template--attach', 'Select an option', false, 'choose');
+                
+            break;
+
+            case 'basic_auth':
+                form_html += display_input('ww_template--username', 'ww_template--username', 'Username', 'Enter username');
+                form_html += display_input('ww_template--password', 'ww_template--password', 'Password', 'Enter password');
+            break;
+
+            case 'bearer_token':
+                form_html += display_input('ww_template--token', 'ww_template--token', 'Token', 'Enter token');
+            break;
+
+            case 'digest_auth':
+                
+            break;
+        
+            default:
+            break;
+
+        }
+
+        $('.ww_append').html(form_html);
+
+    });
+    
+
+    $('.ww_append').on('click', function (e) { 
+           
+            
+            const form_parentnode = $(e.target).parent().parent().parent().parent().parent().parent().parent().parent();
+           const dropdown_parentnode = $(e.target).parent().parent().parent();
+           const dropdown = dropdown_parentnode.children('.ant-select').children('.ant-select-dropdown');
+           const input = $(form_parentnode).children('.ant-select').children('.ant-select-selector').children('.ant-select-selection-search').children('.ant-select-selection-search-input');
+           const selectText = $(form_parentnode).children('.ant-select').children('.ant-select-selector').children('.ant-select-selection-item');
+           if($(e.target).hasClass('ant-select-item-option-content')){
+                $(e.target).parent().parent().parent().parent().parent().parent().toggleClass('ant-select-dropdown-hidden');  
+            }
+
+            else if($(e.target).hasClass('ant-select-selection-item')){
+                dropdown.toggleClass('ant-select-dropdown-hidden');
+            }
+         
+
+            selectText.attr('ww-data-value', $(e.target).attr('ww-data-value'));
+            selectText.text($(e.target).text());
+            input.val($(e.target).attr('ww-data-value'));
+            let auth_type = input.val();
+            selectText.css({'color': '#455560'})
+
+            let form_html = '';
+
+    });
+    
+
     
 
 })(jQuery);

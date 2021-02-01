@@ -4924,7 +4924,7 @@
             url : ironikus.ajax_url,
             type : 'post',
             data : {
-                action : 'ironikus_save_webhook_trigger_settings',
+                action : 'ww_save_webhook_trigger_settings',
                 webhook_id : $webhook,
                 webhook_group : $webhook_group,
                 trigger_settings : $datastring,
@@ -5861,7 +5861,7 @@
                 url : ironikus.ajax_url,
                 type : 'post',
                 data : {
-                    action : 'ironikus_add_authentication_template',
+                    action : 'ww_create_auth_template',
                     auth_template : $auth_template,
                     auth_type : $auth_type,
                     ww_nonce: ironikus.ajax_nonce
@@ -5907,7 +5907,7 @@
                 url : ironikus.ajax_url,
                 type : 'post',
                 data : {
-                    action : 'ironikus_load_authentication_template_data',
+                    action : 'ww_load_authentication_template_data',
                     auth_template_id : $auth_template_id,
                     ww_nonce: ironikus.ajax_nonce
                 },
@@ -6000,7 +6000,7 @@
                 url : ironikus.ajax_url,
                 type : 'post',
                 data : {
-                    action : 'ironikus_delete_authentication_template',
+                    action : 'ww_delete_auth_template',
                     data_auth_id : $data_auth_id,
                     ww_nonce: ironikus.ajax_nonce
                 },

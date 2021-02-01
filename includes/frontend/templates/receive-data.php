@@ -7,7 +7,7 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 
 
 ?>
-<div class="d-flex flex-column">
+<div class="d-flex flex-column ww_main">
 
 	<div class="d-flex justify-content-between">
 		<div class="ww_receivedata--text">
@@ -27,45 +27,76 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 
 	<div class="alert ww_alert"></div>
 
-	<form class=" d-flex align-items-center">
+	<form class=" d-flex align-items-center ww_receivedata--form">
 		
-		<div class="form-group mb-0 mr-4">
-
-			
-			<input type="text" class="ww_input mb-4 mt-4 form-control" id="ww_webook--action" placeholder=<?php echo "'".wordpress_webhooks()->helpers->translate( 'Enter webhook name', 'ww-page-triggers' )."'"; ?> required>
-			
-			
+	<div class="ant-row ant-form-item">
+		<div class="ant-col ant-form-item-label">
+			<label for="ww_webook--action" class="ant-form-item-required" title="Webhook Name">Webhook Name</label>
 		</div>
+		<div class="ant-col ant-form-item-control">
+			<div class="ant-form-item-control-input">
+				<div class="ant-form-item-control-input-content">
+					<span class="ant-input-affix-wrapper">
+						<input type="text" id="ww_webook--action" class="ant-input" placeholder="<?php echo "'".wordpress_webhooks()->helpers->translate( 'Enter webhook name', 'ww-page-triggers' )."'"; ?>">
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
 		
-		<button type="submit" id="ww_create--action" class="btn btn-primary ">Create Webhook</button>
+		<div class="ant-row ant-form-item" style="display: flex; align-self: flex-end; margin-bottom: 30px; margin-left: 20px;">
+				<div class="ant-col ant-form-item-control">
+					<div class="ant-form-item-control-input">
+						<div class="ant-form-item-control-input-content">
+							<button type="submit" id="ww_create--action" class="ant-btn ant-btn-primary ant-btn-block" ant-click-animating-without-extra-node="false">
+								<span class="ant-btn-loading-icon">
+									<span role="img" aria-label="loading" class="anticon anticon-loading anticon-spin">
+										<svg viewBox="0 0 1024 1024" focusable="false" data-icon="loading" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+											<path d="M988 548c-19.9 0-36-16.1-36-36 0-59.4-11.6-117-34.6-171.3a440.45 440.45 0 00-94.3-139.9 437.71 437.71 0 00-139.9-94.3C629 83.6 571.4 72 512 72c-19.9 0-36-16.1-36-36s16.1-36 36-36c69.1 0 136.2 13.5 199.3 40.3C772.3 66 827 103 874 150c47 47 83.9 101.8 109.7 162.7 26.7 63.1 40.2 130.2 40.2 199.3.1 19.9-16 36-35.9 36z"></path>
+										</svg>
+									</span>
+								</span>
+								<span>Create webhook</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
 	</form>
 
 
 
-<form action="" class="ww_search--form d-flex">
-	<div class="d-flex align-items-center">
-		<input type="text" class="ww_input--sm mb-4 mt-4 form-control" id="ww_search--term" placeholder=<?php echo "'".wordpress_webhooks()->helpers->translate( 'Search webhooks...', 'ww-page-triggers' )."'"; ?> required>
-		<svg class="ww_send--icon" xmlns="http://www.w3.org/2000/svg" width="10.102" height="10.102" viewBox="0 0 10.102 10.102">
-			<path id="Icon_open-magnifying-glass" data-name="Icon open-magnifying-glass" d="M4.38-.032a4.38,4.38,0,1,0,0,8.76,4.329,4.329,0,0,0,2.077-.513,1.251,1.251,0,0,0,.163.163L7.871,9.628a1.276,1.276,0,1,0,1.8-1.8L8.422,6.575a1.251,1.251,0,0,0-.2-.163,4.321,4.321,0,0,0,.551-2.077,4.385,4.385,0,0,0-4.38-4.38Zm0,1.251A3.114,3.114,0,0,1,7.508,4.347,3.138,3.138,0,0,1,6.682,6.5l-.038.038a1.251,1.251,0,0,0-.163.163,3.131,3.131,0,0,1-2.115.788,3.128,3.128,0,0,1,0-6.257Z" transform="translate(0 0.045)" fill="#395ff5"/>
-		</svg>
-
+<form action="" class="ww_search--form d-flex mt-4">
+<div class="ant-row ant-form-item" style="width: 15rem;">
+		<div class="ant-col ant-form-item-control">
+			<div class="ant-form-item-control-input">
+				<div class="ant-form-item-control-input-content">
+					<span class="ant-input-affix-wrapper align-items-center" style="height: 2.5rem;">
+					<span class="ant-input-prefix"><span role="img" aria-label="search" class="anticon anticon-search mr-0"><svg viewBox="64 64 896 896" focusable="false" data-icon="search" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path></svg></span></span>
+						<input type="text" id="ww_search--term" class="ant-input" placeholder="<?php echo wordpress_webhooks()->helpers->translate( 'Search Webhooks', 'ww-page-triggers' ) ?>">
+					</span>
+				</div>
+			</div>
+		</div>
 	</div>
 	
 </form>
 
 
+<div class="table-responsive">
+	<table class="ww_receive--table table">
+	<thead class="thead-dark">
+		<tr>
+			<th style="width:10%" scope="col">Webhook Name</th>
+			<th style="width:40%" scope="col">Webhook Url</th>
+			<th style="width:30%" scope="col">Api Key</th>
+			<th style="width:20%" scope="col">Actions</th>
+		</tr>
+	</thead>
+	<tbody class="tbody"></tbody>
+	</table>
+</div>
 
-<table class="ww_receive--table table">
-  <thead class="thead-dark">
-	<tr>
-		<th style="width:10%" scope="col">Webhook Name</th>
-		<th style="width:40%" scope="col">Webhook Url</th>
-		<th style="width:30%" scope="col">Api Key</th>
-		<th style="width:20%" scope="col">Actions</th>
-	</tr>
-  </thead>
-  <tbody class="tbody"></tbody>
-</table>
 
 <div class="ww_modal">
 	<div class="ww_modal--overlay"></div>

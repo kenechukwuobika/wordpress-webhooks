@@ -10,7 +10,7 @@ $data_mapping_templates = wordpress_webhooks()->data_mapping->get_data_mapping()
 $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
 
 ?>
-<div class="d-flex flex-column">
+<div class="d-flex flex-column ww_main">
 
 	<div class="d-flex justify-content-between">
 		<div class="ww_senddata--text">
@@ -29,112 +29,243 @@ $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
 	</div>
 
 
-	<form class="mb-4">
-	<div class="alert ww_alert"></div>
+	<form class="mb-4 ant-form ant-form-vertical">
+	<!-- <div class="alert ww_alert"></div> -->
+
+	<div class="ww_alert">
+		<div data-show="true" class="ant-alert" role="alert">
+			
+			<div class="ant-alert-content" >
+				<div class="ant-alert-message" ></div>
+				<div class="ant-alert-description" ></div>
+			</div>
+		</div>
+	</div>
 
 		<div class="form-group">
 
 			<div class="dropdown">
-				<button class="ww_input dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					<?php echo wordpress_webhooks()->helpers->translate( 'Select a trigger', 'ww-page-triggers' ); ?>
-				</button>
+				<div class="ant-row ant-form-item" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<div class="ant-col ant-form-item-label">
+						<label for="webhook-url" class="ant-form-item-required" title="Webhook URL">Webhook Triggers</label>
+					</div>
+					<div class="ant-col ant-form-item-control">
+						<div class="ant-form-item-control-input">
+							<div class="ant-form-item-control-input-content">
+								<button type="text" id="" class="ant-input ww_input--select">Select trigger</button>
+							</div>
+
+							<span class="ant-select-arrow" unselectable="on" aria-hidden="true" style="user-select: none;">
+								<span role="img" aria-label="down" class="anticon anticon-down ant-select-suffix">
+									<svg viewBox="64 64 896 896" focusable="false" data-icon="down" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+										<path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+									</svg>
+								</span>
+							</span>
+						</div>
+					</div>
+				</div>
+			
 				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					<?php foreach( $triggers as $identkey => $trigger ) {
+
+						$trigger_name = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
+						$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
+						$trigger_callback = !empty( $trigger['callback'] ) ? $trigger['callback'] : '';
+
+						$settings = array();
+					if( ! empty( $trigger['settings'] ) ){
+
+						if( isset( $trigger['settings']['data'] ) ){
+							$settings = (array) $trigger['settings']['data'];
+						}
+
+						if( isset( $trigger['settings']['load_default_settings'] ) && $trigger['settings']['load_default_settings'] === true ){
+								$settings = array_merge( wordpress_webhooks()->settings->get_default_trigger_settings(), $settings );
+						}
+					}
+
+					//Map dynamic settings
+					$required_settings = wordpress_webhooks()->settings->get_required_trigger_settings();
+					foreach( $required_settings as $settings_ident => $settings_data ){
+
+						if( $settings_ident == 'ww_trigger_authentication' ){
+							if( ! empty( $authentication_templates ) ){
+								$required_settings[ $settings_ident ]['choices'] = array_replace( $required_settings[ $settings_ident ]['choices'], wordpress_webhooks()->auth->flatten_authentication_data( $authentication_templates ) );
+							} else {
+								unset( $required_settings[ $settings_ident ] ); //if empty
+							}
+						}
+
+					}
+
+					$settings = array_merge( $required_settings, $settings );
+
+					?>
+
+						<div id="webhook" data-ww-callback=<?php echo $trigger_callback; ?> class="ww_input--item dropdown-item" >
+							<span><?php echo $webhook_name?></span>
+							<small id="webhook" class="form-text text-muted"><?php echo $trigger_name?></small>
+						</div>
+
+					<?php }?>
+				
+				</div>	
+			</div>
+
+			
+			<div class="ant-row ant-form-item">
+				<div class="ant-col ant-form-item-label">
+					<label for="webhook-name" class="ant-form-item-required" title="Webhook Name">Webhook Name</label>
+				</div>
+				<div class="ant-col ant-form-item-control">
+					<div class="ant-form-item-control-input">
+						<div class="ant-form-item-control-input-content">
+							<span class="ant-input-affix-wrapper">
+								<input type="text" id="webhook-name" class="ant-input" placeholder="<?php echo "'".wordpress_webhooks()->helpers->translate( 'Enter webhook name', 'ww-page-triggers' )."'"; ?>">
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="ant-row ant-form-item">
+				<div class="ant-col ant-form-item-label">
+					<label for="webhook-url" class="ant-form-item-required" title="Webhook URL">Webhook URL</label>
+				</div>
+				<div class="ant-col ant-form-item-control">
+					<div class="ant-form-item-control-input">
+						<div class="ant-form-item-control-input-content">
+							<span class="ant-input-affix-wrapper">
+								<input type="text" id="webhook-url" class="ant-input" placeholder="<?php echo "'".wordpress_webhooks()->helpers->translate( 'Enter webhook url', 'ww-page-triggers' )."'"; ?>">
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="ant-row ant-form-item">
+				<div class="ant-col ant-form-item-control">
+					<div class="ant-form-item-control-input">
+						<div class="ant-form-item-control-input-content">
+							<button type="submit" id="ww_submit" class="ant-btn ant-btn-primary ant-btn-block" ant-click-animating-without-extra-node="false">
+								<span class="ant-btn-loading-icon">
+									<span role="img" aria-label="loading" class="anticon anticon-loading anticon-spin">
+										<svg viewBox="0 0 1024 1024" focusable="false" data-icon="loading" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+											<path d="M988 548c-19.9 0-36-16.1-36-36 0-59.4-11.6-117-34.6-171.3a440.45 440.45 0 00-94.3-139.9 437.71 437.71 0 00-139.9-94.3C629 83.6 571.4 72 512 72c-19.9 0-36-16.1-36-36s16.1-36 36-36c69.1 0 136.2 13.5 199.3 40.3C772.3 66 827 103 874 150c47 47 83.9 101.8 109.7 162.7 26.7 63.1 40.2 130.2 40.2 199.3.1 19.9-16 36-35.9 36z"></path>
+										</svg>
+									</span>
+								</span>
+								<span>Add trigger</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		
+	</form>
+
+	
+
+
+<form action="" class="ww_search--form d-flex align-items-center">
+	<div class="ant-row ant-form-item" style="width: 15rem;">
+		<div class="ant-col ant-form-item-control">
+			<div class="ant-form-item-control-input">
+				<div class="ant-form-item-control-input-content">
+					<span class="ant-input-affix-wrapper align-items-center" style="height: 2.5rem;">
+					<span class="ant-input-prefix"><span role="img" aria-label="search" class="anticon anticon-search mr-0"><svg viewBox="64 64 896 896" focusable="false" data-icon="search" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path></svg></span></span>
+						<input type="text" id="ww_search--term" class="ant-input" placeholder="<?php echo "'".wordpress_webhooks()->helpers->translate( 'Search Webhooks', 'ww-page-triggers' )."'"; ?>">
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="ant-row ant-form-item" style="width: 15rem;">
+
+        <div class="ant-select ant-select-single ant-select-show-arrow ant-select-open" style="height:32px">
+            <div class="ant-select-selector">
+            
+            <span class="ant-select-selection-search">
+                <input autocomplete="off" type="search" class="ant-select-selection-search-input" role="combobox" aria-haspopup="listbox" aria-owns="rc_select_7_list" aria-autocomplete="list" aria-controls="rc_select_7_list" aria-activedescendant="rc_select_7_list_0" readonly="" unselectable="on" value="" id="rc_select_7" style="opacity: 0;" aria-expanded="true">
+            </span>
+            <span class="ant-select-selection-item" title="Select a trigger" >Select a trigger</span>
+        </div>
+        <span class="ant-select-arrow" unselectable="on" aria-hidden="true" style="user-select: none;">
+            <span role="img" aria-label="down" class="anticon anticon-down ant-select-suffix">
+                <svg viewBox="64 64 896 896" focusable="false" data-icon="down" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+                    <path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+                </svg>
+            </span>
+        </span>
+
+        <div class="ant-select-dropdown ant-select-dropdown-placement-bottomLeft ant-select-dropdown-hidden" >
+        <div role="listbox" id="rc_select_7_list" style="height: 0px; width: 0px; overflow: hidden;">
+            <div aria-label="All" role="option" id="rc_select_7_list_0" aria-selected="true">Select a trigger</div>
+                <div aria-label="Cloths" role="option" id="rc_select_7_list_1" aria-selected="false">Select a trigger</div>
+            </div>
+            <div class="rc-virtual-list" style="position: relative;">
+                <div class="rc-virtual-list-holder" style="max-height: 256px; overflow-y: hidden; overflow-anchor: none;"><div>
+				<div class="rc-virtual-list-holder-inner" style="display: flex; flex-direction: column;">
+
+				<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-active ant-select-item-option-selected" title="All">
+					<div class="ant-select-item-option-content ww_filter--trigger">Select a trigger</div>
+					<span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
+				</div>
+			
 				<?php foreach( $triggers as $identkey => $trigger ) {
 
 					$trigger_name = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
 					$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
 					$trigger_callback = !empty( $trigger['callback'] ) ? $trigger['callback'] : '';
-
-					$settings = array();
-				if( ! empty( $trigger['settings'] ) ){
-
-					if( isset( $trigger['settings']['data'] ) ){
-						$settings = (array) $trigger['settings']['data'];
-					}
-
-					if( isset( $trigger['settings']['load_default_settings'] ) && $trigger['settings']['load_default_settings'] === true ){
-							$settings = array_merge( wordpress_webhooks()->settings->get_default_trigger_settings(), $settings );
-					}
-				}
-
-				//Map dynamic settings
-				$required_settings = wordpress_webhooks()->settings->get_required_trigger_settings();
-				foreach( $required_settings as $settings_ident => $settings_data ){
-
-					if( $settings_ident == 'ww_trigger_authentication' ){
-						if( ! empty( $authentication_templates ) ){
-							$required_settings[ $settings_ident ]['choices'] = array_replace( $required_settings[ $settings_ident ]['choices'], wordpress_webhooks()->auth->flatten_authentication_data( $authentication_templates ) );
-						} else {
-							unset( $required_settings[ $settings_ident ] ); //if empty
-						}
-					}
-
-				}
-
-				$settings = array_merge( $required_settings, $settings );
-
 				?>
-
-					<div id="webhook" data-ww-callback=<?php echo $trigger_callback; ?> class="ww_input--item dropdown-item" >
-						<span><?php echo $webhook_name?></span>
-						<small id="webhook" class="form-text text-muted"><?php echo $trigger_name?></small>
+					<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-active ant-select-item-option-selected" title="All">
+                        <div class="ant-select-item-option-content ww_filter--trigger" ww-data-value="<?php echo $webhook_name; ?>"><?php echo $webhook_name; ?></div>
+                        <span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
 					</div>
-
-				<?php }?>
-				
-				</div>	
+					
+				<?php } ?>
+                    
+            	</div>
 			</div>
+            <div class="rc-virtual-list-scrollbar" style="width: 8px; top: 0px; bottom: 0px; right: 0px; position: absolute; display: none;">
+                <div class="rc-virtual-list-scrollbar-thumb" style="width: 100%; height: 128px; top: 0px; left: 0px; position: absolute; background: rgba(0, 0, 0, 0.5); border-radius: 99px; cursor: pointer; user-select: none;"></div>
+            </div>
+        </div>
+    </div>
 
-			<input type="text" class="ww_input mb-4 mt-4 form-control" id="webhook-name" placeholder=<?php echo "'".wordpress_webhooks()->helpers->translate( 'Enter webhook name', 'ww-page-triggers' )."'"; ?> required>
-			
-			<input type="text" class="ww_input mb-4 form-control" id="webhook-url" placeholder=<?php echo "'".wordpress_webhooks()->helpers->translate( 'Enter webhook url', 'ww-page-triggers' )."'"; ?> required>
-
-			
-		</div>
-		<!-- <div class="form-group">
-			<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-		</div> -->
-		
-		<button id="ww_submit" type="submit" class="btn btn-primary">Add trigger</button>
-	</form>
-
-
-
-<form action="" class="ww_search--form d-flex">
-	<div class="d-flex align-items-center">
-		<input type="text" class="ww_input--sm mb-4 mt-4 form-control" id="ww_search--term" placeholder=<?php echo "'".wordpress_webhooks()->helpers->translate( 'Search webhooks...', 'ww-page-triggers' )."'"; ?> required>
-		<svg class="ww_send--icon" xmlns="http://www.w3.org/2000/svg" width="10.102" height="10.102" viewBox="0 0 10.102 10.102">
-			<path id="Icon_open-magnifying-glass" data-name="Icon open-magnifying-glass" d="M4.38-.032a4.38,4.38,0,1,0,0,8.76,4.329,4.329,0,0,0,2.077-.513,1.251,1.251,0,0,0,.163.163L7.871,9.628a1.276,1.276,0,1,0,1.8-1.8L8.422,6.575a1.251,1.251,0,0,0-.2-.163,4.321,4.321,0,0,0,.551-2.077,4.385,4.385,0,0,0-4.38-4.38Zm0,1.251A3.114,3.114,0,0,1,7.508,4.347,3.138,3.138,0,0,1,6.682,6.5l-.038.038a1.251,1.251,0,0,0-.163.163,3.131,3.131,0,0,1-2.115.788,3.128,3.128,0,0,1,0-6.257Z" transform="translate(0 0.045)" fill="#395ff5"/>
-		</svg>
-
+        
+				
+	</div>
+	</div>
 	</div>
 	
-	<select type="text" class="ww_input--sm mb-4 mt-4 form-control" id="ww_filter--trigger" placeholder=<?php echo "'".wordpress_webhooks()->helpers->translate( 'Filter by trigger', 'ww-page-triggers' )."'"; ?>>
-		<option value="">Select a trigger</option>
-		<?php foreach( $triggers as $identkey => $trigger ) {
 
-		$trigger_name = !empty( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'];
-		$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
-		$trigger_callback = !empty( $trigger['callback'] ) ? $trigger['callback'] : '';
-		?>
-		<option value="<?php echo $webhook_name; ?>"><?php echo $webhook_name; ?></option>
-		<?php } ?>
+	
+	
 	<input id="ww-current-url" type="hidden" value="<?php echo $current_url_full; ?>" />
 </form>
 
 
 
-<table class="table ww_send--table">
-  <thead class="thead-dark">
-	<tr>
-		<th scope="col">Webhook Name</th>
-		<th scope="col">Webhook url</th>
-		<th scope="col">Trigger</th>
-		<th scope="col">Actions</th>
-	</tr>
-  </thead>
-  <tbody class="tbody"></tbody>
-</table>
+<div class="table-responsive">
+	<table class="table ww_send--table">
+	<thead class="thead-dark">
+		<tr>
+			<th scope="col">Webhook Name</th>
+			<th scope="col">Webhook url</th>
+			<th scope="col">Trigger</th>
+			<th scope="col">Actions</th>
+		</tr>
+	</thead>
+	<tbody class="tbody"></tbody>
+	</table>
+
+	<div class="ww_append"></div>
+</div>
 
 <!-- Button trigger modal -->
 <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">

@@ -76,15 +76,15 @@ if( is_array( $menu_endpoints ) ){
 			$title = apply_filters( 'ww/admin/settings/element/filter_title', $title, $hook_name );
 
 			if( $active_val == $hook_name ){
-				$heading .= '<li class="nav-item active"><a class="nav-link ironikus-setting-single-tab active ' . $hook_name . '">' . $title . '</a></li>';
+				$heading .= '<li class="nav-item ww_nav--active ww_nav-item active"><a class="nav-link ironikus-setting-single-tab active ' . $hook_name . '">' . $title . '</a></li>';
 			} else {
-				$heading .= '<li class="nav-item"><a class="nav-link ironikus-setting-single-tab ' . $hook_name . '" href="?page=' . $this->page_name . '&tab=' . $hook_name . '">' . $title . '</a></li>';
+				$heading .= '<li class="nav-item ww_nav-item"><a class="nav-link ironikus-setting-single-tab ' . $hook_name . '" href="?page=' . $this->page_name . '&tab=' . $hook_name . '">' . $title . '</a></li>';
 			}
 		}
 
 	}
 } else {
-	$heading = '<li class="nav-item active"><a class="nav-link ironikus-setting-single-tab" href="?page=' . $this->page_name . '">' . wordpress_webhooks()->helpers->translate( $subs_origin['home'], 'admin-backend' ) . '</a></li>';
+	$heading = '<li class="nav-item ww_nav-item active"><a class="nav-link ironikus-setting-single-tab" href="?page=' . $this->page_name . '">' . wordpress_webhooks()->helpers->translate( $subs_origin['home'], 'admin-backend' ) . '</a></li>';
 }
 
 ?>
@@ -97,23 +97,22 @@ if( is_array( $menu_endpoints ) ){
     }
 </style>
 
-<div class="ww-container">
-    <h1 class="ww__primary--heading"><?php echo $plugin_name; ?></h1>
+<div id="ww__container">
+    
 
     <nav class="navbar ww__navbar navbar-expand-lg navbar-dark">
         <button class="navbar-toggler justify-content-end" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div style="padding: 1rem 0;" class="collapse navbar-collapse justify-content-start" id="navbarNav">
+        <div class="collapse navbar-collapse justify-content-start" id="navbarNav">
             <ul class="navbar-nav">
                 <?php echo $heading; ?>
             </ul>
         </div>
     </nav>
 
-	<section id="ww__container">
         <div class="ww__content">
             <?php echo $current_content; ?>
         </div>
-    </section>
+
 </div>

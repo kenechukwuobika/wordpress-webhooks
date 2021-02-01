@@ -156,13 +156,16 @@ class WordPress_Webhooks_Run{
 		if( wordpress_webhooks()->helpers->is_page( $this->page_name ) && is_admin() ) {
 			$version = WW_DEV_MODE === 'development' ? time() : WW_VERSION;
 
-			wp_register_style('ww_google_font', 'https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Raleway:300,400,500,600,700|Crete+Round:400i"', [], $ver);
+			wp_register_style('ww_google_font', '<link rel="preconnect" href="https://fonts.gstatic.com">
+			<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">', []);
 			wp_register_style('ww_bootstrap', WW_PLUGIN_URL.'includes/frontend/assets/css/bootstrap.css', array(), $version);
+			// wp_register_style( 'ww_emilus', WW_PLUGIN_URL . 'includes/frontend/assets/css/emilus.css', array(), $version, 'all' );
 			wp_register_style( 'ww_styles', WW_PLUGIN_URL . 'includes/frontend/assets/css/styles.css', array(), $version, 'all' );
 			
 			wp_enqueue_style('ww_google_font');
 			wp_enqueue_style('ww_bootstrap');
 			wp_enqueue_style('ww_styles');
+			// wp_enqueue_style('ww_emilus');
 			
 			wp_register_script( 'ww_popper', WW_PLUGIN_URL . 'includes/frontend/assets/js/popper.js', array( 'jquery' ), $version, true );
 			wp_register_script( 'ww_rateit', WW_PLUGIN_URL . 'includes/frontend/assets/js/rateit/jquery.rateit.min.js', array( 'jquery' ), '1.0.0', true );
@@ -348,6 +351,9 @@ class WordPress_Webhooks_Run{
 				$response['webhook_url'] = wordpress_webhooks()->webhook->built_url( $webhook_name, $webhooks_updated[ $webhook_name ]['api_key'] );
 				$response['api_key'] = $webhooks_updated[ $webhook_name ]['api_key'];
 			}
+		}
+		else{
+			$response['msg'] = wordpress_webhooks()->helpers->translate( 'This key already exists. Please use a different one.', 'ww-page-actions' );
 		}
 
         echo json_encode( $response );
