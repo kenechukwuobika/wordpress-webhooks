@@ -80,21 +80,103 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 		</div>
 	</div>
 	
-</form>
+</form>	
 
+<div class="ant-row" style="margin-left: -8px; margin-right: -8px;">
+	<div class="ant-col ant-col-xs-24 ant-col-sm-24 ant-col-md-24 ant-col-lg-24" style="padding-left: 8px; padding-right: 8px;">
+		<div class="ant-card ant-card-bordered table-responsive">
+			<div class="ant-card-head">
+				<div class="ant-card-head-wrapper">
+					<div class="ant-card-head-title">Available Webhook Triggers</div>
+				</div>
+			</div>
+			<div class="ant-card-body">
+				<div class="ant-table-wrapper">
+					<div class="ant-spin-nested-loading">
+						<div class="ant-spin-container">
+							<div class="ant-table">
+								<div class="ant-table-container">
+									<div class="ant-table-content">
+										<table style="table-layout: auto;" class="ww_receive--table">
+											<colgroup></colgroup>
+											<thead class="ant-table-thead">
+												<tr>
+													<th class="ant-table-cell ant-table-column-has-sorters">
+														<div class="ant-table-column-sorters-with-tooltip">
+															<div class="ant-table-column-sorters">
+																<span>Webhook Name</span>
+																<span class="ant-table-column-sorter ant-table-column-sorter-full">
+																	<span class="ant-table-column-sorter-inner">
+																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
+																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
+																		</span>
+																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
+																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
+																		</span>
+																	</span>
+																</span>
+															</div>
+														</div>
+													</th>
+													
+													<th class="ant-table-cell ant-table-column-has-sorters">
+														<div class="ant-table-column-sorters-with-tooltip">
+															<div class="ant-table-column-sorters">
+																<span>Webhook Url</span>
+																<span class="ant-table-column-sorter ant-table-column-sorter-full">
+																	<span class="ant-table-column-sorter-inner">
+																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
+																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
+																		</span>
+																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
+																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
+																		</span>
+																	</span>
+																</span>
+															</div>
+														</div>
+													</th>
 
-<div class="table-responsive">
-	<table class="ww_receive--table table">
-	<thead class="thead-dark">
-		<tr>
-			<th style="width:10%" scope="col">Webhook Name</th>
-			<th style="width:40%" scope="col">Webhook Url</th>
-			<th style="width:30%" scope="col">Api Key</th>
-			<th style="width:20%" scope="col">Actions</th>
-		</tr>
-	</thead>
-	<tbody class="tbody"></tbody>
-	</table>
+													<th class="ant-table-cell ant-table-column-has-sorters">
+														<div class="ant-table-column-sorters-with-tooltip">
+															<div class="ant-table-column-sorters">
+																<span>Trigger</span>
+																<span class="ant-table-column-sorter ant-table-column-sorter-full">
+																	<span class="ant-table-column-sorter-inner">
+																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
+																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
+																		</span>
+																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
+																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
+																		</span>
+																	</span>
+																</span>
+															</div>
+														</div>
+													</th>
+
+													<th class="ant-table-cell">
+														<span>Action</span>
+													</th>
+
+												</tr>
+											</thead>
+											<tbody class="ant-table-tbody">
+												
+											</tbody>
+										</table>
+										<div class="ww_append"></div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 </div>
 
 

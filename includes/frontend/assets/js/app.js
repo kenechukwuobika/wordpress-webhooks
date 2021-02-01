@@ -303,12 +303,9 @@ const display_select = (id='', name='', title='', required=false, label='') => {
 
     $( "#ww_create--auth" ).on( "click", function(e) {
         e.preventDefault();
-        console.log($('#ww_auth--form').serialize());
-        // return
         let error = [];
         let values = [];
-        // console.log($('.ww_append').children());
-        $('.ww_append').children().each(function (el) {
+        $('.ww_more--fields').children().each(function (el) {
             values.push({'name': $(this['name']).selector, 'value': $(this).val()})
         });
 
@@ -1087,7 +1084,7 @@ const display_select = (id='', name='', title='', required=false, label='') => {
     
     }
     
-    $( ".tbody" ).on( "click", function(e) {
+    $( ".ant-table-tbody" ).on( "click", function(e) {
         e.preventDefault();
         let element = $(e.target);
         if(element.attr('ww-data-callback')){
@@ -1134,7 +1131,7 @@ const display_select = (id='', name='', title='', required=false, label='') => {
             });
 
             if(values.length === 0){
-                $( '.ww_send--table > tbody' ).html( `` );
+                $( '.ant-table-tbody' ).html( `` );
                 $( '.ww_append' ).html( `<div class="alert alert-info"> No trigger was found under '${filter}'</div>` );
                 return;
             }
@@ -1150,7 +1147,7 @@ const display_select = (id='', name='', title='', required=false, label='') => {
             values = [...arr]
 
             if(values.length === 0){
-                $( '.ww_send--table > tbody' ).html( `` );
+                $( '.ant-table-tbody' ).html( `` );
                 $( '.ww_append' ).html( `<div class="alert alert-info">"${term}" does not match any trigger</div>` );
                 return;
             }
@@ -1178,90 +1175,87 @@ const display_select = (id='', name='', title='', required=false, label='') => {
                 status = 'inactive';
                 status_name = 'Activate';
             }
+
+            webhook_html += `
+                <tr id="ww_trigger--${webhook_name}" class="ant-table-row ant-table-row-level-0">
+                    <td class="ant-table-cell"><span>${webhook_name}</span></td>
+                    <td class="ant-table-cell"><span>${webhook_url}</span></td>
+                    <td class="ant-table-cell"><span>${webhook_group}</span></td>
+                    
+                    <td class="ant-table-cell">
+                        <div class="d-flex">
+                            <div class="ww_action--items ww_action--demo">
+                                <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="31.5" height="27" viewBox="0 0 31.5 27">
+                                    <path d="M3.015,31.5,34.5,18,3.015,4.5,3,15l22.5,3L3,21Z" transform="translate(-3 -4.5)" fill="#5643fa" />
+                                </svg>
+                
+                                <a href="#" 
+                                ww-data-trigger=${webhook_name} 
+                                ww-data-callback=${webhook_callback} 
+                                ww-data-webhook-group= ${webhook_group}
+                                class="ww_action--links ww_trigger--demo">Demo</a>
+                            </div>
+                        
+                            <div class="ww_action--items ww_action--settings">
+                                <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="12.26" height="12.263" viewBox="0 0 12.26 12.263">
+                                    <path style="fill: currentColor" id="Icon_ionic-ios-settings" data-name="Icon ionic-ios-settings" d="M15.748,10.63A1.578,1.578,0,0,1,16.76,9.158,6.253,6.253,0,0,0,16,7.335a1.6,1.6,0,0,1-.642.137,1.574,1.574,0,0,1-1.44-2.216A6.235,6.235,0,0,0,12.1,4.5a1.576,1.576,0,0,1-2.944,0,6.253,6.253,0,0,0-1.823.757A1.574,1.574,0,0,1,5.9,7.472a1.547,1.547,0,0,1-.642-.137A6.392,6.392,0,0,0,4.5,9.161a1.577,1.577,0,0,1,0,2.944,6.253,6.253,0,0,0,.757,1.823,1.575,1.575,0,0,1,2.078,2.078,6.29,6.29,0,0,0,1.823.757,1.573,1.573,0,0,1,2.937,0,6.253,6.253,0,0,0,1.823-.757A1.576,1.576,0,0,1,16,13.928a6.29,6.29,0,0,0,.757-1.823A1.585,1.585,0,0,1,15.748,10.63Zm-5.089,2.551a2.554,2.554,0,1,1,2.554-2.554A2.553,2.553,0,0,1,10.659,13.181Z" transform="translate(-4.5 -4.5)" fill="#395ff5"/>
+                                </svg>
             
-            
-            webhook_html += '<tr id= ww_trigger--' + webhook_name + '"><th scope="row">' + webhook_name + '</th>';
-            webhook_html += '<td>' + webhook_url + '</td>';
-            webhook_html += '<td>' + webhook_group + '</td>';
-            webhook_html += '<td class="d-flex mr-auto">';
-            
+                                <a href="#" 
+                                    class="ww_action--links ww_trigger--settings" 
+                                    data-toggle="modal" 
+                                    data-target="#exampleModalCenter" 
+                                    ww-webhook-name=${webhook_name} 
+                                    ww-trigger-setting=true
+                                    ww-webhook-group=${webhook_group} 
+                                >
+                                settings</a>
+                            </div>
 
-            webhook_html    += `<div class="ww_action--items ww_action--demo">
-            <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="31.5" height="27" viewBox="0 0 31.5 27">
-                <path d="M3.015,31.5,34.5,18,3.015,4.5,3,15l22.5,3L3,21Z" transform="translate(-3 -4.5)" fill="#5643fa" />
-            </svg>
+                            <div class="ww_action--items ww_action--deactivate">
+                                <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11.438 11.438">
+                                    <path style="fill: currentColor" id="Icon_awesome-stop-circle" data-name="Icon awesome-stop-circle" d="M6.281.563A5.719,5.719,0,1,0,12,6.281,5.718,5.718,0,0,0,6.281.563ZM8.495,8.126a.37.37,0,0,1-.369.369H4.436a.37.37,0,0,1-.369-.369V4.436a.37.37,0,0,1,.369-.369h3.69a.37.37,0,0,1,.369.369Z" transform="translate(-0.563 -0.563)" fill="#395ff5"/>
+                                </svg>
+                
+                                <svg class="ww_action--icon__abs" xmlns="http://www.w3.org/2000/svg" width="7.464" height="9.5" viewBox="0 0 7.464 9.5">
+                                    <path style="fill: currentColor" d="M12,7.5V17l7.464-4.75Z" transform="translate(-12 -7.5)" fill="#395ff5"/>
+                                </svg>
+                                <a 
+                                    href="#" 
+                                    class="ww_action--links ww_trigger--deactivate" 
+                                    ww-data-webhook-status=${status} 
+                                    ww-data-trigger="${webhook_name}" 
+                                >
+                                    ${status_name}
+                                </a>
+                            </div>
+                        
+                        
+                    
+                            <div class="ww_action--items ww_action--delete">
+                                <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="7.98" height="10.26" viewBox="0 0 7.98 10.26">
+                                    <path style="fill: currentColor" d="M8.07,13.62a1.143,1.143,0,0,0,1.14,1.14h4.56a1.143,1.143,0,0,0,1.14-1.14V6.78H8.07Zm7.41-8.55H13.485l-.57-.57h-2.85l-.57.57H7.5V6.21h7.98Z" transform="translate(-7.5 -4.5)" fill="#395ff5"/>
+                                </svg>
+                                <a 
+                                    href="#" 
+                                    class="ww_action--links ww_trigger--delete"
+                                    ww-data-delete-trigger="Are you sure you want to delete <b>${webhook_group}></b> trigger?"
+                                    ww-data-trigger="${webhook_name}" 
+                                >
+                                delete
+                                </a>
+                            </div>
+                        </div>
+                    </td>
 
-                <a href="#" 
-                ww-data-trigger=${webhook_name} 
-                ww-data-callback=${webhook_callback} 
-                ww-data-webhook-group= ${webhook_group}
-                class="ww_action--links ww_trigger--demo">Demo</a>
-            </div>`;
-            
-            webhook_html    += `<div class="ww_action--items ww_action--settings">
-            <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="12.26" height="12.263" viewBox="0 0 12.26 12.263">
-                <path style="fill: currentColor" id="Icon_ionic-ios-settings" data-name="Icon ionic-ios-settings" d="M15.748,10.63A1.578,1.578,0,0,1,16.76,9.158,6.253,6.253,0,0,0,16,7.335a1.6,1.6,0,0,1-.642.137,1.574,1.574,0,0,1-1.44-2.216A6.235,6.235,0,0,0,12.1,4.5a1.576,1.576,0,0,1-2.944,0,6.253,6.253,0,0,0-1.823.757A1.574,1.574,0,0,1,5.9,7.472a1.547,1.547,0,0,1-.642-.137A6.392,6.392,0,0,0,4.5,9.161a1.577,1.577,0,0,1,0,2.944,6.253,6.253,0,0,0,.757,1.823,1.575,1.575,0,0,1,2.078,2.078,6.29,6.29,0,0,0,1.823.757,1.573,1.573,0,0,1,2.937,0,6.253,6.253,0,0,0,1.823-.757A1.576,1.576,0,0,1,16,13.928a6.29,6.29,0,0,0,.757-1.823A1.585,1.585,0,0,1,15.748,10.63Zm-5.089,2.551a2.554,2.554,0,1,1,2.554-2.554A2.553,2.553,0,0,1,10.659,13.181Z" transform="translate(-4.5 -4.5)" fill="#395ff5"/>
-            </svg>
-
-                <a href="#" 
-                    class="ww_action--links ww_trigger--settings" 
-                    data-toggle="modal" 
-                    data-target="#exampleModalCenter" 
-                    ww-webhook-name=${webhook_name} 
-                    ww-trigger-setting=true
-                    ww-webhook-group=${webhook_group} 
-                >
-                settings</a>
-            </div>`;
-
-            webhook_html   +=      `<div class="ww_action--items ww_action--deactivate">
-                <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11.438 11.438">
-                    <path style="fill: currentColor" id="Icon_awesome-stop-circle" data-name="Icon awesome-stop-circle" d="M6.281.563A5.719,5.719,0,1,0,12,6.281,5.718,5.718,0,0,0,6.281.563ZM8.495,8.126a.37.37,0,0,1-.369.369H4.436a.37.37,0,0,1-.369-.369V4.436a.37.37,0,0,1,.369-.369h3.69a.37.37,0,0,1,.369.369Z" transform="translate(-0.563 -0.563)" fill="#395ff5"/>
-                </svg>
-
-                <svg class="ww_action--icon__abs" xmlns="http://www.w3.org/2000/svg" width="7.464" height="9.5" viewBox="0 0 7.464 9.5">
-                    <path style="fill: currentColor" d="M12,7.5V17l7.464-4.75Z" transform="translate(-12 -7.5)" fill="#395ff5"/>
-                </svg>
-                <a 
-                    href="#" 
-                    class="ww_action--links ww_trigger--deactivate" 
-                    ww-data-webhook-status=${status} 
-                    ww-data-trigger="${webhook_name}" 
-                >
-                    ${status_name}
-                </a>
-            </div>`;
-    
-            webhook_html    +=  `<div class="ww_action--items ww_action--delete">
-            <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="7.98" height="10.26" viewBox="0 0 7.98 10.26">
-                <path style="fill: currentColor" d="M8.07,13.62a1.143,1.143,0,0,0,1.14,1.14h4.56a1.143,1.143,0,0,0,1.14-1.14V6.78H8.07Zm7.41-8.55H13.485l-.57-.57h-2.85l-.57.57H7.5V6.21h7.98Z" transform="translate(-7.5 -4.5)" fill="#395ff5"/>
-            </svg>
-            <a 
-                href="#" 
-                class="ww_action--links ww_trigger--delete"
-                ww-data-delete-trigger="Are you sure you want to delete <b>${webhook_group}></b> trigger?"
-                ww-data-trigger="${webhook_name}" 
-            >
-            delete
-            </a>`
-
-            webhook_html    += '</td>';
-
-
-            
-            //keiks read this
-            if( webhook['webhook_callback'] != '' ){
-                webhook_html += '<br><span class="ironikus-send-demo" ironikus-demo-data-callback="' + webhook['webhook_callback'] + '" ironikus-webhook="' + webhook['webhook'] + '" ironikus-group="' + webhook['webhook_group'] + '" >Send demo</span>';
-            }
-
-            webhook_html += '</div></td></tr>';
-
+                </tr>
+            `;
         });
 
         
             $( '.ww_loader--container' ).remove();
             $( '.ww_append' ).html('');
-            $( '.ww_send--table > tbody' ).html( webhook_html );
+            $( '.ant-table-tbody' ).html( webhook_html );
 
         let status    =   $('.ww_action--deactivate > .ww_trigger--deactivate');
         if(status){
@@ -1300,7 +1294,7 @@ const display_select = (id='', name='', title='', required=false, label='') => {
             values = [...arr]
 
             if(values.length === 0){
-                $( '.ww_send--table > tbody' ).html( `<div class="alert alert-info">"${term}" does not match any trigger</div>` );
+                $( '.ww_receive--table > .ant-table-tbody' ).html( `<div class="alert alert-info">"${term}" does not match any trigger</div>` );
         return;
             }
         }
@@ -1329,56 +1323,50 @@ const display_select = (id='', name='', title='', required=false, label='') => {
                 status_name = 'Activate';
             }
             
-            
-            webhook_html += '<tr id= ww_trigger--' + webhook_name + '"><th scope="row">' + webhook_name + '</th>';
-            
-            webhook_html += 
-            `<td>
-            ${display_input(`webhook_name_${index}`, `webhook_name_${index}`, '', '', webhook_url, '', 'readonly')}
+            webhook_html += `
+            <tr id="ww_trigger--${webhook_name}" class="ant-table-row ant-table-row-level-0">
+                <td class="ant-table-cell"><span>${webhook_name}</span></td>
                 
-            </td>`;
-
-            webhook_html += 
-            `<td>
-            ${display_input(`webhook_api_key_${index}`, `webhook_api_key_${index}`, '', '', webhook_api_key, '', 'readonly')}
-            </td>`;
-            webhook_html += '<td class="d-flex mr-auto">';
+                <td class="ant-table-cell">${display_input(`webhook_name_${index}`, `webhook_name_${index}`, '', '', webhook_url, '', 'readonly')}</td>
+                <td class="ant-table-cell">${display_input(`webhook_api_key_${index}`, `webhook_api_key_${index}`, '', '', webhook_api_key, '', 'readonly')}</td>
             
+            
+            
+                <td class="ant-table-cell">
+                    <div class="d-flex">
+                        <div class="ww_action--items ww_action--deactivate">
+                            <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11.438 11.438">
+                                <path style="fill: currentColor" id="Icon_awesome-stop-circle" data-name="Icon awesome-stop-circle" d="M6.281.563A5.719,5.719,0,1,0,12,6.281,5.718,5.718,0,0,0,6.281.563ZM8.495,8.126a.37.37,0,0,1-.369.369H4.436a.37.37,0,0,1-.369-.369V4.436a.37.37,0,0,1,.369-.369h3.69a.37.37,0,0,1,.369.369Z" transform="translate(-0.563 -0.563)" fill="#395ff5"/>
+                            </svg>
 
-            webhook_html   +=      `<div class="ww_action--items ww_action--deactivate">
-                <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11.438 11.438">
-                    <path style="fill: currentColor" id="Icon_awesome-stop-circle" data-name="Icon awesome-stop-circle" d="M6.281.563A5.719,5.719,0,1,0,12,6.281,5.718,5.718,0,0,0,6.281.563ZM8.495,8.126a.37.37,0,0,1-.369.369H4.436a.37.37,0,0,1-.369-.369V4.436a.37.37,0,0,1,.369-.369h3.69a.37.37,0,0,1,.369.369Z" transform="translate(-0.563 -0.563)" fill="#395ff5"/>
-                </svg>
-
-                <svg class="ww_action--icon__abs" xmlns="http://www.w3.org/2000/svg" width="7.464" height="9.5" viewBox="0 0 7.464 9.5">
-                    <path style="fill: currentColor" d="M12,7.5V17l7.464-4.75Z" transform="translate(-12 -7.5)" fill="#395ff5"/>
-                </svg>
-                <a 
-                    href="#" 
-                    class="ww_action--links ww_trigger--deactivate" 
-                    ww-data-webhook-status=${status} 
-                    ww-data-trigger="${webhook_name}" 
-                >
-                    ${status_name}
-                </a>
-            </div>`;
-    
-            webhook_html    +=  `<div class="ww_action--items ww_action--delete">
-            <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="7.98" height="10.26" viewBox="0 0 7.98 10.26">
-                <path style="fill: currentColor" d="M8.07,13.62a1.143,1.143,0,0,0,1.14,1.14h4.56a1.143,1.143,0,0,0,1.14-1.14V6.78H8.07Zm7.41-8.55H13.485l-.57-.57h-2.85l-.57.57H7.5V6.21h7.98Z" transform="translate(-7.5 -4.5)" fill="#395ff5"/>
-            </svg>
-            <a 
-                href="#" 
-                class="ww_action--links ww_trigger--delete"
-                ww-data-delete-action="Are you sure you want to delete <b>${webhook_name}></b> webhook action?"
-                ww-data-trigger="${webhook_name}" 
-            >
-            delete
-            </a>`
-
-            webhook_html    += '</td>';
-
-            webhook_html += '</div></td></tr>';
+                            <svg class="ww_action--icon__abs" xmlns="http://www.w3.org/2000/svg" width="7.464" height="9.5" viewBox="0 0 7.464 9.5">
+                                <path style="fill: currentColor" d="M12,7.5V17l7.464-4.75Z" transform="translate(-12 -7.5)" fill="#395ff5"/>
+                            </svg>
+                            <a 
+                                href="#" 
+                                class="ww_action--links ww_trigger--deactivate" 
+                                ww-data-webhook-status=${status} 
+                                ww-data-trigger="${webhook_name}" 
+                            >
+                                ${status_name}
+                            </a>
+                        </div>
+                        <div class="ww_action--items ww_action--delete">
+                            <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="7.98" height="10.26" viewBox="0 0 7.98 10.26">
+                                <path style="fill: currentColor" d="M8.07,13.62a1.143,1.143,0,0,0,1.14,1.14h4.56a1.143,1.143,0,0,0,1.14-1.14V6.78H8.07Zm7.41-8.55H13.485l-.57-.57h-2.85l-.57.57H7.5V6.21h7.98Z" transform="translate(-7.5 -4.5)" fill="#395ff5"/>
+                            </svg>
+                            <a 
+                                href="#" 
+                                class="ww_action--links ww_trigger--delete"
+                                ww-data-delete-action="Are you sure you want to delete <b>${webhook_name}></b> webhook action?"
+                                ww-data-trigger="${webhook_name}" 
+                            >
+                            delete
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
 
             
 
@@ -1386,7 +1374,7 @@ const display_select = (id='', name='', title='', required=false, label='') => {
         });
 
         $( '.ww_loader--container' ).remove();
-        $( '.ww_receive--table > tbody' ).html( webhook_html );
+        $( '.ww_receive--table > .ant-table-tbody' ).html( webhook_html );
 
         let status    =   $('.ww_action--deactivate > .ww_trigger--deactivate');
         if(status){
@@ -1422,7 +1410,7 @@ const display_select = (id='', name='', title='', required=false, label='') => {
             });
 
             if(values.length === 0){
-                $( '.ww_auth--table > tbody' ).html( `` );
+                $( '.ww_auth--table > .ant-table-tbody' ).html( `` );
                 $( '.ww_append' ).html( `<div class="alert alert-info"> No templates was found under '${filter}'</div>` );
                 return;
             }
@@ -1463,23 +1451,27 @@ const display_select = (id='', name='', title='', required=false, label='') => {
             let log_time =    template['log_time'];
             
             
-            html += `<tr><th scope="row"> ${name} </th>`;
-            html += `<td class=ant-table-cell> ${auth_type} </td>`;
-            html += '<td class="d-flex mr-auto">';
-            
-            html    +=  `<div class="ww_action--items ww_action--delete">
-            <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="7.98" height="10.26" viewBox="0 0 7.98 10.26">
-                <path style="fill: currentColor" d="M8.07,13.62a1.143,1.143,0,0,0,1.14,1.14h4.56a1.143,1.143,0,0,0,1.14-1.14V6.78H8.07Zm7.41-8.55H13.485l-.57-.57h-2.85l-.57.57H7.5V6.21h7.98Z" transform="translate(-7.5 -4.5)" fill="#395ff5"/>
-            </svg>
-            <a 
-                href="#" 
-                class="ww_action--links ww_delete--auth"
-                ww-data-id=${id}
-            >
-            delete
-            </a>`
-
-            html    += '</div></td></tr>';
+            html += `
+            <tr class="ant-table-row ant-table-row-level-0">
+                <td class="ant-table-cell"><span>${name}</span></td>
+                <td class=ant-table-cell> ${auth_type} </td>
+                <td class="ant-table-cell">
+                    <div class="d-flex">
+                        <div class="ww_action--items ww_action--delete">
+                            <svg class="ww_action--icon" xmlns="http://www.w3.org/2000/svg" width="7.98" height="10.26" viewBox="0 0 7.98 10.26">
+                                <path style="fill: currentColor" d="M8.07,13.62a1.143,1.143,0,0,0,1.14,1.14h4.56a1.143,1.143,0,0,0,1.14-1.14V6.78H8.07Zm7.41-8.55H13.485l-.57-.57h-2.85l-.57.57H7.5V6.21h7.98Z" transform="translate(-7.5 -4.5)" fill="#395ff5"/>
+                            </svg>
+                            <a 
+                                href="#" 
+                                class="ww_action--links ww_delete--auth"
+                                ww-data-id=${id}
+                            >
+                            delete
+                            </a>    
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
 
         
 
@@ -1489,7 +1481,7 @@ const display_select = (id='', name='', title='', required=false, label='') => {
         });
 
         $( '.ww_loader--container' ).remove();
-        $( '.tbody' ).html( html );
+        $( '.ww_auth--table > .ant-table-tbody' ).html( html );
         $( '.ww_append' ).html( '' );
         let status    =   $('.ww_action--deactivate > .ww_trigger--deactivate');
         if(status){
@@ -1539,7 +1531,7 @@ const display_select = (id='', name='', title='', required=false, label='') => {
 
         }
 
-        $('.ww_append').html(form_html);
+        $('.ww_more--fields').html(form_html);
 
     });
 
@@ -1739,12 +1731,12 @@ const display_select = (id='', name='', title='', required=false, label='') => {
 
         }
 
-        $('.ww_append').html(form_html);
+        $('.ww_more--fields').html(form_html);
 
     });
     
 
-    $('.ww_append').on('click', function (e) { 
+    $('.ww_more--fields').on('click', function (e) { 
            
             
             const form_parentnode = $(e.target).parent().parent().parent().parent().parent().parent().parent().parent();

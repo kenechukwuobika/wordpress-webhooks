@@ -29,13 +29,13 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
 
 			<div class="ant-row ant-form-item" style="width: 25rem;">
 				<div class="ant-col ant-form-item-label">
-					<label for="webhook-name" class="ant-form-item-required" title="Webhook Name">Webhook Name</label>
+					<label for="ww_template--name" class="ant-form-item-required" title="Template Name">Template Name</label>
 				</div>
 				<div class="ant-col ant-form-item-control">
 					<div class="ant-form-item-control-input">
 						<div class="ant-form-item-control-input-content">
 							<span class="ant-input-affix-wrapper">
-								<input type="text" id="ww_template--name" name="ww_template--name" class="ant-input" placeholder="'Enter webhook name'">
+								<input type="text" id="ww_template--name" name="ww_template--name" class="ant-input" placeholder="'Enter template name'">
 							</span>
 						</div>
 					</div>
@@ -44,7 +44,7 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
 
 			<div class="ant-row ant-form-item" style="width: 25rem;">
 				<div class="ant-col ant-form-item-label">
-					<label for="webhook-name" class="ant-form-item-required" title="Auth Type">Auth Type</label>
+					<label for="ww_choose--auth" class="ant-form-item-required" title="Auth Type">Auth Type</label>
 				</div>
 				<div class="ant-select ant-select-single ant-select-show-arrow ant-select-open" style="height:32px">
 					<div class="ant-select-selector">
@@ -100,7 +100,28 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
 
 			
 		</div>		
-		<button id="ww_create--auth" type="submit" class="btn btn-primary">Save template</button>
+
+		<div class="ww_more--fields"></div>
+		
+		<div class="ant-row ant-form-item">
+				<div class="ant-col ant-form-item-control">
+					<div class="ant-form-item-control-input">
+						<div class="ant-form-item-control-input-content">
+							<button type="submit" id="ww_create--auth" class="ant-btn ant-btn-primary ant-btn-block" ant-click-animating-without-extra-node="false">
+								<span class="ant-btn-loading-icon">
+									<span role="img" aria-label="loading" class="anticon anticon-loading anticon-spin">
+										<svg viewBox="0 0 1024 1024" focusable="false" data-icon="loading" width="1em" height="1em" fill="currentColor" aria-hidden="true">
+											<path d="M988 548c-19.9 0-36-16.1-36-36 0-59.4-11.6-117-34.6-171.3a440.45 440.45 0 00-94.3-139.9 437.71 437.71 0 00-139.9-94.3C629 83.6 571.4 72 512 72c-19.9 0-36-16.1-36-36s16.1-36 36-36c69.1 0 136.2 13.5 199.3 40.3C772.3 66 827 103 874 150c47 47 83.9 101.8 109.7 162.7 26.7 63.1 40.2 130.2 40.2 199.3.1 19.9-16 36-35.9 36z"></path>
+										</svg>
+									</span>
+								</span>
+								<span>Save template</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 	</form>
 
 <form action="" class="ww_search--form d-flex align-items-center mt-4">
@@ -129,7 +150,7 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
             <span class="ant-select-selection-search">
                 <input autocomplete="off" type="search" class="ant-select-selection-search-input" role="combobox" aria-haspopup="listbox" aria-owns="rc_select_7_list" aria-autocomplete="list" aria-controls="rc_select_7_list" aria-activedescendant="rc_select_7_list_0" readonly="" unselectable="on" value="" id="rc_select_7" style="opacity: 0;" aria-expanded="true">
             </span>
-            <span class="ant-select-selection-item" title="Select a trigger" >Select a trigger</span>
+            <span class="ant-select-selection-item" title="Select a template" >Select a template</span>
         </div>
         <span class="ant-select-arrow" unselectable="on" aria-hidden="true" style="user-select: none;">
             <span role="img" aria-label="down" class="anticon anticon-down ant-select-suffix">
@@ -141,15 +162,15 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
 
         <div class="ant-select-dropdown ant-select-dropdown-placement-bottomLeft ant-select-dropdown-hidden" >
         <div role="listbox" id="rc_select_7_list" style="height: 0px; width: 0px; overflow: hidden;">
-            <div aria-label="All" role="option" id="rc_select_7_list_0" aria-selected="true">Select a trigger</div>
-                <div aria-label="Cloths" role="option" id="rc_select_7_list_1" aria-selected="false">Select a trigger</div>
+            <div aria-label="All" role="option" id="rc_select_7_list_0" aria-selected="true">Select a template</div>
+                <div aria-label="Cloths" role="option" id="rc_select_7_list_1" aria-selected="false">Select a template</div>
             </div>
             <div class="rc-virtual-list" style="position: relative;">
                 <div class="rc-virtual-list-holder" style="max-height: 256px; overflow-y: hidden; overflow-anchor: none;"><div>
 				<div class="rc-virtual-list-holder-inner" style="display: flex; flex-direction: column;">
 
 				<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-active ant-select-item-option-selected" title="All">
-					<div class="ant-select-item-option-content ww_filter--auth">Select a trigger</div>
+					<div class="ant-select-item-option-content ww_filter--auth">Select a template</div>
 					<span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
 				</div>
 			
@@ -186,21 +207,83 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
 	<input id="ww-current-url" type="hidden" value="<?php echo $current_url_full; ?>" />
 </form>
 
+<div class="ant-row" style="margin-left: -8px; margin-right: -8px;">
+	<div class="ant-col ant-col-xs-24 ant-col-sm-24 ant-col-md-24 ant-col-lg-24" style="padding-left: 8px; padding-right: 8px;">
+		<div class="ant-card ant-card-bordered table-responsive">
+			<div class="ant-card-head">
+				<div class="ant-card-head-wrapper">
+					<div class="ant-card-head-title">Available Authentication Templates</div>
+				</div>
+			</div>
+			<div class="ant-card-body">
+				<div class="ant-table-wrapper">
+					<div class="ant-spin-nested-loading">
+						<div class="ant-spin-container">
+							<div class="ant-table">
+								<div class="ant-table-container">
+									<div class="ant-table-content">
+										<table style="table-layout: auto;" class="ww_auth--table">
+											<colgroup></colgroup>
+											<thead class="ant-table-thead">
+												<tr>
+													<th class="ant-table-cell ant-table-column-has-sorters">
+														<div class="ant-table-column-sorters-with-tooltip">
+															<div class="ant-table-column-sorters">
+																<span>Template Name</span>
+																<span class="ant-table-column-sorter ant-table-column-sorter-full">
+																	<span class="ant-table-column-sorter-inner">
+																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
+																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
+																		</span>
+																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
+																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
+																		</span>
+																	</span>
+																</span>
+															</div>
+														</div>
+													</th>
+													
+													<th class="ant-table-cell ant-table-column-has-sorters">
+														<div class="ant-table-column-sorters-with-tooltip">
+															<div class="ant-table-column-sorters">
+																<span>Auth Type</span>
+																<span class="ant-table-column-sorter ant-table-column-sorter-full">
+																	<span class="ant-table-column-sorter-inner">
+																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
+																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
+																		</span>
+																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
+																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
+																		</span>
+																	</span>
+																</span>
+															</div>
+														</div>
+													</th>
 
+													<th class="ant-table-cell">
+														<span>Action</span>
+													</th>
 
-<table class="table ww_auth--table">
-  <thead class="thead-dark">
-	<tr class="">
-		<th scope="col">Template Type</th>
-		<th scope="col">Auth Type</th>
-		<th scope="col">Actions</th>
-	</tr>
-  </thead>
-  <tbody class="tbody">
-	  
-  </tbody>
-</table>
+												</tr>
+											</thead>
+											<tbody class="ant-table-tbody">
+												
+											</tbody>
+										</table>
+										<div class="ww_append"></div>
 
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<div class="ww_append"></div>
+</div>
+
 
