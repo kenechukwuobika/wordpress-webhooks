@@ -246,43 +246,6 @@ class WordPress_Webhooks_Settings{
 				'required'    => false,
 				'description' => wordpress_webhooks()->helpers->translate('This allows you to authenticate certain webhook triggers in case you want to send data to API that requires authentication. It will add a new tab within the menu', 'ww-fields-activate-authentication-tip')
 			),
-
-			/**
-			 * Activate data mapping
-			 */
-			'ww_activate_data_mapping' => array(
-				'id'          => 'ww_activate_data_mapping',
-				'type'        => 'checkbox',
-				'label'       => wordpress_webhooks()->helpers->translate('Activate Data Mapping', 'ww-fields-activate-data-mapping'),
-				'placeholder' => '',
-				'required'    => false,
-				'description' => wordpress_webhooks()->helpers->translate('This allows you to create mapping templates that can be used for actions and triggers to reformat the incoming and outgoing data. It will add a new tab within the menu', 'ww-fields-activate-data-mapping-tip')
-			),
-
-			/**
-			 * ACTIVATE WHITELIST
-			 */
-			'ww_activate_whitelist' => array(
-				'id'          => 'ww_activate_whitelist',
-				'type'        => 'checkbox',
-				'label'       => wordpress_webhooks()->helpers->translate('Activate Whitelist', 'ww-fields-activate-whitelist'),
-				'placeholder' => '',
-				'required'    => false,
-				'description' => wordpress_webhooks()->helpers->translate('Enhance your website security by activating the whitelist. This will restrict all incoming webhook connections by default and only allows them when you want to. It will add a new tab within the menu', 'ww-fields-whitelist-tip')
-			),
-
-			/**
-			 * Activate logs
-			 */
-			'ww_activate_logs' => array(
-				'id'          => 'ww_activate_logs',
-				'type'        => 'checkbox',
-				'label'       => wordpress_webhooks()->helpers->translate('Activate Logs', 'ww-fields-activate-logs'),
-				'placeholder' => '',
-				'required'    => false,
-				'description' => wordpress_webhooks()->helpers->translate('Enable logging on your website. This will create logging data (within a custom table) about your fired triggers and actions. It will add a new tab within the menu.', 'ww-fields-activate-logs-tip')
-			),
-
 			/**
 			 * ACTIVATE TRANSLATIONS
 			 */
