@@ -13,7 +13,7 @@
  *
  * @since 3.0.6
  * @package WW
- * @author Ironikus <info@ironikus.com>
+ * @author Pullbytes <info@pullbytes.com>
  */
 class WordPress_Webhooks_Whitelabel {
 

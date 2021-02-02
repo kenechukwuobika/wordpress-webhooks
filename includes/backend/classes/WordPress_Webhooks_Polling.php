@@ -16,7 +16,7 @@
  *
  * @since 2.1.2
  * @package WW
- * @author Ironikus <info@ironikus.com>
+ * @author Pullbytes <info@pullbytes.com>
  */
 class WordPress_Webhooks_Polling {
 

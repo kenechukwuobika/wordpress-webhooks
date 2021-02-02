@@ -7,7 +7,7 @@
  *
  * @since 1.0.0
  * @package WW
- * @author Ironikus <info@ironikus.com>
+ * @author Pullbytes <info@pullbytes.com>
  */
 
 class WordPress_Webhooks_Run{
@@ -1411,9 +1411,6 @@ class WordPress_Webhooks_Run{
 				break;
 			case 'whitelist':
 				include( WW_PLUGIN_DIR . 'includes/frontend/templates/whitelist.php' );
-				break;
-			case 'logs':
-				include( WW_PLUGIN_DIR . 'includes/frontend/templates/logs.php' );
 				break;
 			case 'data-mapping':
 				include( WW_PLUGIN_DIR . 'includes/frontend/templates/data-mapping.php' );

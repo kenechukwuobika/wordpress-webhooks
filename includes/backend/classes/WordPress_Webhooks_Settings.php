@@ -8,7 +8,7 @@
  *
  * @since 1.0.0
  * @package WW
- * @author Ironikus <info@ironikus.com>
+ * @author Pullbytes <info@pullbytes.com>
  */
 class WordPress_Webhooks_Settings{
 
