@@ -24,7 +24,7 @@ define( 'WW_PLUGIN_URL',     plugin_dir_url( WW_PLUGIN_FILE ) );
 // Plugin Root File.
 //Defined within /core/includes/backend/classes/WordPress_Webhooks_Helpers.php
 //Please check the translation function for the original definition
-define( 'WW_TEXTDOMAIN',     'wp-webhooks-pro' );
+define( 'WW_TEXTDOMAIN',     'wordpress-webhooks' );
 
 // Plugin Store URL
 define( 'PULL_BYTES',        'https://pullbytes.com' );
