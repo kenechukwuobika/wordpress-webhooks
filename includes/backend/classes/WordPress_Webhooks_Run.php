@@ -90,7 +90,7 @@ class WordPress_Webhooks_Run{
 		add_action( 'wp_ajax_ironikus_manage_extensions',  array( $this, 'ironikus_manage_extensions' ) );
 
 		// Load admin page tabs
-		add_filter( 'ww/admin/settings/menu_data', array( $this, 'add_main_settings_tabs' ), 10 );
+		add_filter( 'ww_admin_settings_menu_data', array( $this, 'add_main_settings_tabs' ), 10 );
 		add_action( 'ww_display_admin_content', array( $this, 'add_main_settings_content' ), 10 );
 
 		// Setup actions
@@ -134,7 +134,7 @@ class WordPress_Webhooks_Run{
 
 		array_unshift( $links, $settings_link );
 
-		// $links['our_shop'] = sprintf( '<a href="%s" target="_blank" style="font-weight:700;color:#f1592a;">%s</a>', 'https://ironikus.com/products/?utm_source=wp-webhooks-pro&utm_medium=plugin-overview-shop-button&utm_campaign=WP%20Webhooks%20Pro', wordpress_webhooks()->helpers->translate('Our Shop', 'plugin-page') );
+		$links['our_shop'] = sprintf( '<a href="%s" target="_blank" style="font-weight:700;color:#f1592a;">%s</a>', 'https://ironikus.com/products/?utm_source=wp-webhooks-pro&utm_medium=plugin-overview-shop-button&utm_campaign=WP%20Webhooks%20Pro', wordpress_webhooks()->helpers->translate('Our Shop', 'plugin-page') );
 
 		return $links;
 	}
@@ -156,27 +156,30 @@ class WordPress_Webhooks_Run{
 		if( wordpress_webhooks()->helpers->is_page( $this->page_name ) && is_admin() ) {
 			$version = WW_DEV_MODE === 'development' ? time() : WW_VERSION;
 
-			wp_register_style('ww_google_font', '<link rel="preconnect" href="https://fonts.gstatic.com">
-			<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">', []);
-			wp_register_style('ww_bootstrap', WW_PLUGIN_URL.'includes/frontend/assets/css/bootstrap.css', array(), $version);
-			// wp_register_style( 'ww_emilus', WW_PLUGIN_URL . 'includes/frontend/assets/css/emilus.css', array(), $version, 'all' );
-			wp_register_style( 'ww_styles', WW_PLUGIN_URL . 'includes/frontend/assets/css/styles.css', array(), $version, 'all' );
-			
-			wp_enqueue_style('ww_google_font');
-			wp_enqueue_style('ww_bootstrap');
-			wp_enqueue_style('ww_styles');
-			// wp_enqueue_style('ww_emilus');
-			
-			wp_register_script( 'ww_popper', WW_PLUGIN_URL . 'includes/frontend/assets/js/popper.js', array( 'jquery' ), $version, true );
-			wp_register_script( 'ww_rateit', WW_PLUGIN_URL . 'includes/frontend/assets/js/rateit/jquery.rateit.min.js', array( 'jquery' ), '1.0.0', true );
-			wp_register_script( 'ww-admin-scripts', WW_PLUGIN_URL . 'includes/frontend/assets/dist/js/admin-scripts.min.js', array( 'jquery' ), $version, true );
-			wp_register_script( 'ww_app', WW_PLUGIN_URL . 'includes/frontend/assets/js/app.js', array( 'jquery' ), $version, true );
+			$styles = [
+				'ww_google_font' => ['<link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">', array()],
+				'ww_bootstrap' => [WW_PLUGIN_URL.'includes/frontend/assets/css/bootstrap.css', array()],
+				'ww_styles' => [WW_PLUGIN_URL.'includes/frontend/assets/css/styles.css', array()],
+			];
 
-			wp_enqueue_script( 'jquery-ui-sortable');
-			wp_enqueue_script( 'ww_popper');
-			wp_enqueue_script( 'ww_rateit');
-			wp_enqueue_script( 'ww-admin-scripts');
-			wp_enqueue_script( 'ww_app');
+			$scripts = [
+				'ww_popper' => [WW_PLUGIN_URL.'includes/frontend/assets/js/popper.js', array('jquery')],
+				'ww-admin-scripts' => [WW_PLUGIN_URL. 'includes/frontend/assets/dist/js/admin-scripts.min.js', array('jquery')],
+				'ww_app' => [WW_PLUGIN_URL.'includes/frontend/assets/js/app.js', array('jquery', 'ww_popper')]
+			];
+
+			$styles = apply_filters('ww_add_styles', $styles);
+			$scripts = apply_filters('ww_add_scripts', $scripts);
+
+			foreach($styles as $style => $items){
+				wp_enqueue_style($style, $items[0], $items[1], $version );
+			}
+
+			foreach($scripts as $script => $items){
+				wp_enqueue_script($script, $items[0], $items[1], $version, true );
+			}
+
+			
 			
 			
 			wp_localize_script( 'ww-admin-scripts', 'ww_ajax', array(
@@ -1322,7 +1325,30 @@ class WordPress_Webhooks_Run{
 	*/
 
 	public function add_user_menu(){
-		add_menu_page( "WordPress Webhooks", "WordPress Webhooks", wordpress_webhooks()->settings->get_admin_cap( 'admin-add-submenu-page-item' ),$this->page_name,array( $this, 'render_admin_submenu_page' ));
+		add_menu_page( 
+			wordpress_webhooks()->settings->get_page_title(), 
+			wordpress_webhooks()->settings->get_page_title(), 
+			wordpress_webhooks()->settings->get_admin_cap( 'admin-add-submenu-page-item' ),
+			$this->page_name,
+			array( $this, 'render_admin_submenu_page' )
+		);
+
+		$sub_menu_items		=	apply_filters( 'ww_admin_settings_menu_data', array() );
+
+		foreach($sub_menu_items as $sub_menu_item){
+			$slug_arr		=	explode(" ", $sub_menu_item);
+			$slug		=	strtolower(implode('-', $slug_arr));
+			add_submenu_page(  
+				$this->page_name, 
+				wordpress_webhooks()->settings->get_page_title(), 
+				$sub_menu_item, 
+				wordpress_webhooks()->settings->get_admin_cap( 'admin-add-submenu-page-item' ),
+				"wordpress_webhooks&tab=$slug", 
+				array( $this, 'render_admin_submenu_page' )
+			);
+		}
+
+		
 		
 	}
 
@@ -1353,18 +1379,6 @@ class WordPress_Webhooks_Run{
 		$tabs['send-data']      = wordpress_webhooks()->helpers->translate( 'Send Data', 'admin-menu' );
 		$tabs['receive-data']   = wordpress_webhooks()->helpers->translate( 'Receive Data', 'admin-menu' );
 
-		// if( wordpress_webhooks()->whitelist->is_active() ){
-		// 	$tabs['whitelist']  = wordpress_webhooks()->helpers->translate( 'Whitelist', 'admin-menu' );
-		// }
-
-		// if( wordpress_webhooks()->logs->is_active() ){
-		// 	$tabs['logs']  = wordpress_webhooks()->helpers->translate( 'Logs', 'admin-menu' );
-		// }
-
-		// if( wordpress_webhooks()->data_mapping->is_active() ){
-		// 	$tabs['data-mapping']  = wordpress_webhooks()->helpers->translate( 'Data Mapping', 'admin-menu' );
-		// }
-
 		if( wordpress_webhooks()->auth->is_active() ){
 			$tabs['authentication']  = wordpress_webhooks()->helpers->translate( 'Authentication', 'admin-menu' );
 		}
@@ -1372,16 +1386,10 @@ class WordPress_Webhooks_Run{
 		if( isset( $_GET['wpwh_whitelabel_settings'] ) && $_GET['wpwh_whitelabel_settings'] === 'visible' ){
 			$tabs['whitelabel']  = wordpress_webhooks()->helpers->translate( 'Whitelabel', 'admin-menu' );
 		}
-
-		if( ! wordpress_webhooks()->whitelabel->is_active() || wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_hide_extensions' ) !== 'yes' ){
-			$tabs['extensions']       = wordpress_webhooks()->helpers->translate( 'Integrations', 'admin-menu' );
-		}
-
-		if( ! wordpress_webhooks()->whitelabel->is_active() || wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_hide_settings' ) !== 'yes' ){
+			
+		if(!defined('WW_PRO_SETUP')){
+			$tabs['integrations']       = wordpress_webhooks()->helpers->translate( 'Integrations', 'admin-menu' );
 			$tabs['settings']       = wordpress_webhooks()->helpers->translate( 'Settings', 'admin-menu' );
-		}
-
-		if( ! wordpress_webhooks()->whitelabel->is_active() || wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_hide_licensing' ) !== 'yes' ){
 			$tabs['license']        = wordpress_webhooks()->helpers->translate( 'License', 'admin-menu' );
 		}
 
@@ -1409,20 +1417,11 @@ class WordPress_Webhooks_Run{
 			case 'settings':
 				include( WW_PLUGIN_DIR . 'includes/frontend/templates/settings.php' );
 				break;
-			case 'whitelist':
-				include( WW_PLUGIN_DIR . 'includes/frontend/templates/whitelist.php' );
-				break;
-			case 'data-mapping':
-				include( WW_PLUGIN_DIR . 'includes/frontend/templates/data-mapping.php' );
-				break;
 			case 'authentication':
 				include( WW_PLUGIN_DIR . 'includes/frontend/templates/authentication.php' );
 				break;
-			case 'extensions':
-				include( WW_PLUGIN_DIR . 'includes/frontend/templates/extensions.php' );
-				break;
-			case 'whitelabel':
-				include( WW_PLUGIN_DIR . 'includes/frontend/templates/whitelabel.php' );
+			case 'integrations':
+				include( WW_PLUGIN_DIR . 'includes/frontend/templates/integrations.php' );
 				break;
 			case 'home':
 				include( WW_PLUGIN_DIR . 'includes/frontend/templates/home.php' );
