@@ -12,29 +12,47 @@
  * along with TMG User Filter. If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once "constants.php";
+//Determines if plugin is in development or production environment
+define('WW_DEV_MODE',       'development');
+
+// Plugin version.
+define( 'WW_VERSION',        '1.0.0' );
+
+// Determines if the plugin is loaded
+define( 'WW_SETUP',          true );
+
+// Plugin Root File.
+define( 'WW_PLUGIN_FILE',    __FILE__ );
+
+// Plugin base.
+define( 'WW_PLUGIN_BASE',    plugin_basename( WW_PLUGIN_FILE ) );
+
+// Plugin Folder Path.
+define( 'WW_PLUGIN_DIR',     plugin_dir_path( WW_PLUGIN_FILE ) );
+
+// Plugin Folder URL.
+define( 'WW_PLUGIN_URL',     plugin_dir_url( WW_PLUGIN_FILE ) );
+
+// Plugin Root File.
+//Defined within /core/includes/backend/classes/WordPress_Webhooks_Helpers.php
+//Please check the translation function for the original definition
+define( 'WW_TEXTDOMAIN',     'wordpress-webhooks' );
+
+// Plugin Store URL
+define( 'PULL_BYTES',        'https://pullbytes.com' );
+
+// Plugin Store ID
+define( 'WW_PLUGIN_ID',    183 );
+
+// News ID
+define( 'WW_NEWS_FEED_ID', 1 );
 
 // Exit if accessed directly.
 if ( !defined( 'ABSPATH' ) ) exit;
 
 
-//Preload Whitelabel data
-$whitelabel_data = get_option( 'ironikus_webhook_whitelabel' );
-if( 
-	! empty( $whitelabel_data ) 
-	&& isset( $whitelabel_data['ww_whitelabel_name'] ) 
-	&& isset( $whitelabel_data['ww_whitelabel_activate'] ) 
-	&& $whitelabel_data['ww_whitelabel_activate'] === 'yes' 
-	&& ! empty( $whitelabel_data['ww_whitelabel_name'] ) 
-){
-	// Plugin name.
-	define( 'WW_NAME',		  $whitelabel_data['ww_whitelabel_name'] );
-} else {
-	// Plugin name.
-	define( 'WW_NAME',		  'WordPress Webhooks' );
-}
-
-
+// Plugin name.
+define( 'WW_NAME',		  'WordPress Webhooks' );
 
 
 
