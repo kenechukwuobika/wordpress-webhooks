@@ -283,7 +283,7 @@ class WordPress_Webhooks_Settings{
 			),
 
 			/**
-			 * Reset WP Webbhooks Pro
+			 * Reset WordPress Webhooks
 			 */
 			'ww_reset_data' => array(
 				'id'          => 'ww_reset_data',
@@ -295,21 +295,23 @@ class WordPress_Webhooks_Settings{
 			),
 		);
 
-		foreach( $fields as $key => $field ){
+		$new_fields		=	apply_filters('ww_settings_fields', $fields);
+
+		foreach( $new_fields as $key => $field ){
 			$value = get_option( $key );
 
-			$fields[ $key ]['value'] = $value;
+			$new_fields[ $key ]['value'] = $value;
 
-			if( $fields[ $key ]['type'] == 'checkbox' ){
-				if( empty( $fields[ $key ]['value'] ) || $fields[ $key ]['value'] == 'no' ){
-					$fields[ $key ]['value'] = 'no';
+			if( $new_fields[ $key ]['type'] == 'checkbox' ){
+				if( empty( $new_fields[ $key ]['value'] ) || $new_fields[ $key ]['value'] == 'no' ){
+					$new_fields[ $key ]['value'] = 'no';
 				} else {
-					$fields[ $key ]['value'] = 'yes';
+					$new_fields[ $key ]['value'] = 'yes';
 				}
 			}
 		}
 
-		return apply_filters('ww/settings/fields', $fields);
+		return $new_fields;
 	}
 
 	/**
@@ -1055,7 +1057,7 @@ class WordPress_Webhooks_Settings{
 		/*
 		 * Filter the page name based on your needs
 		 */
-		return apply_filters( 'ww/admin/settings/page_name', $this->page_name );
+		return apply_filters( 'ww_admin_settings_page_name', $this->page_name );
 	}
 
 	/**
@@ -1067,7 +1069,7 @@ class WordPress_Webhooks_Settings{
 		/*
 		 * Filter the page title based on your needs.
 		 */
-		return apply_filters( 'ww/admin/settings/page_title', $this->page_title );
+		return apply_filters( 'ww_admin_settings_page_title', $this->page_title );
 	}
 
 	/**
