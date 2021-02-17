@@ -81,6 +81,7 @@ p{
   height: 100%;
   padding: 0.5rem 1rem;
   margin-bottom: 0;
+  font-size: .875rem;
   position: relative;
 }
 
@@ -563,6 +564,14 @@ padding: 0 4rem;
   }
 }
 
+@media only screen and (max-width: 1310px) {
+ .ww_nav-item {
+   font-size: .75rem;
+    padding: 0.25rem;
+
+  }
+}
+
 @media only screen and (max-width: 1200px) {
   .ww_settings--card{
     width: auto;
@@ -574,9 +583,6 @@ padding: 0 4rem;
     width: 400px;
   }
 
-  .ww_nav-item {
-  padding: 0.5rem;
-}
 }
 
 @media only screen and (max-width: 700px) {
