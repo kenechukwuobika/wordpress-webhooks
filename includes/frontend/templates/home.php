@@ -1,14 +1,28 @@
+<?php
+$go_pro = 'GO PRO';
+if(defined('WW_PRO_SETUP')){
+    $go_pro = 'MANAGE EXTENSIONS';
+}
+
+?>
+
+
 <div class="d-flex flex-column align-items-center">
     <div class="ww_home--heading">
         <h2 class="ww-heading-primary">
-            <?php echo sprintf( wordpress_webhooks()->helpers->translate( 'Welcome to %s', 'ww-page-actions' ), WW_NAME ); ?>
+            <?php echo sprintf( wordpress_webhooks()->helpers->translate( 'Welcome to %s', 'ww-page-actions' ), wordpress_webhooks()->settings->get_page_title() ); ?>
         </h2>
     </div>
 
-    <p class="ww_home--text">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores</p>
+    <p class="ww_home--text">
+                <?php if( defined('WW_PRO_SETUP') && wordpress_webhooks()->whitelabel->is_active() && ! empty( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_home' ) ) ) : ?>
+                    <?php echo wordpress_webhooks()->helpers->translate( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_home' ), 'admin-settings-license' ); ?>
+                <?php else : ?>
+                    <?php echo wordpress_webhooks()->helpers->translate( 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores</p>'); ?>
+				<?php endif; ?>
 
     <div class="ww_info">
-        <div class="d-flex ww_offers">
+        <div class="d-flex justify-content-between ww_offers">
             <div class="ww_card">
                 <div class="ww_card--header ww_card--header__1">
                     <h4 class="ww_card--title ww_card--title__1">GET STARTED</h4>
@@ -23,17 +37,41 @@
             </div>
 
             <div class="ww_card">
-                <div class="ww_popular">popular</div>
-                <div class="ww_card--header ww_card--header__2">
-                    <h4 class="ww_card--title ww_card--title__1">GO PRO</h4>                
-                    <p class="ww_card--text">Lorem ipsum dolor sit amet, consetetur sadipscing elit.</p>
-                </div>
-                <div class="ww_card--body">
-                    <img class="ww_card--img" src="<?php echo WW_PLUGIN_URL . 'includes/frontend/assets/img/home_banner2.png'; ?>" alt="home_banner2">
-                </div>
-                <div class="ww_card--footer">
-                    <a href="?page=wordpress_webhooks&tab=license" class="btn btn-primary ww_btn ww_card--btn">Upgrade Plugin</a>
-                </div>
+                <?php
+                    if(!defined('WW_PRO_SETUP')){
+
+                ?>
+                    <div class="ww_popular">popular</div>
+                    <div class="ww_card--header ww_card--header__2">
+                        <h4 class="ww_card--title ww_card--title__1">GO PRO</h4>                
+                        <p class="ww_card--text">Lorem ipsum dolor sit amet, consetetur sadipscing elit.</p>
+                    </div>
+                    <div class="ww_card--body">
+                        <img class="ww_card--img" src="<?php echo WW_PLUGIN_URL . 'includes/frontend/assets/img/home_banner2.png'; ?>" alt="home_banner2">
+                    </div>
+                    <div class="ww_card--footer">
+                        <a href="?page=wordpress_webhooks&tab=license" class="btn btn-primary ww_btn ww_card--btn">Upgrade Plugin</a>
+                    </div>
+                
+                <?php   
+                    }
+                    else{
+                ?>
+                    <div class="ww_card--header ww_card--header__2">
+                        <h4 class="ww_card--title ww_card--title__1">MANAGE INTEGRATIONS</h4>                
+                        <p class="ww_card--text">Lorem ipsum dolor sit amet, consetetur sadipscing elit.</p>
+                    </div>
+                    <div class="ww_card--body">
+                        <img class="ww_card--img" src="<?php echo WW_PLUGIN_URL . 'includes/frontend/assets/img/home_banner2.png'; ?>" alt="home_banner2">
+                    </div>
+                    <div class="ww_card--footer">
+                        <a href="?page=wordpress_webhooks&tab=integrations" class="btn btn-primary ww_btn ww_card--btn">Manage</a>
+                    </div>
+                <?php   
+                    }
+
+                ?>
+                
             </div>
 
             <div class="ww_card">

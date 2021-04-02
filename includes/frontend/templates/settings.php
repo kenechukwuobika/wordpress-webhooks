@@ -80,9 +80,11 @@ if( did_action( 'ww_settings_saved' ) ){
 																		$is_checked = ( $setting_value['type'] == 'checkbox' && $setting_value['value'] == 'yes' ) ? 'checked' : '';
 																		$value = ( $setting_value['type'] != 'checkbox' ) ? $setting_value['value'] : '1';
 																		$is_checkbox = ( $setting_value['type'] == 'checkbox' ) ? true : false;
-																		if($setting_value['label'] === 'Activate Whitelist' || $setting_value['label'] === 'Activate Data Mapping' || $setting_value['label'] === 'Activate Logs'){
-																			continue;
-																		}
+																		// if(
+																		// 	$setting_value['label'] === 'Activate Logs'
+																		// ){
+																		// 	continue;
+																		// }
 																?>
 																<tr class="ant-table-row ant-table-row-level-0">
 																	<td class="ant-table-cell">

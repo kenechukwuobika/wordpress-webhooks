@@ -16,7 +16,7 @@ $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
 		<div class="ww_senddata--text">
 			<h2 class=""><?php echo wordpress_webhooks()->helpers->translate( 'Create A Webhook Trigger', 'ww-page-triggers' ); ?></h2>
 			<div class="main-description">
-				<?php if( wordpress_webhooks()->whitelabel->is_active() && ! empty( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ) ) ) : ?>
+				<?php if( defined('WW_PRO_SETUP') && wordpress_webhooks()->whitelabel->is_active() && ! empty( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ) ) ) : ?>
 					<?php echo wordpress_webhooks()->helpers->translate( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ), 'admin-settings-license' ); ?>
 				<?php else : ?>
 					
@@ -148,7 +148,7 @@ $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
 				<div class="ant-col ant-form-item-control">
 					<div class="ant-form-item-control-input">
 						<div class="ant-form-item-control-input-content">
-							<button type="submit" id="ww_submit" class="ant-btn ant-btn-primary ant-btn-block" ant-click-animating-without-extra-node="false">
+							<button type="submit" id="ww_create--trigger" class="ant-btn ant-btn-primary ant-btn-block" ant-click-animating-without-extra-node="false">
 								<span class="ant-btn-loading-icon">
 									<span role="img" aria-label="loading" class="anticon anticon-loading anticon-spin">
 										<svg viewBox="0 0 1024 1024" focusable="false" data-icon="loading" width="1em" height="1em" fill="currentColor" aria-hidden="true">
@@ -156,7 +156,7 @@ $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
 										</svg>
 									</span>
 								</span>
-								<span>Add trigger</span>
+								<span>Create trigger</span>
 							</button>
 						</div>
 					</div>
@@ -174,7 +174,7 @@ $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
 				<div class="ant-form-item-control-input-content">
 					<span class="ant-input-affix-wrapper align-items-center" style="height: 2.5rem;">
 					<span class="ant-input-prefix"><span role="img" aria-label="search" class="anticon anticon-search mr-0"><svg viewBox="64 64 896 896" focusable="false" data-icon="search" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path></svg></span></span>
-						<input type="text" id="ww_search--term" class="ant-input" placeholder="<?php echo "'".wordpress_webhooks()->helpers->translate( 'Search Webhooks', 'ww-page-triggers' )."'"; ?>">
+						<input type="text" id="ww_search--term" class="ant-input" placeholder="<?php echo wordpress_webhooks()->helpers->translate( 'Search Webhooks', 'ww-page-triggers' ); ?>">
 					</span>
 				</div>
 			</div>
@@ -208,7 +208,7 @@ $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
                 <div class="rc-virtual-list-holder" style="max-height: 256px; overflow-y: hidden; overflow-anchor: none;"><div>
 				<div class="rc-virtual-list-holder-inner" style="display: flex; flex-direction: column;">
 
-				<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-active ant-select-item-option-selected" title="All">
+				<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-selected" title="All">
 					<div class="ant-select-item-option-content ww_filter--trigger">Select a trigger</div>
 					<span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
 				</div>
@@ -219,7 +219,7 @@ $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
 					$webhook_name = !empty( $trigger['trigger'] ) ? $trigger['trigger'] : '';
 					$trigger_callback = !empty( $trigger['callback'] ) ? $trigger['callback'] : '';
 				?>
-					<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-active ant-select-item-option-selected" title="All">
+					<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-selected" title="All">
                         <div class="ant-select-item-option-content ww_filter--trigger" ww-data-value="<?php echo $webhook_name; ?>"><?php echo $webhook_name; ?></div>
                         <span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
 					</div>
@@ -266,58 +266,16 @@ $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
 											<colgroup></colgroup>
 											<thead class="ant-table-thead">
 												<tr>
-													<th class="ant-table-cell ant-table-column-has-sorters">
-														<div class="ant-table-column-sorters-with-tooltip">
-															<div class="ant-table-column-sorters">
-																<span>Webhook Name</span>
-																<span class="ant-table-column-sorter ant-table-column-sorter-full">
-																	<span class="ant-table-column-sorter-inner">
-																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
-																		</span>
-																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
-																		</span>
-																	</span>
-																</span>
-															</div>
-														</div>
+													<th class="ant-table-cell">
+														<span>Webhook Name</span>
 													</th>
 													
-													<th class="ant-table-cell ant-table-column-has-sorters">
-														<div class="ant-table-column-sorters-with-tooltip">
-															<div class="ant-table-column-sorters">
-																<span>Webhook Url</span>
-																<span class="ant-table-column-sorter ant-table-column-sorter-full">
-																	<span class="ant-table-column-sorter-inner">
-																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
-																		</span>
-																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
-																		</span>
-																	</span>
-																</span>
-															</div>
-														</div>
+													<th class="ant-table-cell">
+														<span>Webhook Url</span>
 													</th>
 
-													<th class="ant-table-cell ant-table-column-has-sorters">
-														<div class="ant-table-column-sorters-with-tooltip">
-															<div class="ant-table-column-sorters">
-																<span>Trigger</span>
-																<span class="ant-table-column-sorter ant-table-column-sorter-full">
-																	<span class="ant-table-column-sorter-inner">
-																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
-																		</span>
-																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
-																		</span>
-																	</span>
-																</span>
-															</div>
-														</div>
+													<th class="ant-table-cell">
+														<span>Trigger</span>
 													</th>
 
 													<th class="ant-table-cell">
@@ -326,7 +284,7 @@ $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
 
 												</tr>
 											</thead>
-											<tbody class="ant-table-tbody">
+											<tbody class="ant-table-tbody ww_tbody">
 												
 											</tbody>
 										</table>
@@ -367,7 +325,7 @@ $authentication_templates = wordpress_webhooks()->auth->get_auth_templates();
       </div>
 	  <form action="" id="ww_trigger--settings_form">
 
-		<div class="ww_setttings-modal modal-body d-flex flex-column">
+		<div class="ww_settings-modal modal-body d-flex flex-column">
 
 
 		</div>

@@ -9,8 +9,8 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
 		<div class="ww_senddata--text">
 			<h2 class=""><?php echo wordpress_webhooks()->helpers->translate( 'Authentication', 'ww-page-triggers' ); ?></h2>
 			<div class="main-description">
-				<?php if( wordpress_webhooks()->whitelabel->is_active() && ! empty( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ) ) ) : ?>
-					<?php echo wordpress_webhooks()->helpers->translate( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ), 'admin-settings-license' ); ?>
+				<?php if( defined('WW_PRO_SETUP') && wordpress_webhooks()->whitelabel->is_active() && ! empty( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_authentication' ) ) ) : ?>
+					<?php echo wordpress_webhooks()->helpers->translate( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_authentication' ), 'admin-settings-license' ); ?>
 				<?php else : ?>
 					
 					<?php echo sprintf( wordpress_webhooks()->helpers->translate( 'Create your own authentication template down below. This allows you to authenticate your outgoing "Send Data" webhook triggers to a given endpoint. For more information, please check out the authentication documentation by clicking here.')); ?>
@@ -70,7 +70,7 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
 						<div class="rc-virtual-list" style="position: relative;">
 							<div class="rc-virtual-list-holder" style="max-height: 256px; overflow-y: hidden; overflow-anchor: none;"><div>
 							<div class="rc-virtual-list-holder-inner" style="display: flex; flex-direction: column;">
-								<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-active ant-select-item-option-selected" title="All">
+								<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-selected" title="All">
 									<div class="ant-select-item-option-content">Choose auth type</div>
 									<span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
 								</div>
@@ -101,7 +101,7 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
 			
 		</div>		
 
-		<div class="ww_more--fields"></div>
+		<div class="ww_auth--add_fields"></div>
 		
 		<div class="ant-row ant-form-item">
 				<div class="ant-col ant-form-item-control">
@@ -169,7 +169,7 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
                 <div class="rc-virtual-list-holder" style="max-height: 256px; overflow-y: hidden; overflow-anchor: none;"><div>
 				<div class="rc-virtual-list-holder-inner" style="display: flex; flex-direction: column;">
 
-				<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-active ant-select-item-option-selected" title="All">
+				<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-selected" title="All">
 					<div class="ant-select-item-option-content ww_filter--auth">Select a template</div>
 					<span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
 				</div>
@@ -180,7 +180,7 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
 					}
 					$auth_method_name = !empty( $auth_method['name'] ) ? $auth_method['name'] : $auth_method['auth_method'];
 				?>
-					<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-active ant-select-item-option-selected" title="All">
+					<div aria-selected="true" class="ant-select-item ant-select-item-option ant-select-item-option-selected" title="All">
                         <div class="ant-select-item-option-content ww_filter--auth" ww-data-value="<?php echo $auth_method_name; ?>"><?php echo $auth_method_name; ?></div>
                         <span class="ant-select-item-option-state" unselectable="on" aria-hidden="true" style="user-select: none;"></span>
 					</div>
@@ -226,40 +226,12 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
 											<colgroup></colgroup>
 											<thead class="ant-table-thead">
 												<tr>
-													<th class="ant-table-cell ant-table-column-has-sorters">
-														<div class="ant-table-column-sorters-with-tooltip">
-															<div class="ant-table-column-sorters">
-																<span>Template Name</span>
-																<span class="ant-table-column-sorter ant-table-column-sorter-full">
-																	<span class="ant-table-column-sorter-inner">
-																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
-																		</span>
-																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
-																		</span>
-																	</span>
-																</span>
-															</div>
-														</div>
+													<th class="ant-table-cell">
+														<span>Template Name</span>
 													</th>
 													
-													<th class="ant-table-cell ant-table-column-has-sorters">
-														<div class="ant-table-column-sorters-with-tooltip">
-															<div class="ant-table-column-sorters">
-																<span>Auth Type</span>
-																<span class="ant-table-column-sorter ant-table-column-sorter-full">
-																	<span class="ant-table-column-sorter-inner">
-																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
-																		</span>
-																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
-																		</span>
-																	</span>
-																</span>
-															</div>
-														</div>
+													<th class="ant-table-cell">
+														<span>Auth Type</span>
 													</th>
 
 													<th class="ant-table-cell">
@@ -268,7 +240,7 @@ $auth_methods = wordpress_webhooks()->settings->get_authentication_methods();
 
 												</tr>
 											</thead>
-											<tbody class="ant-table-tbody">
+											<tbody class="ant-table-tbody ww_tbody">
 												
 											</tbody>
 										</table>

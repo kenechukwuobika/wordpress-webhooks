@@ -11,10 +11,10 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 
 	<div class="d-flex justify-content-between">
 		<div class="ww_receivedata--text">
-			<h2 class=""><?php echo wordpress_webhooks()->helpers->translate( 'Recevie Data To WordPress Webhooks', 'ww-page-triggers' ); ?></h2>
+			<h2 class=""><?php echo wordpress_webhooks()->helpers->translate( 'Recevie Data To '.wordpress_webhooks()->settings->get_page_title(), 'ww-page-triggers' ); ?></h2>
 			<div class="main-description">
-				<?php if( wordpress_webhooks()->whitelabel->is_active() && ! empty( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ) ) ) : ?>
-					<?php echo wordpress_webhooks()->helpers->translate( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_send_data' ), 'admin-settings-license' ); ?>
+				<?php if( defined('WW_PRO_SETUP') && wordpress_webhooks()->whitelabel->is_active() && ! empty( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_receive_data' ) ) ) : ?>
+					<?php echo wordpress_webhooks()->helpers->translate( wordpress_webhooks()->whitelabel->get_setting( 'ww_whitelabel_custom_text_receive_data' ), 'admin-settings-license' ); ?>
 				<?php else : ?>
 					
 					<?php echo sprintf( wordpress_webhooks()->helpers->translate( 'Use the webhook URL down below to connect your external service with your site. This URL receives data from external endpoints and does certain actions on your WordPress site. Please note, that deleting the default main webhook creates automatically a new one. If you need more information, check out the installation and documentation by clicking here.' ), '<strong>' . $this->page_title . '</strong>', 'https://ironikus.com/docs/?utm_source=wp-webhooks-pro&utm_medium=send-data-documentation&utm_campaign=WP%20Webhooks%20Pro'); ?>
@@ -87,7 +87,7 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 		<div class="ant-card ant-card-bordered table-responsive">
 			<div class="ant-card-head">
 				<div class="ant-card-head-wrapper">
-					<div class="ant-card-head-title">Available Webhook Triggers</div>
+					<div class="ant-card-head-title">Available Webhook Actions</div>
 				</div>
 			</div>
 			<div class="ant-card-body">
@@ -101,58 +101,16 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 											<colgroup></colgroup>
 											<thead class="ant-table-thead">
 												<tr>
-													<th class="ant-table-cell ant-table-column-has-sorters">
-														<div class="ant-table-column-sorters-with-tooltip">
-															<div class="ant-table-column-sorters">
-																<span>Webhook Name</span>
-																<span class="ant-table-column-sorter ant-table-column-sorter-full">
-																	<span class="ant-table-column-sorter-inner">
-																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
-																		</span>
-																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
-																		</span>
-																	</span>
-																</span>
-															</div>
-														</div>
+													<th class="ant-table-cell">
+														<span>Webhook Name</span>
 													</th>
 													
-													<th class="ant-table-cell ant-table-column-has-sorters">
-														<div class="ant-table-column-sorters-with-tooltip">
-															<div class="ant-table-column-sorters">
-																<span>Webhook Url</span>
-																<span class="ant-table-column-sorter ant-table-column-sorter-full">
-																	<span class="ant-table-column-sorter-inner">
-																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
-																		</span>
-																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
-																		</span>
-																	</span>
-																</span>
-															</div>
-														</div>
+													<th class="ant-table-cell">
+														<span>Webhook Url</span>
 													</th>
 
-													<th class="ant-table-cell ant-table-column-has-sorters">
-														<div class="ant-table-column-sorters-with-tooltip">
-															<div class="ant-table-column-sorters">
-																<span>Trigger</span>
-																<span class="ant-table-column-sorter ant-table-column-sorter-full">
-																	<span class="ant-table-column-sorter-inner">
-																		<span role="img" aria-label="caret-up" class="anticon anticon-caret-up ant-table-column-sorter-up">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-up" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M858.9 689L530.5 308.2c-9.4-10.9-27.5-10.9-37 0L165.1 689c-12.2 14.2-1.2 35 18.5 35h656.8c19.7 0 30.7-20.8 18.5-35z"></path></svg>
-																		</span>
-																		<span role="img" aria-label="caret-down" class="anticon anticon-caret-down ant-table-column-sorter-down">
-																			<svg viewBox="0 0 1024 1024" focusable="false" data-icon="caret-down" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
-																		</span>
-																	</span>
-																</span>
-															</div>
-														</div>
+													<th class="ant-table-cell">
+														<span>Trigger</span>
 													</th>
 
 													<th class="ant-table-cell">
@@ -161,7 +119,7 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 
 												</tr>
 											</thead>
-											<tbody class="ant-table-tbody">
+											<tbody class="ant-table-tbody ww_tbody">
 												
 											</tbody>
 										</table>
@@ -188,7 +146,7 @@ $actions = wordpress_webhooks()->webhook->get_actions();
 		<svg class="ww_modal--close" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 20.177 20.177"><path d="M13.463,3.375A10.088,10.088,0,1,0,23.552,13.463,10.087,10.087,0,0,0,13.463,3.375Zm2.556,13.741L13.463,14.56l-2.556,2.556a.775.775,0,1,1-1.1-1.1l2.556-2.556L9.811,10.907a.775.775,0,1,1,1.1-1.1l2.556,2.556,2.556-2.556a.775.775,0,0,1,1.1,1.1L14.56,13.463l2.556,2.556a.779.779,0,0,1,0,1.1A.77.77,0,0,1,16.019,17.116Z" transform="translate(-3.375 -3.375)" fill="#707070"/></svg>
 		
 		<div class="ww_modal--1">
-			<h4 class="ww_modal--heading mb-4">Available Webhooks Triggers</h4>
+			<h4 class="ww_modal--heading mb-4">Available Webhook Actions</h4>
 
 			<p class="ww_modal--text">Use the webhook URL down below to connect your external service with your site. This URL receives data from external endpoints and does certain actions on your WordPress site. Please note, that deleting the default main webhook creates automatically a new one. If you need more information, check out the installation and documentation by clicking here.</p>
 
