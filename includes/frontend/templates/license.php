@@ -1,3 +1,91 @@
+<?php
+$license_key        = wordpress_webhooks()->settings->get_license('key');
+$license_status     = wordpress_webhooks()->settings->get_license('status');
+$license_expires    = wordpress_webhooks()->settings->get_license('expires');
+$license_expired    = '';
+$license_option_key = wordpress_webhooks()->settings->get_license_option_key();
+$license_nonce_data = wordpress_webhooks()->settings->get_license_nonce();
+$home_url = home_url();
+
+
+if ( ! empty( $license_expires ) ) {
+	$license_is_expired = wordpress_webhooks()->license->is_expired( $license_expires );
+	if ( $license_is_expired ) {
+		$license_expired = wordpress_webhooks()->helpers->translate('Your license key has expired.', 'admin-settings-license');
+	}
+}
+
+// Check on submit and update the license.
+if ( isset( $_REQUEST['ksubmit'] ) ) {
+	var_dump($_REQUEST['submit']);
+
+	if ( isset( $_REQUEST['license_number' ] ) ) {
+		$license_key = $_REQUEST['license_number'];
+		wordpress_webhooks()->license->update( 'key', trim( $license_key ) );
+		echo wordpress_webhooks()->helpers->create_admin_notice( 'Saved successfully.', 'success', true );
+	}else{
+		wordpress_webhooks()->license->update( 'key' );
+		$license_key = '';
+	}
+}
+
+// Activate license.
+if( isset( $_POST['submit'] ) ) {
+	// if( ! check_admin_referer( $license_nonce_data['action'], $license_nonce_data['arg'] ) ) {
+	// 	return;
+	// }
+
+	$response = wordpress_webhooks()->license->activate( array( 'license_number' => $_REQUEST['license_number']	) );
+
+	if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+		$message =  ( is_wp_error( $response ) && ! empty( $response->get_error_message() ) ) ? $response->get_error_message() : wordpress_webhooks()->helpers->translate( 'An error occurred, please try again.', 'admin-settings-license' );
+		echo wordpress_webhooks()->helpers->create_admin_notice( $message, 'error', true );
+	} else {
+		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
+
+		if( ! empty( $license_data ) && $license_data->status == 'active' ){
+			wordpress_webhooks()->license->update( 'status', $license_data->status );
+			wordpress_webhooks()->license->update( 'expires_at', $license_data->expiry_date );
+			wordpress_webhooks()->license->update( 'billing_cycle', $license_data->billing_cycle );
+			$license_status = $license_data->status;
+			$license_expires_at = $license_data->expires_at;
+			$license_billing_cycle = $license_data->billing_cycle;
+			$license_expired = false;
+			echo wordpress_webhooks()->helpers->create_admin_notice( 'License successfully activated.', 'success', true );
+		} elseif( ! empty( $license_data ) && ! empty( $license_data->site_count ) && ! empty( $license_data->license_limit ) ) {
+			if( $license_data->site_count >= $license_data->license_limit ){
+				echo sprintf(wordpress_webhooks()->helpers->create_admin_notice( 'We are sorry, but you reached the maximum of active installations for your subscription. Please go to your <a href="%s" target="_blank" rel="noopener">account page</a> and manage your active sites or upgrade your current plan.', 'error', true ), 'https://ironikus.com/account/?utm_source=wp-webhooks-pro&utm_medium=notice-reached-activation-limit&utm_campaign=WP%20Webhooks%20Pro');
+            }
+		} elseif( ! empty( $license_data ) && ! empty( $license_data->error ) && $license_data->error == 'expired' ){
+			echo wordpress_webhooks()->helpers->create_admin_notice( 'Sorry, but your license is expired. Please renew it first.', 'error', true );
+        } else {
+			echo wordpress_webhooks()->helpers->create_admin_notice( 'Unfortunately we could not activate your license.', 'error', true );
+		}
+
+	}
+
+}
+
+// Deactivate license.
+if ( isset( $_POST['ironikus_deactivate_license'] ) ) {
+	if( ! check_admin_referer( $license_nonce_data['action'], $license_nonce_data['arg'] ) ) {
+		return;
+	}
+
+	$response = wordpress_webhooks()->license->deactivate( array( 'license' => $license_key	) );
+
+	if ( ! is_wp_error( $response ) ) {
+		wordpress_webhooks()->license->update( 'status' );
+		wordpress_webhooks()->license->update( 'expires' );
+		wordpress_webhooks()->license->update( 'whitelabel' );
+		$license_status = false;
+		echo wordpress_webhooks()->helpers->create_admin_notice( 'Deactivated license successfully.', 'success', true );
+	}
+
+}
+
+?>
+
 <div class="d-flex flex-column align-items-center">
     <div class="ww_home--heading">
         <h2 class="ww-heading-primary">
@@ -26,7 +114,7 @@
     </div>
 
     <div class="ww_plugin--rate d-flex flex-column align-items-center">
-		<form action="">
+		<form method="post" action="">
 		<div class="ant-row ant-form-item">
 				<div class="ant-col ant-form-item-label">
 					<label for="webhook-url" class="ant-form-item-required" title="License Key">License Key</label>
@@ -35,7 +123,7 @@
 					<div class="ant-form-item-control-input">
 						<div class="ant-form-item-control-input-content">
 							<span class="ant-input-affix-wrapper">
-								<input type="text" id="webhook-url" class="ant-input" placeholder="<?php echo "'".wordpress_webhooks()->helpers->translate( 'Enter license key', 'ww-page-triggers' )."'"; ?>">
+								<input type="text" id="license_number" name="license_number" class="ant-input" placeholder="<?php echo "'".wordpress_webhooks()->helpers->translate( 'Enter license key', 'ww-page-triggers' )."'"; ?>">
 							</span>
 						</div>
 					</div>
@@ -48,7 +136,7 @@
 				<div class="ant-col ant-form-item-control">
 					<div class="ant-form-item-control-input">
 						<div class="ant-form-item-control-input-content">
-							<button type="submit" style="width: 15rem; height: 3.25rem" id="ww_submit" class="ant-btn ant-btn-primary ant-btn-block" ant-click-animating-without-extra-node="false">
+							<button type="submit" name="submit" style="width: 15rem; height: 3.25rem" id="ww_submit" class="ant-btn ant-btn-primary ant-btn-block" ant-click-animating-without-extra-node="false">
 								<span class="ant-btn-loading-icon">
 									<span role="img" aria-label="loading" class="anticon anticon-loading anticon-spin">
 										<svg viewBox="0 0 1024 1024" focusable="false" data-icon="loading" width="1em" height="1em" fill="currentColor" aria-hidden="true">

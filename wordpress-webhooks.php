@@ -39,7 +39,7 @@ define( 'WW_PLUGIN_URL',     plugin_dir_url( WW_PLUGIN_FILE ) );
 define( 'WW_TEXTDOMAIN',     'wordpress-webhooks' );
 
 // Plugin Store URL
-define( 'PULL_BYTES',        'https://pullbytes.com' );
+define( 'PULL_BYTES',        'https://wordpress-webhooks-api.herokuapp.com/api/v1/verify_license' );
 
 // Plugin Store ID
 define( 'WW_PLUGIN_ID',    183 );

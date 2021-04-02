@@ -44,20 +44,20 @@ class WordPress_Webhooks_License {
 	 */
 	public function ironikus_throw_admin_notices(){
 
-		if ( empty( $this->license_data['key'] ) ) {
-			echo sprintf(wordpress_webhooks()->helpers->create_admin_notice( 'If you run a WP Webhook Pro integration on a live site, we recommend our annual support license for updates and premium support. <a href="%s" target="_blank" rel="noopener">More Info</a>', 'warning', false ), 'https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wp-webhooks-pro&utm_medium=notice-license-not-set&utm_campaign=WP%20Webhooks%20Pro');
-		} else {
-			if ( empty( $this->license_data['status'] ) || $this->license_data['status'] !== 'valid' ) {
-				echo sprintf(wordpress_webhooks()->helpers->create_admin_notice( 'If you run a WP Webhook Pro integration on a live site, we recommend our annual support license for updates and premium support. <a href="%s" target="_blank" rel="noopener">More Info</a>', 'warning', false ), 'https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wp-webhooks-pro&utm_medium=notice-license-not-activated&utm_campaign=WP%20Webhooks%20Pro');
-			} else {
-				if ( ! empty( $this->license_data['expires'] ) ) {
-					$license_is_expired = $this->is_expired( $this->license_data['expires'] );
-					if ( $license_is_expired ) {
-						echo sprintf(wordpress_webhooks()->helpers->create_admin_notice( 'Your license key has expired. We recommend in renewing your annual support license to continue to get automatic updates and premium support. <a href="%s" target="_blank" rel="noopener">More Info</a>', 'warning' ), 'https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wp-webhooks-pro&utm_medium=notice-license-expired&utm_campaign=WP%20Webhooks%20Pro');
-					}
-				}
-			}
-		}
+		// if ( empty( $this->license_data['key'] ) ) {
+		// 	echo sprintf(wordpress_webhooks()->helpers->create_admin_notice( 'If you run a WP Webhook Pro integration on a live site, we recommend our annual support license for updates and premium support. <a href="%s" target="_blank" rel="noopener">More Info</a>', 'warning', false ), 'https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wp-webhooks-pro&utm_medium=notice-license-not-set&utm_campaign=WP%20Webhooks%20Pro');
+		// } else {
+		// 	if ( empty( $this->license_data['status'] ) || $this->license_data['status'] !== 'valid' ) {
+		// 		echo sprintf(wordpress_webhooks()->helpers->create_admin_notice( 'If you run a WP Webhook Pro integration on a live site, we recommend our annual support license for updates and premium support. <a href="%s" target="_blank" rel="noopener">More Info</a>', 'warning', false ), 'https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wp-webhooks-pro&utm_medium=notice-license-not-activated&utm_campaign=WP%20Webhooks%20Pro');
+		// 	} else {
+		// 		if ( ! empty( $this->license_data['expires'] ) ) {
+		// 			$license_is_expired = $this->is_expired( $this->license_data['expires'] );
+		// 			if ( $license_is_expired ) {
+		// 				echo sprintf(wordpress_webhooks()->helpers->create_admin_notice( 'Your license key has expired. We recommend in renewing your annual support license to continue to get automatic updates and premium support. <a href="%s" target="_blank" rel="noopener">More Info</a>', 'warning' ), 'https://ironikus.com/downloads/wp-webhooks-pro/?utm_source=wp-webhooks-pro&utm_medium=notice-license-expired&utm_campaign=WP%20Webhooks%20Pro');
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 	}
 
@@ -110,24 +110,24 @@ class WordPress_Webhooks_License {
 	 */
 	public function activate( $args ){
 
-		if( empty( $args['license'] ) )
+		if( empty( $args['license_number'] ) )
 			return false;
 
 		$home_url = home_url();
 
 		$api_params = array(
 			'edd_action' => 'activate_license',
-			'license'    => $args['license'],
+			'license_number'    => $args['license_number'],
 			'item_id'    => WW_PLUGIN_ID,
 			'url'        => $home_url
 		);
 
-		$response = wp_remote_post( PULL_BYTES, array( 'timeout' => 30, 'sslverify' => true, 'body' => $api_params ) );
+		$response = wp_remote_post( PULL_BYTES, array( 'body' => $api_params ) );
 
 		return $response;
 	}
 
-	/**
+	/**[]
 	 * Deactivate a given license
 	 *
 	 * @param array $args - The arguments for the request (Currently supports only license)

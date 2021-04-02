@@ -115,20 +115,20 @@ class WordPress_Webhooks_Settings{
 		$this->data_mapping_table_data   = $this->setup_data_mapping_table_data();
 		$this->authentication_table_data   = $this->setup_authentication_table_data();
 		$this->license_nonce        = array(
-			'action' => 'ironikus_ww_license',
-			'arg'    => 'ironikus_ww_license_nonce'
+			'action' => 'wp_ww_license',
+			'arg'    => 'wp_ww_license_nonce'
 		);
 		$this->whitelist_nonce        = array(
-			'action' => 'ironikus_ww_whitelist',
-			'arg'    => 'ironikus_ww_whitelist_nonce'
+			'action' => 'wp_ww_whitelist',
+			'arg'    => 'wp_ww_whitelist_nonce'
 		);
 		$this->action_nonce        = array(
-			'action' => 'ironikus_ww_actions',
-			'arg'    => 'ironikus_ww_actions_nonce'
+			'action' => 'wp_ww_actions',
+			'arg'    => 'wp_ww_actions_nonce'
 		);
 		$this->log_nonce        = array(
-			'action' => 'ironikus_ww_logs',
-			'arg'    => 'ironikus_ww_logs_nonce'
+			'action' => 'wp_ww_logs',
+			'arg'    => 'wp_ww_logs_nonce'
 		);
 		$this->license              = $this->setup_license();
 		$this->trans_strings        = $this->load_default_strings();
